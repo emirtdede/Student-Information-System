@@ -1,0 +1,74 @@
+
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    a {
+        text-decoration: none;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .footer {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        height: 20vh;
+        margin-top: 1rem;
+    }
+    .footer img {
+    margin: 1rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    }
+    .footer .medya {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    }
+    .footer .medya .icons i {
+    font-size: 1.5rem;
+    }
+    .footer .medya .icons i:hover {
+    color: gold;
+    }
+    .footer .iletisim  i:hover{
+    color: green;
+    }
+    .navbar  {
+        justify-content: space-between;
+        height: 6rem;
+    }
+
+    .navbar .navbarright {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .navbar .navbarright .search {
+        float: right;
+    }
+    
+    .navbar .navbarright .search input{
+        padding: 5px;
+        border-radius: 7px;
+        border: 1px solid white;
+        
+        
+    }
+    .navbar .navbarright .search button{
+        border-radius: 7px;
+        padding: 5px;
+        color: white;
+        border: 1px solid white;
+       
+    }
+    .navbar .navbarright .search button:hover{
+        color: black;
+        background-color: white!important;
+    }
+    
