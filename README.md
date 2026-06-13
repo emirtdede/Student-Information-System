@@ -1,5 +1,4 @@
 # 🎓 OKÜ Student Information System - SIS
-# 🎓 (OKÜ Öğrenci Bilgi Sistemi - OBS)
 
 [![.NET Core](https://img.shields.io/badge/.NET_Core-9.0-blue.svg?style=flat-square&logo=.net)](https://dotnet.microsoft.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-Database-green.svg?style=flat-square&logo=sqlite)](https://www.sqlite.org/)
@@ -85,7 +84,7 @@ This project is built following modern web design trends (bento grid layout, gla
 
 ---
 
-## Türkçe Versiyon (Ekran Görüntüleri ile)
+# 🎓 OKÜ Öğrenci Bilgi Sistemi - OBS
 
 OKÜ Öğrenci Bilgi Sistemi (OBS), bilgisayar mühendisliği öğrencileri ve akademik danışmanları için özel olarak tasarlanmış, yüksek bilgi yoğunluğuna sahip, modern ve responsive bir akademik portaldır. 
 
