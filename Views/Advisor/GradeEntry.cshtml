@@ -1,0 +1,115 @@
+@model List<Student_Information_System.Models.Student>
+@{ ViewData["Title"] = "Not Girişi Sistemi"; }
+
+@section Styles {
+<style>
+.ambient-shadow { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05); }
+.grade-input {
+    width: 60px;
+    text-align: center;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 4px;
+}
+.grade-input:focus {
+    outline: none;
+    border-color: #00647e;
+    background: white;
+}
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<div class="p-gutter flex-1 w-full max-w-container-max mx-auto">
+<div class="mb-lg">
+<h1 class="font-h1 text-h1 text-primary mb-xs"><span class="lang-en">Grade Entry System</span><span class="lang-tr">Not Girişi Sistemi</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">Enter midterm (Midterm) and semester-end (Final) grades for the students you advise.</span><span class="lang-tr">Danışmanlığını yaptığınız öğrencilerin ara sınav (Vize) ve yarıyıl sonu (Final) notlarını girin.</span></p>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">error</span>
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (ViewBag.IsGradeEntryActive == false)
+{
+    <div class="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">event_busy</span>
+        <div>
+            <strong><span class="lang-en">Grade Entry Period is Closed.</span><span class="lang-tr">Not Giriş Dönemi Kapatılmıştır.</span></strong> <span class="lang-en">You cannot submit or update grades at this time.</span><span class="lang-tr">Şu anda not girişi veya not güncellemesi yapamıyorsunuz.</span>
+        </div>
+    </div>
+}
+
+<div class="flex flex-col gap-md">
+    @if(Model != null && Model.Count > 0)
+    {
+        foreach (var student in Model)
+        {
+            var approvedCourses = student.Enrollments?.ToList();
+            if(approvedCourses != null && approvedCourses.Count > 0)
+            {
+                <div class="glass-card ambient-shadow rounded-xl p-md">
+                    <div class="flex items-center gap-sm mb-sm border-b border-outline-variant/30 pb-xs">
+                        <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                            @student.FirstName.Substring(0,1)@student.LastName.Substring(0,1)
+                        </div>
+                        <div>
+                            <h3 class="font-h3 text-[18px] text-on-surface font-bold">@student.FirstName @student.LastName</h3>
+                            <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Student No:</span><span class="lang-tr">Öğrenci No:</span> @student.StudentNumber | @student.Department</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-outline-variant/30 text-on-surface-variant font-label-sm text-label-sm">
+                                    <th class="py-2 font-medium"><span class="lang-en">Course Code</span><span class="lang-tr">Ders Kodu</span></th>
+                                    <th class="py-2 font-medium"><span class="lang-en">Course Name</span><span class="lang-tr">Ders Adı</span></th>
+                                    <th class="py-2 font-medium text-center"><span class="lang-en">Midterm Grade</span><span class="lang-tr">Vize Notu</span></th>
+                                    <th class="py-2 font-medium text-center"><span class="lang-en">Final Grade</span><span class="lang-tr">Final Notu</span></th>
+                                    <th class="py-2 font-medium text-center"><span class="lang-en">Action</span><span class="lang-tr">İşlem</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrollment in approvedCourses)
+                                {
+                                    <tr class="border-b border-outline-variant/10 hover:bg-white/50 transition-colors">
+                                        <form method="post" asp-action="SaveGrades">
+                                            <input type="hidden" name="studentId" value="@student.Id" />
+                                            <input type="hidden" name="courseId" value="@enrollment.CourseId" />
+                                            <td class="py-3 font-body-md text-on-surface">@enrollment.Course.Code</td>
+                                            <td class="py-3 font-body-md text-on-surface truncate max-w-[200px]">@enrollment.Course.Name</td>
+                                            <td class="py-3 text-center">
+                                                <input type="number" name="midtermGrade" class="grade-input" min="0" max="100" value="@enrollment.MidtermGrade" @(ViewBag.IsGradeEntryActive == false ? "disabled" : "") />
+                                            </td>
+                                            <td class="py-3 text-center">
+                                                <input type="number" name="finalGrade" class="grade-input" min="0" max="100" value="@enrollment.FinalGrade" @(ViewBag.IsGradeEntryActive == false ? "disabled" : "") />
+                                            </td>
+                                            <td class="py-3 text-center">
+                                                <button type="submit" @(ViewBag.IsGradeEntryActive == false ? "disabled" : "") class="bg-primary text-on-primary font-label-sm text-label-sm px-3 py-1 rounded hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"><span class="lang-en">Save</span><span class="lang-tr">Kaydet</span></button>
+                                            </td>
+                                        </form>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="glass-panel p-lg text-center font-body-lg text-on-surface-variant rounded-xl">
+            <span class="lang-en">No students with approved courses found in the system.</span><span class="lang-tr">Sisteme kayıtlı, onaylanmış dersi olan öğrenci bulunmamaktadır.</span>
+        </div>
+    }
+</div>
+
+</div>
+</div>

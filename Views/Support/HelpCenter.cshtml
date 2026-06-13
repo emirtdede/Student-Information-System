@@ -1,0 +1,89 @@
+@{ ViewData["Title"] = "Help Center"; }
+
+@section Styles {
+<style>
+/* Custom subtle scrollbar for content areas */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: theme('colors.outline-variant');
+            border-radius: 10px;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<div class="max-w-container-max mx-auto space-y-12">
+<!-- Hero Section: Search -->
+<section class="text-center space-y-6 max-w-3xl mx-auto py-8">
+<h1 class="font-h1 text-h1 text-primary"><span class="lang-en">How can we help you?</span><span class="lang-tr">Nasıl yardımcı olabiliriz?</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">Search for frequently asked questions or choose one of the categories below.</span><span class="lang-tr">Sıkça sorulan soruları arayın veya aşağıdaki kategorilerden birini seçin.</span></p>
+<div class="relative max-w-2xl mx-auto mt-8">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-4 rounded-full glass-card text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent font-body-md text-body-md transition-shadow" placeholder="Örn: Ders kaydı nasıl yapılır?" data-tr-placeholder="Örn: Ders kaydı nasıl yapılır?" data-en-placeholder="e.g. How to register for courses?" type="text"/>
+</div>
+</section>
+<!-- Categories Bento Grid -->
+<section>
+<h2 class="font-h3 text-h3 text-on-surface mb-6 px-2"><span class="lang-en">Help Topics</span><span class="lang-tr">Yardım Konuları</span></h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Category Card 1 -->
+<a class="glass-card rounded-xl p-6 flex flex-col space-y-4 hover:-translate-y-1 transition-transform duration-300 group" href="/Auth/ForgotPassword">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center group-hover:bg-primary-container/30 transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="login">login</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface text-[20px]"><span class="lang-en">Login Issues</span><span class="lang-tr">Giriş Sorunları</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1"><span class="lang-en">Issues related to password reset, two-factor authentication, and system access.</span><span class="lang-tr">Şifre sıfırlama, iki faktörlü doğrulama ve sisteme erişim ile ilgili sorunlar.</span></p>
+<span class="text-primary font-label-md text-label-md group-hover:underline flex items-center mt-auto">
+                                <span class="lang-en">View Solutions</span><span class="lang-tr">Çözümleri Gör</span> <span class="material-symbols-outlined ml-1 text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</span>
+</a>
+<!-- Category Card 2 -->
+<a class="glass-card rounded-xl p-6 flex flex-col space-y-4 hover:-translate-y-1 transition-transform duration-300 group" href="/Support/StudentHandbook">
+<div class="w-12 h-12 rounded-lg bg-secondary-container/40 flex items-center justify-center group-hover:bg-secondary-container/60 transition-colors">
+<span class="material-symbols-outlined text-secondary" data-icon="app_registration">app_registration</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface text-[20px]"><span class="lang-en">Course Registration</span><span class="lang-tr">Ders Kaydı</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1"><span class="lang-en">Information about semester course selection, advisor approval, and elective course quotas.</span><span class="lang-tr">Dönemlik ders seçimi, danışman onayı ve seçmeli ders kotaları hakkında bilgiler.</span></p>
+<span class="text-primary font-label-md text-label-md group-hover:underline flex items-center mt-auto">
+                                <span class="lang-en">Review Guides</span><span class="lang-tr">Kılavuzları İncele</span> <span class="material-symbols-outlined ml-1 text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</span>
+</a>
+<!-- Category Card 3 -->
+<a class="glass-card rounded-xl p-6 flex flex-col space-y-4 hover:-translate-y-1 transition-transform duration-300 group" href="/Academic/Grades">
+<div class="w-12 h-12 rounded-lg bg-tertiary-container/20 flex items-center justify-center group-hover:bg-tertiary-container/30 transition-colors">
+<span class="material-symbols-outlined text-tertiary" data-icon="grade">grade</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface text-[20px]"><span class="lang-en">Grades and Exams</span><span class="lang-tr">Not ve Sınavlar</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex-1"><span class="lang-en">Details on midterm, final grades, objection processes, and transcript operations.</span><span class="lang-tr">Ara sınav, final notları, itiraz süreçleri ve transkript işlemleri detayları.</span></p>
+<span class="text-primary font-label-md text-label-md group-hover:underline flex items-center mt-auto">
+                                <span class="lang-en">Read Details</span><span class="lang-tr">Detayları Oku</span> <span class="material-symbols-outlined ml-1 text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</span>
+</a>
+</div>
+</section>
+<!-- Contact Support CTA -->
+<section class="glass-card rounded-xl p-8 flex flex-col md:flex-row items-center justify-between overflow-hidden relative mt-12">
+<div class="absolute right-0 top-0 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+<div class="space-y-2 mb-6 md:mb-0 relative z-10 text-center md:text-left">
+<h2 class="font-h2 text-h2 text-primary"><span class="lang-en">Still need help?</span><span class="lang-tr">Hala yardıma mı ihtiyacınız var?</span></h2>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Our support team is here to assist you.</span><span class="lang-tr">Destek ekibimiz size yardımcı olmak için burada.</span></p>
+</div>
+<button onclick="window.location.href='mailto:bilgiislem@@osmaniye.edu.tr'" class="relative z-10 bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-full flex items-center space-x-2 hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="support_agent">mail</span>
+<span><span class="lang-en">Contact Support</span><span class="lang-tr">Destekle İletişime Geç</span></span>
+</button>
+</section>
+</div>
+<!-- Footer Component -->
+</div>
+
+@section Scripts {
+<script>
+
+</script>
+}

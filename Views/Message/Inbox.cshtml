@@ -1,0 +1,220 @@
+@model StudentInformationSystem.Controllers.InboxViewModel
+@{
+    ViewData["Title"] = "Mesaj Kutusu";
+    var userRole = ViewBag.UserRole as string;
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-lg">
+        <div>
+            <h1 class="font-h1 text-h1 text-on-surface"><span class="lang-en">Academic Communication / Inbox</span><span class="lang-tr">Akademik İletişim / Mesaj Kutusu</span></h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-xs"><span class="lang-en">Communication panel for academic situations, course registration approvals, and objections.</span><span class="lang-tr">Akademik durumlar, ders kayıt onayları ve itirazlar için iletişim paneli.</span></p>
+        </div>
+        <button onclick="document.getElementById('composeModal').classList.remove('hidden')" class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">edit</span>
+            <span class="lang-en">Compose New Message</span><span class="lang-tr">Yeni Mesaj Oluştur</span>
+        </button>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary/10 border border-secondary/30 text-secondary p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">error</span>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Glass Box Container -->
+    <div class="glass-card rounded-2xl overflow-hidden flex flex-col xl:flex-row min-h-[600px] border border-outline-variant/20">
+        
+        <!-- Left Side: Tabs Navigation -->
+        <div class="w-full xl:w-64 border-r border-outline-variant/20 bg-surface-container-low/30 p-sm flex flex-col gap-xs">
+            <button onclick="switchTab('inbox')" id="btn-inbox" class="tab-btn w-full flex items-center justify-between px-md py-sm rounded-lg text-left font-label-md text-label-md bg-primary text-on-primary shadow-sm transition-all">
+                <div class="flex items-center gap-sm">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <span class="lang-en">Inbox</span><span class="lang-tr">Gelen Kutusu</span>
+                </div>
+                @{
+                    var unreadCount = Model.ReceivedMessages.Count(m => !m.IsRead);
+                }
+                @if (unreadCount > 0)
+                {
+                    <span class="px-2 py-0.5 rounded-full bg-error text-on-error text-[11px] font-bold">@unreadCount</span>
+                }
+            </button>
+            <button onclick="switchTab('sent')" id="btn-sent" class="tab-btn w-full flex items-center gap-sm px-md py-sm rounded-lg text-left font-label-md text-label-md text-on-surface-variant hover:bg-surface-container/50 hover:text-primary transition-all">
+                <span class="material-symbols-outlined">send</span>
+                <span class="lang-en">Sent Items</span><span class="lang-tr">Gönderilenler</span>
+            </button>
+        </div>
+
+        <!-- Right Side: Message Lists -->
+        <div class="flex-grow p-md">
+            
+            <!-- Gelen Kutusu Listesi -->
+            <div id="tab-content-inbox" class="tab-content flex flex-col gap-sm">
+                <h3 class="font-h3 text-h3 text-on-surface mb-sm"><span class="lang-en">Received Messages</span><span class="lang-tr">Gelen Mesajlar</span></h3>
+                @if (Model.ReceivedMessages.Count > 0)
+                {
+                    <div class="flex flex-col gap-2">
+                        @foreach (var msg in Model.ReceivedMessages)
+                        {
+                            <a href="/Message/Details/@msg.Id" class="glass-card hover:bg-white/40 dark:hover:bg-slate-800/80 transition-colors p-md rounded-xl border border-outline-variant/15 flex items-center justify-between gap-md relative @(msg.IsRead ? "opacity-80" : "border-l-4 border-l-primary")">
+                                <div class="flex-grow min-w-0">
+                                    <div class="flex items-center gap-sm mb-1.5 flex-wrap">
+                                        <span class="font-label-sm text-label-sm text-primary font-bold">@msg.Sender.FirstName @msg.Sender.LastName</span>
+                                        <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-normal">@msg.Sender.Role</span>
+                                        @if (!msg.IsRead)
+                                        {
+                                            <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error/10 text-error font-bold flex items-center gap-0.5"><span class="lang-en">New</span><span class="lang-tr">Yeni</span></span>
+                                        }
+                                    </div>
+                                    <h4 class="font-label-md text-label-md text-on-surface font-semibold truncate">@msg.Subject</h4>
+                                    <p class="text-[13px] text-on-surface-variant line-clamp-1 mt-0.5">@msg.Content</p>
+                                </div>
+                                <div class="text-right flex flex-col items-end shrink-0">
+                                    <span class="text-xs text-outline font-label-sm">@msg.SentDate.ToString("dd MMM yyyy HH:mm")</span>
+                                    <span class="material-symbols-outlined text-primary mt-1">chevron_right</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="py-lg text-center opacity-50 flex flex-col items-center">
+                        <span class="material-symbols-outlined text-[48px] mb-sm">mail</span>
+                        <p class="font-body-md text-body-md"><span class="lang-en">Your inbox is empty.</span><span class="lang-tr">Gelen mesaj kutunuz boş.</span></p>
+                    </div>
+                }
+            </div>
+
+            <!-- Gönderilen Kutusu Listesi -->
+            <div id="tab-content-sent" class="tab-content hidden flex flex-col gap-sm">
+                <h3 class="font-h3 text-h3 text-on-surface mb-sm"><span class="lang-en">Sent Messages</span><span class="lang-tr">Gönderilen Mesajlar</span></h3>
+                @if (Model.SentMessages.Count > 0)
+                {
+                    <div class="flex flex-col gap-2">
+                        @foreach (var msg in Model.SentMessages)
+                        {
+                            <a href="/Message/Details/@msg.Id" class="glass-card hover:bg-white/40 dark:hover:bg-slate-800/80 transition-colors p-md rounded-xl border border-outline-variant/15 flex items-center justify-between gap-md relative">
+                                <div class="flex-grow min-w-0">
+                                    <div class="flex items-center gap-sm mb-1.5 flex-wrap">
+                                        <span class="font-label-sm text-label-sm text-on-surface-variant font-bold"><span class="lang-en">To:</span><span class="lang-tr">Kime:</span> @msg.Receiver.FirstName @msg.Receiver.LastName</span>
+                                        <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-normal">@msg.Receiver.Role</span>
+                                    </div>
+                                    <h4 class="font-label-md text-label-md text-on-surface font-semibold truncate">@msg.Subject</h4>
+                                    <p class="text-[13px] text-on-surface-variant line-clamp-1 mt-0.5">@msg.Content</p>
+                                </div>
+                                <div class="text-right flex flex-col items-end shrink-0">
+                                    <span class="text-xs text-outline font-label-sm">@msg.SentDate.ToString("dd MMM yyyy HH:mm")</span>
+                                    <span class="material-symbols-outlined text-primary mt-1">chevron_right</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="py-lg text-center opacity-50 flex flex-col items-center">
+                        <span class="material-symbols-outlined text-[48px] mb-sm">send</span>
+                        <p class="font-body-md text-body-md"><span class="lang-en">You have no sent messages.</span><span class="lang-tr">Gönderilmiş herhangi bir mesajınız bulunmuyor.</span></p>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Compose Message Modal -->
+<div id="composeModal" class="fixed inset-0 z-[100] flex items-center justify-center p-md bg-black/40 backdrop-blur-sm hidden">
+    <div class="glass-card w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-white/30 p-lg flex flex-col gap-md relative">
+        <div class="flex justify-between items-center border-b border-outline-variant/20 pb-sm">
+            <h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">Send New Message</span><span class="lang-tr">Yeni Mesaj Gönder</span></h3>
+            <button onclick="document.getElementById('composeModal').classList.add('hidden')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <form method="post" asp-action="SendMessage" class="flex flex-col gap-md m-0">
+            <!-- Receiver -->
+            @if (userRole == "Student")
+            {
+                var adv = ViewBag.Advisor as Student_Information_System.Models.Advisor;
+                if (adv != null)
+                {
+                    <input type="hidden" name="receiverId" value="@adv.Id" />
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Recipient (Academic Advisor)</span><span class="lang-tr">Alıcı (Akademik Danışman)</span></label>
+                        <input type="text" readonly value="@adv.Title @adv.FirstName @adv.LastName" class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-container-low cursor-not-allowed outline-none font-body-md" />
+                    </div>
+                }
+                else
+                {
+                    <div class="text-error text-xs"><span class="lang-en">Your assigned advisor could not be found. Please contact student affairs.</span><span class="lang-tr">Atanmış danışmanınız bulunamadı. Lütfen öğrenci işleri ile iletişime geçin.</span></div>
+                }
+            }
+            else if (userRole == "Advisor")
+            {
+                var advs = ViewBag.Advisees as List<Student_Information_System.Models.Student>;
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Select Student</span><span class="lang-tr">Öğrenci Seçin</span></label>
+                    <select name="receiverId" class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md" required>
+                        <option value=""><span class="lang-en">-- Select Recipient Student --</span><span class="lang-tr">-- Alıcı Öğrenci Seçin --</span></option>
+                        @if (advs != null)
+                        {
+                            foreach (var std in advs)
+                            {
+                                <option value="@std.Id">@std.FirstName @std.LastName (@std.StudentNumber)</option>
+                            }
+                        }
+                    </select>
+                </div>
+            }
+
+            <!-- Subject -->
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Subject</span><span class="lang-tr">Konu</span></label>
+                <input type="text" name="subject" placeholder="Mesajın konusu..." data-tr-placeholder="Mesajın konusu..." data-en-placeholder="Subject of the message..." class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md" required />
+            </div>
+
+            <!-- Content -->
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Message Content</span><span class="lang-tr">Mesaj İçeriği</span></label>
+                <textarea name="content" rows="6" placeholder="Mesajınızı buraya yazın..." data-tr-placeholder="Mesajınızı buraya yazın..." data-en-placeholder="Write your message here..." class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md resize-none" required></textarea>
+            </div>
+
+            <div class="flex justify-end gap-sm border-t border-outline-variant/20 pt-md">
+                <button type="button" onclick="document.getElementById('composeModal').classList.add('hidden')" class="px-5 py-2.5 rounded-full border border-outline text-on-surface-variant font-label-md text-label-md hover:bg-surface-container/50"><span class="lang-en">Cancel</span><span class="lang-tr">Vazgeç</span></button>
+                <button type="submit" class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-md hover:scale-105 transition-transform"><span class="lang-en">Send Message</span><span class="lang-tr">Mesajı Gönder</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.className = "tab-btn w-full flex items-center gap-sm px-md py-sm rounded-lg text-left font-label-md text-label-md text-on-surface-variant hover:bg-surface-container/50 hover:text-primary transition-all";
+        });
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+
+        if (tab === 'inbox') {
+            document.getElementById('btn-inbox').className = "tab-btn w-full flex items-center justify-between px-md py-sm rounded-lg text-left font-label-md text-label-md bg-primary text-on-primary shadow-sm transition-all";
+            document.getElementById('tab-content-inbox').classList.remove('hidden');
+        } else {
+            document.getElementById('btn-sent').className = "tab-btn w-full flex items-center justify-between px-md py-sm rounded-lg text-left font-label-md text-label-md bg-primary text-on-primary shadow-sm transition-all";
+            document.getElementById('tab-content-sent').classList.remove('hidden');
+        }
+    }
+</script>

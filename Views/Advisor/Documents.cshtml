@@ -1,0 +1,184 @@
+@model List<Student_Information_System.Models.DocumentRequest>
+@{ ViewData["Title"] = "Document Management"; }
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <section class="space-y-sm mb-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+            <div>
+                <h1 class="font-h1 text-h1 text-on-background"><span class="lang-en">Document Request Management</span><span class="lang-tr">Belge Talep Yönetimi</span></h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">You can review, approve, or reject your students' document requests.</span><span class="lang-tr">Öğrencilerinizin belge taleplerini inceleyebilir, onaylayabilir veya reddedebilirsiniz.</span></p>
+            </div>
+            @{
+                var pendingCount = Model?.Count(d => d.Status == "Pending") ?? 0;
+            }
+            @if (pendingCount > 0)
+            {
+                <span class="glass-card px-md py-sm rounded-lg font-label-md flex items-center gap-xs text-amber-600 dark:text-amber-400">
+                    <span class="material-symbols-outlined text-[20px]">pending</span>
+                    <span>@pendingCount <span class="lang-en">Pending Request(s)</span><span class="lang-tr">Bekleyen Talep</span></span>
+                </span>
+            }
+        </div>
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary-container/20 border border-secondary text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @{
+        var typeLabels = new Dictionary<string, string> {
+            { "Transkript", "Transkript" },
+            { "OgrenciBelgesi", "Student Certificate" },
+            { "IliskiKesmeBelgesi", "Separation Document" },
+            { "DisiplinBelgesi", "Disciplinary Record" },
+            { "BursYazisi", "Scholarship Letter" }
+        };
+        var typeLabelsEn = new Dictionary<string, string> {
+            { "Transkript", "Transcript" },
+            { "OgrenciBelgesi", "Student Certificate" },
+            { "IliskiKesmeBelgesi", "Separation Document" },
+            { "DisiplinBelgesi", "Disciplinary Record" },
+            { "BursYazisi", "Scholarship Letter" }
+        };
+        var typeLabelsTr = new Dictionary<string, string> {
+            { "Transkript", "Transkript" },
+            { "OgrenciBelgesi", "Öğrenci Belgesi" },
+            { "IliskiKesmeBelgesi", "İlişik Kesme Belgesi" },
+            { "DisiplinBelgesi", "Disiplin Belgesi" },
+            { "BursYazisi", "Burs Yazısı" }
+        };
+        var typeIcons = new Dictionary<string, string> {
+            { "Transkript", "description" },
+            { "OgrenciBelgesi", "badge" },
+            { "IliskiKesmeBelgesi", "link_off" },
+            { "DisiplinBelgesi", "gavel" },
+            { "BursYazisi", "savings" }
+        };
+        var pendingRequests = Model?.Where(d => d.Status == "Pending").ToList() ?? new List<Student_Information_System.Models.DocumentRequest>();
+        var processedRequests = Model?.Where(d => d.Status != "Pending").ToList() ?? new List<Student_Information_System.Models.DocumentRequest>();
+    }
+
+    <section class="space-y-md">
+        @if (pendingRequests.Any())
+        {
+            <h2 class="font-h2 text-h2 text-on-background flex items-center gap-xs">
+                <span class="material-symbols-outlined text-amber-500">pending_actions</span>
+                <span class="lang-en">Pending Requests</span><span class="lang-tr">Bekleyen Talepler</span>
+            </h2>
+            <div class="space-y-md">
+                @foreach (var req in pendingRequests)
+                {
+                    var typeLabel = typeLabels.ContainsKey(req.DocumentType) ? typeLabels[req.DocumentType] : req.DocumentType;
+                    var typeLabelTr = typeLabelsTr.ContainsKey(req.DocumentType) ? typeLabelsTr[req.DocumentType] : req.DocumentType;
+                    var typeLabelEn = typeLabelsEn.ContainsKey(req.DocumentType) ? typeLabelsEn[req.DocumentType] : req.DocumentType;
+                    var typeIcon = typeIcons.ContainsKey(req.DocumentType) ? typeIcons[req.DocumentType] : "article";
+
+                    <div class="glass-card rounded-xl p-md border-l-4 border-amber-500">
+                        <div class="flex flex-col lg:flex-row justify-between gap-md">
+                            <div class="flex-1 space-y-sm">
+                                <div class="flex items-center gap-sm flex-wrap">
+                                    <span class="material-symbols-outlined text-primary text-[22px]">@typeIcon</span>
+                                    <span class="font-body-md text-body-md text-on-background font-semibold text-lg"><span class="lang-en">@typeLabelEn</span><span class="lang-tr">@typeLabelTr</span></span>
+                                    <span class="font-label-sm text-label-sm bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-full">@req.CopyCount <span class="lang-en">Copy(ies)</span><span class="lang-tr">Kopya</span></span>
+                                </div>
+                                <div class="flex items-center gap-sm text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-[18px]">person</span>
+                                    <span class="font-body-md text-body-md">@req.Student.FirstName @req.Student.LastName</span>
+                                    <span class="text-outline">•</span>
+                                    <span class="font-label-sm text-label-sm text-outline">@req.RequestDate.ToString("dd.MM.yyyy HH:mm")</span>
+                                </div>
+                                <div class="bg-surface-container-low rounded-lg p-sm">
+                                    <p class="font-label-sm text-label-sm text-on-surface-variant mb-1"><span class="lang-en">Purpose of Request:</span><span class="lang-tr">Talep Amacı:</span></p>
+                                    <p class="font-body-md text-body-md text-on-surface">@req.Purpose</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-sm min-w-[240px]">
+                                <!-- Approve Form -->
+                                <form method="post" asp-action="ApproveDocument" class="space-y-sm">
+                                    <input type="hidden" name="id" value="@req.Id" />
+                                    <div class="space-y-1">
+                                        <label class="block font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Admin Note (Optional)</span><span class="lang-tr">Yönetim Notu (Opsiyonel)</span></label>
+                                        <input type="text" name="adminNote" placeholder="Teslim bilgisi vb."
+                                               class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary" />
+                                    </div>
+                                    <button type="submit" class="w-full bg-green-600 text-white font-label-md text-label-md px-md py-xs rounded-lg hover:bg-green-700 transition-all shadow-sm flex items-center justify-center gap-1">
+                                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                        <span class="lang-en">Approve &amp; Prepare</span><span class="lang-tr">Onayla ve Hazırla</span>
+                                    </button>
+                                </form>
+                                <!-- Reject Form -->
+                                <form method="post" asp-action="RejectDocument" class="space-y-sm">
+                                    <input type="hidden" name="id" value="@req.Id" />
+                                    <input type="text" name="adminNote" placeholder="Red gerekçesi"
+                                           class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary" />
+                                    <button type="submit" class="w-full bg-red-600 text-white font-label-md text-label-md px-md py-xs rounded-lg hover:bg-red-700 transition-all shadow-sm flex items-center justify-center gap-1">
+                                        <span class="material-symbols-outlined text-[18px]">cancel</span>
+                                        <span class="lang-en">Reject</span><span class="lang-tr">Reddet</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (processedRequests.Any())
+        {
+            <h2 class="font-h2 text-h2 text-on-background flex items-center gap-xs mt-lg">
+                <span class="material-symbols-outlined text-outline">history</span>
+                <span class="lang-en">Processed Requests</span><span class="lang-tr">İşlenmiş Talepler</span>
+            </h2>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <div class="hidden md:grid grid-cols-12 gap-4 px-md py-sm bg-surface-container-low border-b border-outline-variant font-label-md text-label-md text-on-surface-variant">
+                    <div class="col-span-2"><span class="lang-en">Student</span><span class="lang-tr">Öğrenci</span></div>
+                    <div class="col-span-2"><span class="lang-en">Document Type</span><span class="lang-tr">Belge Türü</span></div>
+                    <div class="col-span-3"><span class="lang-en">Purpose</span><span class="lang-tr">Amaç</span></div>
+                    <div class="col-span-2"><span class="lang-en">Date</span><span class="lang-tr">Tarih</span></div>
+                    <div class="col-span-1 text-center"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></div>
+                    <div class="col-span-2"><span class="lang-en">Note</span><span class="lang-tr">Not</span></div>
+                </div>
+                <div class="divide-y divide-outline-variant/30">
+                    @foreach (var req in processedRequests)
+                    {
+                        var statusClass = req.Status == "Ready"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+                        var statusText = req.Status == "Ready" ? "<span class=\"lang-en\">Ready</span><span class=\"lang-tr\">Hazır</span>" : "<span class=\"lang-en\">Rejected</span><span class=\"lang-tr\">Reddedildi</span>";
+                        var statusIcon = req.Status == "Ready" ? "inventory" : "cancel";
+                        var typeLabel = typeLabels.ContainsKey(req.DocumentType) ? typeLabels[req.DocumentType] : req.DocumentType;
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-md py-sm items-center hover:bg-surface-bright/50 transition-colors">
+                            <div class="md:col-span-2 font-body-md text-body-md text-on-background">@req.Student.FirstName @req.Student.LastName</div>
+                            <div class="md:col-span-2 font-label-sm text-label-sm text-primary font-semibold">
+                                <span class="lang-en">@(typeLabelsEn.ContainsKey(req.DocumentType) ? typeLabelsEn[req.DocumentType] : req.DocumentType)</span>
+                                <span class="lang-tr">@(typeLabelsTr.ContainsKey(req.DocumentType) ? typeLabelsTr[req.DocumentType] : req.DocumentType)</span>
+                            </div>
+                            <div class="md:col-span-3 font-body-md text-body-md text-on-surface-variant truncate" title="@req.Purpose">@req.Purpose</div>
+                            <div class="md:col-span-2 font-label-sm text-label-sm text-on-surface-variant">@req.RequestDate.ToString("dd.MM.yyyy")</div>
+                            <div class="md:col-span-1 text-center">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm @statusClass">
+                                    <span class="material-symbols-outlined text-[14px]">@statusIcon</span>
+                                    @Html.Raw(statusText)
+                                </span>
+                            </div>
+                            <div class="md:col-span-2 font-label-sm text-label-sm text-on-surface-variant truncate" title="@req.AdminNote">@(req.AdminNote ?? "-")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (!pendingRequests.Any() && !processedRequests.Any())
+        {
+            <div class="glass-card rounded-xl p-lg text-center">
+                <span class="material-symbols-outlined text-[48px] text-on-surface-variant/50 mb-sm block">folder_open</span>
+                <p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">No document requests found yet.</span><span class="lang-tr">Henüz bir belge talebi bulunmuyor.</span></p>
+            </div>
+        }
+    </section>
+</div>

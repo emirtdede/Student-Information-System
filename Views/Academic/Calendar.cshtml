@@ -1,0 +1,151 @@
+@{ ViewData["Title"] = "Academic Calendar"; }
+
+@section Styles {
+<style>
+.timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, theme('colors.primary-container/30'), theme('colors.primary-container/10'));
+            z-index: 0;
+        }
+
+        .ambient-shadow {
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Decorative Background Shader elements -->
+<div class="absolute inset-0 pointer-events-none opacity-20 z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-container rounded-full blur-[100px] mix-blend-multiply"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-surface-dim rounded-full blur-[120px] mix-blend-multiply"></div>
+</div>
+<div class="relative z-10 max-w-4xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-xl gap-md">
+<div>
+<h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-primary mb-xs tracking-tight"><span class="lang-en">Academic Calendar</span><span class="lang-tr">Akademik Takvim</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">Important dates, registration periods, and holidays.</span><span class="lang-tr">Önemli tarihler, kayıt dönemleri ve tatiller.</span></p>
+</div>
+<div class="relative min-w-[200px]">
+<label class="sr-only" for="year-select"><span class="lang-en">Select Academic Year</span><span class="lang-tr">Akademik Yıl Seçiniz</span></label>
+<select class="appearance-none w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-sm px-md pr-xl font-label-md text-label-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow cursor-pointer glass-card" id="year-select">
+<option value="2023-2024"><span class="lang-en">2023-2024 Academic Year</span><span class="lang-tr">2023-2024 Akademik Yılı</span></option>
+<option selected="" value="2024-2025"><span class="lang-en">2024-2025 Academic Year</span><span class="lang-tr">2024-2025 Akademik Yılı</span></option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-md text-on-surface-variant">
+<span class="material-symbols-outlined text-xl" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Timeline Container -->
+<div class="relative timeline-line pl-md md:pl-xl">
+<!-- Month Header -->
+<div class="relative z-10 mb-md mt-md flex items-center">
+<div class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded-full shadow-sm ml-[-32px] md:ml-[-48px] border-4 border-background">
+                            <span class="lang-en">September 2024</span><span class="lang-tr">Eylül 2024</span>
+                        </div>
+</div>
+<!-- Event Card 1 -->
+<div class="mb-lg relative group">
+<div class="absolute left-[-28px] md:left-[-44px] top-md w-4 h-4 rounded-full bg-secondary border-4 border-background z-10 group-hover:scale-125 transition-transform"></div>
+<div class="glass-card rounded-xl p-md ml-sm transition-all hover:bg-surface-container-lowest/90 ambient-shadow">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-sm mb-sm">
+<div>
+<h3 class="font-h3 text-h3 text-on-background mb-xs"><span class="lang-en">Fall Semester Course Registrations</span><span class="lang-tr">Güz Yarıyılı Ders Kayıtları</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">The period when new and returning students must select courses through the system.</span><span class="lang-tr">Yeni ve eski öğrencilerin sistem üzerinden ders seçimi yapması gereken dönem.</span></p>
+</div>
+<div class="flex items-center gap-xs bg-surface-container-low px-sm py-xs rounded-lg border border-outline-variant/20 whitespace-nowrap">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="event">event</span>
+<span class="font-label-md text-label-md text-primary"><span class="lang-en">Sep 18 - 22</span><span class="lang-tr">18 - 22 Eyl</span></span>
+</div>
+</div>
+<div class="inline-flex items-center px-sm py-xs rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm border border-secondary-fixed/50">
+<span class="w-2 h-2 rounded-full bg-secondary mr-xs"></span>
+                                <span class="lang-en">Important</span><span class="lang-tr">Önemli</span>
+                            </div>
+</div>
+</div>
+<!-- Event Card 2 -->
+<div class="mb-lg relative group">
+<div class="absolute left-[-28px] md:left-[-44px] top-md w-4 h-4 rounded-full bg-primary border-4 border-background z-10 group-hover:scale-125 transition-transform"></div>
+<div class="glass-card rounded-xl p-md ml-sm transition-all hover:bg-surface-container-lowest/90 ambient-shadow">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-sm mb-sm">
+<div>
+<h3 class="font-h3 text-h3 text-on-background mb-xs"><span class="lang-en">Start of Fall Semester Classes</span><span class="lang-tr">Güz Yarıyılı Derslerin Başlaması</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">The start of classes in all faculties and colleges.</span><span class="lang-tr">Tüm fakülte ve yüksekokullarda derslerin başlangıcı.</span></p>
+</div>
+<div class="flex items-center gap-xs bg-surface-container-low px-sm py-xs rounded-lg border border-outline-variant/20 whitespace-nowrap">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="event">event</span>
+<span class="font-label-md text-label-md text-primary"><span class="lang-en">Sep 25</span><span class="lang-tr">25 Eyl</span></span>
+</div>
+</div>
+<div class="inline-flex items-center px-sm py-xs rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+                                <span class="lang-en">Academic</span><span class="lang-tr">Akademik</span>
+                            </div>
+</div>
+</div>
+<!-- Month Header -->
+<div class="relative z-10 mb-md mt-xl flex items-center">
+<div class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded-full shadow-sm ml-[-32px] md:ml-[-48px] border-4 border-background">
+                            <span class="lang-en">October 2024</span><span class="lang-tr">Ekim 2024</span>
+                        </div>
+</div>
+<!-- Event Card 3 (Holiday) -->
+<div class="mb-lg relative group">
+<div class="absolute left-[-28px] md:left-[-44px] top-md w-4 h-4 rounded-full bg-tertiary border-4 border-background z-10 group-hover:scale-125 transition-transform"></div>
+<div class="glass-card rounded-xl p-md ml-sm transition-all hover:bg-surface-container-lowest/90 ambient-shadow border-l-4 border-l-tertiary">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-sm mb-sm">
+<div>
+<h3 class="font-h3 text-h3 text-tertiary mb-xs"><span class="lang-en">Republic Day</span><span class="lang-tr">Cumhuriyet Bayramı</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Public Holiday (Half day on eve).</span><span class="lang-tr">Resmi Tatil (Yarım gün arife).</span></p>
+</div>
+<div class="flex items-center gap-xs bg-tertiary-fixed text-on-tertiary-fixed px-sm py-xs rounded-lg border border-tertiary-fixed-dim/30 whitespace-nowrap">
+<span class="material-symbols-outlined text-sm" data-icon="celebration">celebration</span>
+<span class="font-label-md text-label-md"><span class="lang-en">Oct 28 - 29</span><span class="lang-tr">28 - 29 Eki</span></span>
+</div>
+</div>
+<div class="inline-flex items-center px-sm py-xs rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm border border-tertiary/20">
+                                <span class="lang-en">Holiday</span><span class="lang-tr">Tatil</span>
+                            </div>
+</div>
+</div>
+<!-- Month Header -->
+<div class="relative z-10 mb-md mt-xl flex items-center">
+<div class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded-full shadow-sm ml-[-32px] md:ml-[-48px] border-4 border-background">
+                            <span class="lang-en">November 2024</span><span class="lang-tr">Kasım 2024</span>
+                        </div>
+</div>
+<!-- Event Card 4 -->
+<div class="mb-lg relative group">
+<div class="absolute left-[-28px] md:left-[-44px] top-md w-4 h-4 rounded-full bg-primary-container border-4 border-background z-10 group-hover:scale-125 transition-transform"></div>
+<div class="glass-card rounded-xl p-md ml-sm transition-all hover:bg-surface-container-lowest/90 ambient-shadow">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-sm mb-sm">
+<div>
+<h3 class="font-h3 text-h3 text-on-background mb-xs"><span class="lang-en">Midterm Exams Period</span><span class="lang-tr">Ara Sınavlar (Vize) Dönemi</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Conducting fall semester midterm exams.</span><span class="lang-tr">Güz yarıyılı ara sınavlarının yapılması.</span></p>
+</div>
+<div class="flex items-center gap-xs bg-surface-container-low px-sm py-xs rounded-lg border border-outline-variant/20 whitespace-nowrap">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="edit_document">edit_document</span>
+<span class="font-label-md text-label-md text-primary"><span class="lang-en">Nov 13 - 24</span><span class="lang-tr">13 - 24 Kas</span></span>
+</div>
+</div>
+<div class="inline-flex items-center px-sm py-xs rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+                                <span class="lang-en">Exam</span><span class="lang-tr">Sınav</span>
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts {
+<script>
+
+</script>
+}

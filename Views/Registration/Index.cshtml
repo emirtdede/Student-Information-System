@@ -1,0 +1,247 @@
+@model Student_Information_System.Models.RegistrationViewModel
+@{ ViewData["Title"] = "Course Registration"; }
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-lg">
+    <div>
+        <h1 class="font-h1 text-h1 text-on-surface"><span class="lang-en">Course Registration</span><span class="lang-tr">Ders Kayıt</span></h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-xs"><span class="lang-en">You can make your course selections for the 2024-2025 term here.</span><span class="lang-tr">2024-2025 dönemi için ders seçimlerinizi buradan yapabilirsiniz.</span></p>
+    </div>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">error</span>
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (ViewBag.IsRegistrationActive == false)
+{
+    <div class="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">event_busy</span>
+        <div>
+            <strong><span class="lang-en">Course Registration Period is Closed.</span><span class="lang-tr">Ders Kayıt Dönemi Kapalıdır.</span></strong> <span class="lang-en">Active Term:</span><span class="lang-tr">Aktif Dönem:</span> @ViewBag.ActiveSemester. <span class="lang-en">You cannot add or drop courses.</span><span class="lang-tr">Ders ekleme veya silme işlemi yapamazsınız.</span>
+        </div>
+    </div>
+}
+
+@if (ViewBag.IsWarning == true)
+{
+    <div class="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-400 p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined text-red-600">warning</span>
+        <div>
+            <strong><span class="lang-en">Academic Standing Warning:</span><span class="lang-tr">Akademik Durum Uyarısı:</span></strong> <span class="lang-en">Since your Cumulative GPA (CGPA: @ViewBag.StudentGpa.ToString("0.00")) is below 2.00, you can select a maximum of **@ViewBag.MaxEcts ECTS** this term.</span><span class="lang-tr">Genel Not Ortalamanız (GNO: @ViewBag.StudentGpa.ToString("0.00")) 2.00 barajının altında kaldığı için bu dönem maksimum **@ViewBag.MaxEcts AKTS** ders seçebilirsiniz.</span>
+        </div>
+    </div>
+}
+
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter items-start">
+<!-- Left Panel: Curriculum & Filters -->
+<div class="xl:col-span-8 flex flex-col gap-md">
+<!-- Filters -->
+<div class="glass-panel rounded-xl p-md flex flex-wrap gap-sm">
+<button class="px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md transition-transform hover:scale-105"><span class="lang-en">All Courses</span><span class="lang-tr">Tüm Dersler</span></button>
+</div>
+
+<!-- Course List -->
+<div class="glass-panel rounded-xl flex flex-col overflow-hidden">
+    @if (Model.AvailableCourses.Count > 0)
+    {
+        foreach (var course in Model.AvailableCourses)
+        {
+            <!-- Course Item -->
+            <div class="course-row p-md border-b border-outline-variant/20 hover:bg-white/40 transition-colors group flex justify-between items-center gap-4">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant">@course.Code</span>
+                        <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error-container text-on-error-container"><span class="lang-en">Required</span><span class="lang-tr">Zorunlu</span></span>
+                        @{
+                            var completedMap = ViewBag.CompletedEnrollments as Dictionary<int, string>;
+                            if (completedMap != null && completedMap.ContainsKey(course.Id))
+                            {
+                                var prevGrade = completedMap[course.Id];
+                                if (prevGrade == "FF" || prevGrade == "FD" || prevGrade == "FZ")
+                                {
+                                    <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error/20 text-error font-semibold flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[14px]">replay</span>
+                                        <span class="lang-en">Course Repeat (Failed: @prevGrade)</span><span class="lang-tr">Ders Tekrarı (Başarısız: @prevGrade)</span>
+                                    </span>
+                                }
+                                else if (prevGrade == "DD" || prevGrade == "DC")
+                                {
+                                    <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary/20 text-primary font-semibold flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                        <span class="lang-en">Grade Upgrade (Passed: @prevGrade)</span><span class="lang-tr">Not Yükseltme (Geçti: @prevGrade)</span>
+                                    </span>
+                                }
+                            }
+                        }
+                    </div>
+                    <h3 class="font-h3 text-h3 text-on-surface">@course.Name</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant">@course.Instructor</p>
+                    @if (!string.IsNullOrEmpty(course.ClassDay))
+                    {
+                        <p class="text-[13px] text-primary dark:text-primary-fixed mt-1 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">schedule</span>
+                            @course.ClassDay @course.StartTime - @course.EndTime
+                        </p>
+                    }
+                    @{
+                        var countsMap = ViewBag.EnrollmentCounts as Dictionary<int, int>;
+                        int currentCount = 0;
+                        if (countsMap != null && countsMap.ContainsKey(course.Id))
+                        {
+                            currentCount = countsMap[course.Id];
+                        }
+                    }
+                    <p class="text-[12px] text-on-surface-variant mt-1 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[15px]">groups</span>
+                        <span class="lang-en">Quota:</span><span class="lang-tr">Kontenjan:</span> @currentCount / @course.Capacity
+                    </p>
+                </div>
+                <div class="text-right flex items-center gap-md">
+                    <div class="flex flex-col items-end">
+                        <span class="font-h3 text-h3 text-primary">@course.Ects <span class="lang-en">ECTS</span><span class="lang-tr">AKTS</span></span>
+                        <span class="font-label-sm text-label-sm text-outline">@course.Credits <span class="lang-en">Credits</span><span class="lang-tr">Kredi</span></span>
+                    </div>
+                     <form method="post" asp-action="AddCourse" class="m-0 flex items-center gap-2 group/btn relative">
+                        <input type="hidden" name="courseId" value="@course.Id" />
+                        @if (ViewBag.IsDoubleMajorActive == true)
+                        {
+                            <select name="enrollmentType" class="px-2 py-1 text-xs rounded border border-outline-variant/40 bg-surface-bright text-on-surface outline-none">
+                                <option value="Major"><span class="lang-en">Major</span><span class="lang-tr">Anadal</span></option>
+                                <option value="DoubleMajor"><span class="lang-en">Double Major</span><span class="lang-tr">ÇAP</span></option>
+                            </select>
+                        }
+                        @if (ViewBag.IsRegistrationActive == false)
+                        {
+                            <button type="button" disabled title="Ders kayıtları kapalı" class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed opacity-50 shadow-sm">
+                                <span class="material-symbols-outlined">lock</span>
+                            </button>
+                        }
+                        else if (currentCount >= course.Capacity)
+                        {
+                            <button type="button" disabled title="Kontenjan Dolu" class="w-10 h-10 rounded-full bg-error-container text-error flex items-center justify-center cursor-not-allowed opacity-60 shadow-sm">
+                                <span class="material-symbols-outlined text-[20px]">person_off</span>
+                            </button>
+                        }
+                        else if (Model.LockedCoursesReason.ContainsKey(course.Id))
+                        {
+                            <button type="button" disabled class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed opacity-70 shadow-sm">
+                                <span class="material-symbols-outlined text-[20px]">lock</span>
+                            </button>
+                            <div class="absolute right-12 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none z-50">
+                                @Model.LockedCoursesReason[course.Id]
+                            </div>
+                        }
+                        else if (Model.TotalEcts + course.Ects > ViewBag.MaxEcts)
+                        {
+                            <button type="button" disabled title="Maksimum AKTS aşıldı" class="w-10 h-10 rounded-full bg-error-container/50 flex items-center justify-center text-on-error-container cursor-not-allowed opacity-50 shadow-sm">
+                                <span class="material-symbols-outlined">block</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="add-btn w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all shadow-sm">
+                                <span class="material-symbols-outlined">add</span>
+                            </button>
+                        }
+                    </form>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="p-lg text-center text-on-surface-variant font-label-md">
+            <span class="lang-en">No new courses available to take.</span><span class="lang-tr">Alınabilecek yeni ders bulunmamaktadır.</span>
+        </div>
+    }
+</div>
+</div>
+
+<!-- Right Panel: Basket & Counter -->
+<aside class="xl:col-span-4 flex flex-col gap-md sticky top-24">
+<div class="glass-panel rounded-xl p-md flex flex-col h-[500px]">
+<h2 class="font-h2 text-h2 text-on-surface mb-md"><span class="lang-en">Selected Courses (Basket)</span><span class="lang-tr">Seçilen Dersler (Sepet)</span></h2>
+<!-- Filled State -->
+<div class="flex-1 overflow-y-auto pr-2 flex flex-col gap-sm">
+    @if (Model.MyEnrollments.Count > 0)
+    {
+        foreach (var enrollment in Model.MyEnrollments)
+        {
+            <div class="bg-surface-bright rounded-lg p-3 border border-outline-variant/30 flex justify-between items-center shadow-sm">
+                <div>
+                    <div class="font-label-sm text-label-sm text-on-surface-variant mb-0.5">@enrollment.Course.Code</div>
+                    <div class="font-label-md text-label-md text-on-surface leading-tight">@enrollment.Course.Name</div>
+                    @if (!string.IsNullOrEmpty(enrollment.Course.ClassDay))
+                    {
+                        <div class="text-[11px] text-primary dark:text-primary-fixed mt-1 flex items-center gap-0.5">
+                            <span class="material-symbols-outlined text-[13px]">schedule</span>
+                            @enrollment.Course.ClassDay @enrollment.Course.StartTime-@enrollment.Course.EndTime
+                        </div>
+                    }
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="font-label-md text-label-md text-primary font-bold">@enrollment.Course.Ects <span class="lang-en">ECTS</span><span class="lang-tr">AKTS</span></span>
+                    @if (ViewBag.IsRegistrationActive == false)
+                    {
+                        <span class="material-symbols-outlined text-on-surface-variant/40" title="Ders kayıtları kapalı">lock</span>
+                    }
+                    else if (enrollment.Status == "Pending")
+                    {
+                        <form method="post" asp-action="RemoveCourse" class="m-0">
+                            <input type="hidden" name="courseId" value="@enrollment.CourseId" />
+                            <button type="submit" class="text-error hover:text-error-container transition-colors" title="Remove">
+                                <span class="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="material-symbols-outlined text-secondary" title="Onaylandı">check_circle</span>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="flex-1 flex flex-col items-center justify-center text-center opacity-50 my-auto">
+            <span class="material-symbols-outlined text-[48px] mb-2">shopping_basket</span>
+            <p class="font-body-md text-body-md"><span class="lang-en">Your basket is empty.<br>You can add courses from the list.</span><span class="lang-tr">Sepetiniz boş.<br>Listeden ders ekleyebilirsiniz.</span></p>
+        </div>
+    }
+</div>
+
+<!-- Summary & Actions -->
+<div class="pt-md mt-auto border-t border-outline-variant/20">
+    <div class="flex justify-between items-end mb-md">
+        <div class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Total ECTS</span><span class="lang-tr">Toplam AKTS</span></div>
+        <div class="flex items-baseline gap-1">
+            <span class="font-h1 text-h1 text-primary">@Model.TotalEcts</span>
+            <span class="font-body-md text-body-md text-outline">/ @ViewBag.MaxEcts Max</span>
+        </div>
+    </div>
+    
+    @if (Model.MyEnrollments.Any(e => e.Status == "Pending"))
+    {
+        <div class="text-center text-xs text-on-surface-variant mb-2"><span class="lang-en">Your selections are pending advisor approval.</span><span class="lang-tr">Seçimleriniz danışman onayını beklemektedir.</span></div>
+    }
+    else
+    {
+        <button class="w-full py-3 rounded-lg bg-surface-variant text-on-surface-variant font-label-md text-label-md opacity-50 cursor-not-allowed shadow-sm flex justify-center items-center gap-2" disabled>
+            <span class="material-symbols-outlined text-[20px]">send</span>
+            <span class="lang-en">Sent for Advisor Approval</span><span class="lang-tr">Danışman Onayına Gönderildi</span>
+        </button>
+    }
+</div>
+
+</div>
+</aside>
+</div>
+</div>

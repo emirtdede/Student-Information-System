@@ -1,0 +1,170 @@
+@model List<Student_Information_System.Models.Enrollment>
+@{ ViewData["Title"] = "Haftalık Ders Programı"; }
+
+@section Styles {
+<style>
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 24px 0 rgba(0, 100, 126, 0.08);
+            transform: translateY(-2px);
+        }
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 12px;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-md pt-md">
+        <div>
+            <h1 class="font-h1 text-h1 text-primary mb-xs">Haftalık Ders Programı</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Bu program güncel ders kayıtlarınıza (Onaylı veya Bekleyen) göre oluşturulmuştur.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-sm">
+            <button class="glass-panel px-md py-sm rounded-lg flex items-center gap-xs text-primary hover:bg-primary hover:text-white transition-all font-label-md group" onclick="window.print()">
+                <span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform" style="font-size: 20px;">print</span>
+                Yazdır
+            </button>
+        </div>
+    </div>
+    <!-- Schedule Container -->
+    <div class="glass-panel rounded-xl p-md overflow-x-auto relative">
+        <div class="min-w-[800px]">
+            <!-- Grid Header (Days) -->
+            <div class="schedule-grid mb-sm border-b border-outline-variant/30 pb-sm">
+                <div class="text-center font-label-sm text-outline">SAAT</div>
+                <div class="text-center font-h3 text-h3 text-on-surface">Pazartesi</div>
+                <div class="text-center font-h3 text-h3 text-on-surface">Salı</div>
+                <div class="text-center font-h3 text-h3 text-on-surface">Çarşamba</div>
+                <div class="text-center font-h3 text-h3 text-on-surface">Perşembe</div>
+                <div class="text-center font-h3 text-h3 text-on-surface">Cuma</div>
+            </div>
+            <!-- Grid Body -->
+            <div class="relative">
+                <!-- Background Grid Lines -->
+                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 z-0">
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                    <div class="h-16 border-t border-outline"></div>
+                </div>
+                <div class="schedule-grid relative z-10">
+                    <!-- Time Column -->
+                    <div class="flex flex-col gap-0 text-center font-label-sm text-outline-variant pt-2">
+                        <div class="h-16">08:00</div>
+                        <div class="h-16">09:00</div>
+                        <div class="h-16">10:00</div>
+                        <div class="h-16">11:00</div>
+                        <div class="h-16 text-primary/50">12:00</div>
+                        <div class="h-16">13:00</div>
+                        <div class="h-16">14:00</div>
+                        <div class="h-16">15:00</div>
+                        <div class="h-16">16:00</div>
+                        <div class="h-16">17:00</div>
+                    </div>
+                    <!-- Day Columns -->
+                    <div class="relative h-[640px]" id="col-0"></div> <!-- Mon -->
+                    <div class="relative h-[640px]" id="col-1"></div> <!-- Tue -->
+                    <div class="relative h-[640px]" id="col-2"></div> <!-- Wed -->
+                    <div class="relative h-[640px]" id="col-3"></div> <!-- Thu -->
+                    <div class="relative h-[640px]" id="col-4"></div> <!-- Fri -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const courses = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(e => new {
+            e.Course.Code,
+            e.Course.Name,
+            e.Course.Instructor,
+            e.Course.ClassDay,
+            e.Course.StartTime,
+            e.Course.EndTime
+        })));
+
+        const dayMapping = {
+            'Pazartesi': 0,
+            'Salı': 1,
+            'Çarşamba': 2,
+            'Perşembe': 3,
+            'Cuma': 4
+        };
+
+        const colors = [
+            'border-l-primary', 
+            'border-l-secondary', 
+            'border-l-tertiary', 
+            'border-l-primary-container'
+        ];
+        
+        let colorIdx = 0;
+
+        courses.forEach(course => {
+            if (!course.ClassDay || !course.StartTime || !course.EndTime) return;
+            
+            const dayNum = dayMapping[course.ClassDay];
+            if (dayNum === undefined) return;
+
+            const colEl = document.getElementById(`col-${dayNum}`);
+            if (!colEl) return;
+
+            // Calculate top position
+            const startTimeParts = course.StartTime.split(':');
+            const startHour = parseInt(startTimeParts[0]);
+            const startMin = parseInt(startTimeParts[1]);
+            const hoursFrom8 = (startHour - 8) + (startMin / 60.0);
+            const topPx = hoursFrom8 * 64;
+
+            // Calculate height
+            const endTimeParts = course.EndTime.split(':');
+            const endHour = parseInt(endTimeParts[0]);
+            const endMin = parseInt(endTimeParts[1]);
+            const endHoursFrom8 = (endHour - 8) + (endMin / 60.0);
+            const heightPx = (endHoursFrom8 - hoursFrom8) * 64;
+
+            const div = document.createElement('div');
+            div.className = `absolute w-full glass-card rounded-lg p-sm border-l-4 ${colors[colorIdx]} flex flex-col justify-between transition-all overflow-hidden z-10`;
+            div.style.top = `${topPx}px`;
+            div.style.height = `${heightPx}px`;
+            
+            div.innerHTML = `
+                <div>
+                    <h4 class="font-semibold text-on-surface text-[12px] md:text-[13px] leading-tight mb-xs truncate" title="${course.Name}">${course.Name}</h4>
+                    <div class="flex items-center gap-xs text-outline font-label-sm text-[11px]">
+                        <span class="material-symbols-outlined" style="font-size: 13px;">class</span> ${course.Code}
+                    </div>
+                </div>
+                <div class="flex justify-between items-center text-[10px] mt-xs pt-1 border-t border-outline-variant/10">
+                    <span class="text-primary font-medium truncate max-w-[80px]" title="${course.Instructor}">${course.Instructor}</span>
+                    <span class="text-on-surface-variant font-semibold">${course.StartTime}-${course.EndTime}</span>
+                </div>
+            `;
+            
+            colEl.appendChild(div);
+            colorIdx = (colorIdx + 1) % colors.length;
+        });
+        
+        const totalRendered = document.querySelectorAll('[id^="col-"] > div').length;
+        if(totalRendered === 0) {
+            document.getElementById('col-2').innerHTML = `
+                <div class="absolute top-[200px] w-full text-center text-on-surface-variant font-label-md">
+                    Programınızda henüz ders bulunmuyor. Lütfen ders kaydı yapın.
+                </div>
+            `;
+        }
+    });
+</script>
+}

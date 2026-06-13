@@ -1,0 +1,281 @@
+@model List<Student_Information_System.Models.Enrollment>
+@{ ViewData["Title"] = "Ders Materyalleri"; }
+
+@section Styles {
+<style>
+.ambient-shadow { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05); }
+.file-row:hover { background-color: rgba(255, 255, 255, 0.9); }
+.toast-notification {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(11, 28, 48, 0.9);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.toast-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-lg">
+<div>
+<h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-on-surface mb-xs">Ders Materyalleri</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Kayıtlı olduğunuz derslere ait dokümanları görüntüleyin ve indirin.</p>
+</div>
+<div class="relative w-full md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input id="search-materials" class="w-full pl-10 pr-4 py-2 bg-surface-container-low/50 backdrop-blur-sm border border-outline-variant rounded-full focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-body-md text-on-surface placeholder:text-outline-variant" placeholder="Dosyalarda ara..." type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<!-- Course List Sidebar -->
+<div class="lg:col-span-1 flex flex-col gap-sm">
+<div class="glass-card ambient-shadow rounded-xl p-md">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">Kayıtlı Dersler</h3>
+<div class="flex flex-col gap-xs" id="course-list">
+    @if(Model != null && Model.Count > 0)
+    {
+        bool isFirst = true;
+        foreach(var enrollment in Model)
+        {
+            <button class="course-btn flex items-center justify-between p-sm rounded-lg @(isFirst ? "bg-surface-container-high border-l-4 border-primary" : "hover:bg-surface-variant/50") text-left transition-colors w-full" data-code="@enrollment.Course.Code">
+            <div>
+            <div class="font-label-md text-label-md text-on-surface font-semibold">@enrollment.Course.Code</div>
+            <div class="text-xs text-on-surface-variant truncate">@enrollment.Course.Name</div>
+            </div>
+            <span class="material-symbols-outlined text-primary chevron @(isFirst ? "" : "hidden")">chevron_right</span>
+            </button>
+            isFirst = false;
+        }
+    }
+    else
+    {
+        <p class="text-sm text-on-surface-variant text-center py-4">Kayıtlı dersiniz bulunmuyor.</p>
+    }
+</div>
+</div>
+</div>
+<!-- Materials Display Area -->
+<div class="lg:col-span-2 flex flex-col gap-md">
+<!-- Folders Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-sm">
+<div id="folder-notes" class="folder-btn glass-card ambient-shadow rounded-xl p-md flex flex-col items-center justify-center gap-xs cursor-pointer hover:bg-surface-container-high/50 transition-colors border-b-2 border-primary" data-type="notes">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<span class="folder-title font-label-md text-label-md text-on-surface font-semibold">Ders Notları</span>
+<span class="text-xs text-outline" id="notes-count">3 Dosya</span>
+</div>
+<div id="folder-homeworks" class="folder-btn glass-card ambient-shadow rounded-xl p-md flex flex-col items-center justify-center gap-xs cursor-pointer hover:bg-surface-container-high/50 transition-colors border-b-2 border-transparent" data-type="homeworks">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[28px]">assignment</span>
+</div>
+<span class="folder-title font-label-md text-label-md text-on-surface">Ödevler</span>
+<span class="text-xs text-outline" id="homeworks-count">3 Dosya</span>
+</div>
+<div id="folder-readings" class="folder-btn glass-card ambient-shadow rounded-xl p-md flex flex-col items-center justify-center gap-xs cursor-pointer hover:bg-surface-container-high/50 transition-colors border-b-2 border-transparent" data-type="readings">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px]">library_books</span>
+</div>
+<span class="folder-title font-label-md text-label-md text-on-surface">Okumalar</span>
+<span class="text-xs text-outline" id="readings-count">3 Dosya</span>
+</div>
+</div>
+<!-- File List -->
+<div class="glass-card ambient-shadow rounded-xl p-0 overflow-hidden flex flex-col">
+<div class="p-md border-b border-white/20 bg-surface/50 backdrop-blur-md flex justify-between items-center">
+<h3 class="font-label-md text-label-md text-on-surface font-semibold" id="materials-heading">Ders Notları - @(Model?.FirstOrDefault()?.Course?.Code ?? "Ders Seçilmedi")</h3>
+<button id="btn-download-all" class="text-sm text-primary font-medium hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">download</span> Tümünü İndir
+</button>
+</div>
+<div class="flex flex-col" id="files-container">
+    <!-- Files will be loaded dynamically by javascript -->
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="toast" class="toast-notification">
+    <span class="material-symbols-outlined">check_circle</span>
+    <span id="toast-message">Dosya indiriliyor...</span>
+</div>
+
+@section Scripts {
+<script>
+    const filesData = {
+        notes: [
+            { name: "Hafta_01_Giris.pdf", size: "2.4 MB", date: "12 Eki 2024", icon: "picture_as_pdf", color: "text-error" },
+            { name: "Hafta_02_Surecler.pdf", size: "3.1 MB", date: "19 Eki 2024", icon: "picture_as_pdf", color: "text-error" },
+            { name: "Hafta_03_Sunum.pptx", size: "8.5 MB", date: "26 Eki 2024", icon: "slideshow", color: "text-primary" }
+        ],
+        homeworks: [
+            { name: "Odev_01_Gereksinim_Analizi.pdf", size: "1.2 MB", date: "20 Eki 2024", icon: "picture_as_pdf", color: "text-error" },
+            { name: "Odev_02_Tasarim_Raporu.docx", size: "2.1 MB", date: "10 Kas 2024", icon: "description", color: "text-primary" },
+            { name: "Odev_03_Proje_Kodlari.zip", size: "15.4 MB", date: "05 Ara 2024", icon: "folder_zip", color: "text-warning" }
+        ],
+        readings: [
+            { name: "Okuma_01_Yazilim_Metodolojileri.pdf", size: "4.5 MB", date: "15 Eki 2024", icon: "picture_as_pdf", color: "text-error" },
+            { name: "Okuma_02_Clean_Code_Esaslari.pdf", size: "3.8 MB", date: "01 Kas 2024", icon: "picture_as_pdf", color: "text-error" },
+            { name: "Okuma_03_Agile_Manifesto.pdf", size: "1.1 MB", date: "12 Kas 2024", icon: "picture_as_pdf", color: "text-error" }
+        ]
+    };
+
+    let activeCourseCode = "@(Model?.FirstOrDefault()?.Course?.Code ?? "")";
+    let activeFolder = "notes";
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function renderFiles() {
+        const container = document.getElementById('files-container');
+        const searchVal = document.getElementById('search-materials').value.toLowerCase();
+        container.innerHTML = "";
+
+        if (!activeCourseCode) {
+            container.innerHTML = `<div class="p-md text-center text-on-surface-variant font-body-md">Kayıtlı dersiniz bulunmadığı için materyal gösterilemiyor.</div>`;
+            return;
+        }
+
+        const files = filesData[activeFolder] || [];
+        const filtered = files.filter(f => f.name.toLowerCase().includes(searchVal));
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="p-md text-center text-on-surface-variant font-body-md">Eşleşen dosya bulunamadı.</div>`;
+            return;
+        }
+
+        filtered.forEach(file => {
+            const row = document.createElement('div');
+            row.className = "file-row flex items-center justify-between p-md border-b border-outline-variant/30 transition-colors cursor-pointer group";
+            row.innerHTML = `
+                <div class="flex items-center gap-md">
+                    <span class="material-symbols-outlined ${file.color} text-[28px]" style="font-variation-settings: 'FILL' 1;">${file.icon}</span>
+                    <div>
+                        <div class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary transition-colors">${file.name}</div>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant mt-1">
+                            <span>${file.size}</span><span class="w-1 h-1 rounded-full bg-outline-variant"></span><span>${file.date}</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="download-single p-xs text-outline hover:text-primary hover:bg-primary-container/10 rounded-full transition-colors opacity-0 group-hover:opacity-100" data-filename="${file.name}">
+                    <span class="material-symbols-outlined">download</span>
+                </button>
+            `;
+            
+            // Allow row click to download
+            row.addEventListener('click', (e) => {
+                if (!e.target.closest('.download-single')) {
+                    downloadFile(file.name);
+                }
+            });
+            
+            row.querySelector('.download-single').addEventListener('click', (e) => {
+                e.stopPropagation();
+                downloadFile(file.name);
+            });
+
+            container.appendChild(row);
+        });
+
+        // Update counts
+        document.getElementById('notes-count').textContent = `${filesData.notes.length} Dosya`;
+        document.getElementById('homeworks-count').textContent = `${filesData.homeworks.length} Dosya`;
+        document.getElementById('readings-count').textContent = `${filesData.readings.length} Dosya`;
+    }
+
+    function downloadFile(filename) {
+        showToast(`${filename} indiriliyor...`);
+    }
+
+    function updateHeading() {
+        const folderNames = {
+            notes: "Ders Notları",
+            homeworks: "Ödevler",
+            readings: "Okumalar"
+        };
+        document.getElementById('materials-heading').textContent = `${folderNames[activeFolder]} - ${activeCourseCode}`;
+    }
+
+    // Course List Selection
+    document.querySelectorAll('.course-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active styles
+            document.querySelectorAll('.course-btn').forEach(b => {
+                b.classList.remove('bg-surface-container-high', 'border-l-4', 'border-primary');
+                b.classList.add('hover:bg-surface-variant/50');
+                b.querySelector('.chevron').classList.add('hidden');
+            });
+
+            // Add active styles to clicked
+            btn.classList.add('bg-surface-container-high', 'border-l-4', 'border-primary');
+            btn.classList.remove('hover:bg-surface-variant/50');
+            btn.querySelector('.chevron').classList.remove('hidden');
+
+            activeCourseCode = btn.getAttribute('data-code');
+            updateHeading();
+            renderFiles();
+        });
+    });
+
+    // Folder selection
+    document.querySelectorAll('.folder-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.folder-btn').forEach(b => {
+                b.classList.remove('border-primary');
+                b.classList.add('border-transparent');
+                b.querySelector('.folder-title').classList.remove('font-semibold');
+            });
+
+            btn.classList.add('border-primary');
+            btn.classList.remove('border-transparent');
+            btn.querySelector('.folder-title').classList.add('font-semibold');
+
+            activeFolder = btn.getAttribute('data-type');
+            updateHeading();
+            renderFiles();
+        });
+    });
+
+    // Search
+    document.getElementById('search-materials').addEventListener('input', () => {
+        renderFiles();
+    });
+
+    // Download All
+    document.getElementById('btn-download-all').addEventListener('click', () => {
+        if (!activeCourseCode) return;
+        const folderNames = {
+            notes: "Ders Notları",
+            homeworks: "Ödevler",
+            readings: "Okumalar"
+        };
+        showToast(`${activeCourseCode} - Tüm ${folderNames[activeFolder]} arşivi oluşturuluyor ve indiriliyor...`);
+    });
+
+    // Init
+    renderFiles();
+</script>
+}
+

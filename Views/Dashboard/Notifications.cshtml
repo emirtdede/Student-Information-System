@@ -1,0 +1,159 @@
+@{ ViewData["Title"] = "Notifications"; }
+
+@section Styles {
+<style>
+.material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Page Header & Filters -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-sm mb-sm">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface"><span class="lang-en">Notifications</span><span class="lang-tr">Bildirimler</span></h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs"><span class="lang-en">Stay updated with alerts, grades, and advisor messages.</span><span class="lang-tr">Uyarılar, notlar ve danışman mesajları ile güncel kalın.</span></p>
+</div>
+<!-- Category Tabs -->
+<div class="flex p-xs bg-surface-container-high/50 rounded-lg border border-white/40 backdrop-blur-sm self-start" id="notification-tabs">
+<button class="tab-btn px-md py-xs rounded-md bg-surface-container-lowest text-primary font-label-md shadow-sm transition-all" data-filter="unread"><span class="lang-en">Unread</span><span class="lang-tr">Okunmamış</span> (3)</button>
+<button class="tab-btn px-md py-xs rounded-md text-on-surface-variant hover:text-on-surface font-label-md transition-all hover:bg-white/50" data-filter="all"><span class="lang-en">All</span><span class="lang-tr">Tümü</span></button>
+<button class="tab-btn px-md py-xs rounded-md text-on-surface-variant hover:text-on-surface font-label-md transition-all hover:bg-white/50" data-filter="academic"><span class="lang-en">Academic</span><span class="lang-tr">Akademik</span></button>
+</div>
+</div>
+<!-- Notifications List -->
+<div class="flex flex-col gap-sm" id="notifications-container">
+<!-- Item 1: System Alert (Unread) -->
+<div class="notification-item group flex items-start gap-md p-md bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-white/50 shadow-sm hover:bg-surface-container-lowest transition-all cursor-pointer relative overflow-hidden" data-status="unread" data-category="system">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary"></div>
+<div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary" data-icon="warning">warning</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-xs">
+                                <span class="lang-en">System Maintenance</span><span class="lang-tr">Sistem Bakımı</span>
+                                <span class="unread-dot w-2 h-2 rounded-full bg-primary"></span>
+</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:45 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/80 line-clamp-2"><span class="lang-en">OBS will be down for scheduled maintenance tonight from 02:00 AM to 04:00 AM. Course registration services will be temporarily unavailable.</span><span class="lang-tr">OBS bu gece 02:00 - 04:00 saatleri arasında planlı bakım için kapalı olacaktır. Ders kayıt hizmetleri geçici olarak devre dışı kalacaktır.</span></p>
+</div>
+</div>
+<!-- Item 2: Grade Announcement (Unread) -->
+<div class="notification-item group flex items-start gap-md p-md bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-white/50 shadow-sm hover:bg-surface-container-lowest transition-all cursor-pointer relative overflow-hidden" data-status="unread" data-category="academic">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="grade">grade</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-xs">
+                                <span class="lang-en">New Grade Posted</span><span class="lang-tr">Yeni Not Girildi</span>
+                                <span class="unread-dot w-2 h-2 rounded-full bg-primary"></span>
+</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Yesterday</span><span class="lang-tr">Dün</span></span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/80 line-clamp-2"><span class="lang-en">Your Midterm grade for</span><span class="lang-tr">Şu ders için vize notunuz:</span> <span class="font-bold text-on-surface">CENG 301 - Operating Systems</span> <span class="lang-en">has been finalized and published. Click to view details.</span><span class="lang-tr">kesinleşti ve yayınlandı. Detayları görmek için tıklayın.</span></p>
+</div>
+</div>
+<!-- Item 3: Advisor Message (Unread) -->
+<div class="notification-item group flex items-start gap-md p-md bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-white/50 shadow-sm hover:bg-surface-container-lowest transition-all cursor-pointer relative overflow-hidden" data-status="unread" data-category="academic">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary" data-icon="chat">chat</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-xs">
+                                <span class="lang-en">Message from Advisor</span><span class="lang-tr">Danışmandan Mesaj</span>
+                                <span class="unread-dot w-2 h-2 rounded-full bg-primary"></span>
+</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Oct 12</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/80 line-clamp-2"><span class="lang-en">Please ensure you complete your elective course selections before the deadline this Friday. Let me know if you need a quick meeting to discuss.</span><span class="lang-tr">Lütfen bu Cuma günkü son tarihten önce seçmeli ders seçimlerinizi tamamladığınızdan emin olun. Görüşmek için kısa bir toplantıya ihtiyacınız olursa bana bildirin.</span></p>
+</div>
+</div>
+<!-- Item 4: Registration Reminder (Read) -->
+<div class="notification-item group flex items-start gap-md p-md bg-surface/40 backdrop-blur-md rounded-xl border border-outline-variant/20 shadow-none hover:bg-surface-container-lowest/60 transition-all cursor-pointer" data-status="read" data-category="academic">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline" data-icon="how_to_reg">how_to_reg</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-h3 text-h3 text-on-surface/80 flex items-center gap-xs">
+                                <span class="lang-en">Registration Period Open</span><span class="lang-tr">Kayıt Dönemi Başladı</span>
+                            </h3>
+<span class="font-label-sm text-label-sm text-outline">Oct 10</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/60 line-clamp-2"><span class="lang-en">Fall semester course registration is now open. Please review the updated curriculum guidelines before submitting your final list.</span><span class="lang-tr">Güz dönemi ders kayıtları açılmıştır. Son listenizi göndermeden önce güncellenmiş müfredat kılavuzlarını inceleyin.</span></p>
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts {
+<script>
+    // Tab filtering logic
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active classes
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.className = "tab-btn px-md py-xs rounded-md text-on-surface-variant hover:text-on-surface font-label-md transition-all hover:bg-white/50";
+            });
+
+            // Set active class to clicked button
+            btn.className = "tab-btn px-md py-xs rounded-md bg-surface-container-lowest text-primary font-label-md shadow-sm transition-all";
+
+            const filter = btn.getAttribute('data-filter');
+            const items = document.querySelectorAll('.notification-item');
+
+            items.forEach(item => {
+                const status = item.getAttribute('data-status');
+                const category = item.getAttribute('data-category');
+
+                if (filter === 'all') {
+                    item.style.display = 'flex';
+                } else if (filter === 'unread') {
+                    if (status === 'unread') {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                } else if (filter === 'academic') {
+                    if (category === 'academic') {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+
+    // Mark as read on click
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', () => {
+            if (item.getAttribute('data-status') === 'unread') {
+                item.setAttribute('data-status', 'read');
+                
+                // Remove visual unread markers
+                const dot = item.querySelector('.unread-dot');
+                if (dot) dot.remove();
+
+                // Change background card styling to look "read"
+                item.classList.remove('bg-surface-container-lowest/80', 'border-white/50', 'shadow-sm');
+                item.classList.add('bg-surface/40', 'border-outline-variant/20');
+                
+                // Recalculate unread count
+                const unreadCount = document.querySelectorAll('.notification-item[data-status="unread"]').length;
+                const unreadTab = document.querySelector('.tab-btn[data-filter="unread"]');
+                if (unreadTab) {
+                    unreadTab.innerHTML = `<span class="lang-en">Unread</span><span class="lang-tr">Okunmamış</span> (${unreadCount})`;
+                }
+            }
+        });
+    });
+</script>
+}

@@ -1,0 +1,66 @@
+@{ ViewData["Title"] = "Page Not Found"; }
+
+@section Styles {
+<style>
+.ambient-glow {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108,211,250,0.1) 0%, rgba(248,249,255,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Brand Identity -->
+<div class="mb-lg">
+<span class="font-h2 text-h2 font-bold text-primary tracking-tight">OKÜ OBS</span>
+</div>
+<!-- 404 Visual / Glassmorphism Container -->
+<div class="glass-card rounded-xl p-lg w-full mb-lg flex flex-col items-center">
+<span class="material-symbols-outlined text-[120px] text-primary/20 mb-md" style="font-variation-settings: 'FILL' 1;">
+                location_off
+            </span>
+<h1 class="font-h1 text-h1 text-on-surface mb-sm hidden md:block">404 - Academic Void</h1>
+<h1 class="font-h1-mobile text-h1-mobile text-on-surface mb-sm md:hidden">404 - Academic Void</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[500px] mb-lg mx-auto">
+                The academic record, course syllabus, or portal page you are looking for seems to have been misplaced in the archives.
+            </p>
+<!-- Search Bar (Soft Input) -->
+<div class="w-full max-w-[400px] relative mb-lg">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant/50">
+                    search
+                </span>
+<input class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg py-sm pl-[40px] pr-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-inverse-primary focus:border-transparent transition-all placeholder:text-on-surface-variant/50" placeholder="Search courses, grades, or modules..." type="text"/>
+</div>
+<!-- Quick Action Bento Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm w-full max-w-[500px]">
+<!-- Primary Action: Back to Dashboard -->
+<a class="flex items-center justify-center gap-xs bg-primary text-on-primary py-sm px-md rounded-lg hover:bg-primary/90 active:scale-95 transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">
+                        dashboard
+                    </span>
+<span class="font-label-md text-label-md">Return to Dashboard</span>
+</a>
+<!-- Secondary Action: Help Center -->
+<a class="flex items-center justify-center gap-xs bg-surface-container-highest/50 border border-primary text-primary py-sm px-md rounded-lg hover:bg-surface-container-high active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">
+                        help
+                    </span>
+<span class="font-label-md text-label-md">Visit Help Center</span>
+</a>
+</div>
+</div>
+</div>
+
+@section Scripts {
+<script>
+
+</script>
+}

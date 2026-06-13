@@ -1,0 +1,451 @@
+@model Student_Information_System.Models.Student
+@{ ViewData["Title"] = "My Profile"; }
+
+@section Styles {
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<style>
+.input-field {
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: transparent;
+            box-shadow: 0 0 0 2px #00647e; /* primary glow */
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<div class="mb-xl">
+<h2 class="font-h1 text-h1-mobile md:text-h1 text-on-background mb-2"><span class="lang-en">Profile &amp; Settings</span><span class="lang-tr">Profil ve Ayarlar</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">Manage your personal information and academic preferences.</span><span class="lang-tr">Kişisel bilgilerinizi ve akademik tercihlerinizi yönetin.</span></p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Personal Identity & Quick Stats -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Identity Card -->
+<div class="glass-card rounded-xl p-md flex flex-col items-center text-center">
+                <div class="relative mb-md">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface shadow-sm">
+                        <img id="profile-preview-img" alt="Profile" class="w-full h-full object-contain bg-white" src="/profile.png"/>
+                    </div>
+                    <button onclick="triggerPhotoUpload()" class="absolute bottom-0 right-0 w-10 h-10 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md hover:bg-primary-container hover:text-on-primary-container transition-colors">
+                        <span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+                    </button>
+                    <input type="file" id="profile-upload-input" class="hidden" accept="image/*" onchange="initCropper(event)" />
+                </div>
+                <h3 class="font-h2 text-h2 text-on-background mb-xs">@Model.FirstName @Model.LastName</h3>
+                <p class="font-label-md text-label-md text-on-surface-variant bg-surface-container-highest px-3 py-1 rounded-full mb-md"><span class="lang-en">Student No:</span><span class="lang-tr">Öğrenci No:</span> @Model.StudentNumber</p>
+<div class="w-full text-left space-y-sm">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></span>
+<span class="font-body-md text-body-md font-medium text-on-surface">@Model.Department</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Faculty</span><span class="lang-tr">Fakülte</span></span>
+<span class="font-body-md text-body-md font-medium text-on-surface"><span class="lang-en">Faculty of Engineering</span><span class="lang-tr">Mühendislik Fakültesi</span></span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></span>
+<span class="font-label-md text-label-md bg-secondary text-on-secondary px-2 py-1 rounded-full"><span class="lang-en">Active</span><span class="lang-tr">Aktif</span></span>
+</div>
+</div>
+</div>
+<!-- Academic Quick Info -->
+<div class="glass-card rounded-xl p-md">
+<h4 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="menu_book">menu_book</span>
+                            <span class="lang-en">Academic Info</span><span class="lang-tr">Akademik Bilgiler</span>
+                        </h4>
+<div class="space-y-md">
+<div>
+<label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Enrollment Date</span><span class="lang-tr">Kayıt Tarihi</span></label>
+<p class="font-body-md text-body-md text-on-surface"><span class="lang-tr">15 Eylül</span><span class="lang-en">15 September</span> @Model.EnrollmentYear</p>
+</div>
+<div>
+<label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Academic Advisor</span><span class="lang-tr">Akademik Danışman</span></label>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="Advisor" class="w-full h-full object-cover" src="/profile.png"/>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">@(Model.Advisor?.Title) @(Model.Advisor?.FirstName) @(Model.Advisor?.LastName)</p>
+<a class="font-label-sm text-label-sm text-primary hover:underline flex items-center gap-1" href="mailto:@(Model.Advisor?.Email)">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+<span class="lang-en">Contact Advisor</span><span class="lang-tr">Danışmanla İletişime Geç</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Editable Forms -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<!-- Contact Information -->
+<div class="glass-card rounded-xl p-md lg:p-lg">
+<div class="flex justify-between items-center mb-xl border-b border-outline-variant/30 pb-sm">
+<h4 class="font-h3 text-h3 text-on-background flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="contact_mail">contact_mail</span>
+                                <span class="lang-en">Contact Details</span><span class="lang-tr">İletişim Bilgileri</span>
+                            </h4>
+<button id="btn-edit-profile" onclick="toggleProfileEdit()" class="font-label-md text-label-md text-primary bg-primary-container/10 px-4 py-2 rounded-full hover:bg-primary-container/20 transition-colors flex items-center gap-2">
+<span id="edit-icon" class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+                                <span id="edit-text"><span class="lang-en">Edit</span><span class="lang-tr">Düzenle</span></span>
+                            </button>
+</div>
+<form id="profile-edit-form" class="grid grid-cols-1 md:grid-cols-2 gap-md" onsubmit="event.preventDefault();">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">First Name</span><span class="lang-tr">Ad</span></label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="person">person</span>
+<input id="input-first-name" class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-body-md font-body-md text-on-surface" readonly="" type="text" value="@Model.FirstName"/>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Last Name</span><span class="lang-tr">Soyad</span></label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="person">person</span>
+<input id="input-last-name" class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-body-md font-body-md text-on-surface" readonly="" type="text" value="@Model.LastName"/>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Phone Number</span><span class="lang-tr">Telefon Numarası</span></label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="phone">phone</span>
+<input class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-body-md font-body-md text-on-surface" readonly="" type="tel" value="+90 555 123 4567"/>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Personal Email</span><span class="lang-tr">Kişisel E-posta</span></label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="mail">mail</span>
+<input id="input-email" class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-body-md font-body-md text-on-surface" readonly="" type="email" value="@Model.Email"/>
+</div>
+</div>
+<div class="flex flex-col gap-1 md:col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">University Email (Read-only)</span><span class="lang-tr">Üniversite E-posta (Okunur)</span></label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="school">school</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-highest text-on-surface-variant text-body-md font-body-md border-none" disabled="" type="email" value="@(Model.StudentNumber)@("@")ogr.oku.edu.tr"/>
+</div>
+</div>
+<div class="flex flex-col gap-1 md:col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Residential Address</span><span class="lang-tr">İkamet Adresi</span></label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-4 text-outline" data-icon="location_on">location_on</span>
+<textarea class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-body-md font-body-md text-on-surface resize-none" readonly="" rows="3">Fakıuşağı Mahallesi, 45. Sokak No:12, Daire:4
+Merkez / Osmaniye</textarea>
+</div>
+</div>
+</form>
+</div>
+<!-- Additional Details Bento Box -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="glass-card rounded-xl p-md flex flex-col justify-between relative" id="emergency-contact-card">
+    <div class="absolute top-4 right-4">
+        <button onclick="toggleEmergencyEdit()" id="btn-edit-emergency" class="text-primary hover:text-primary-container transition-colors flex items-center justify-center p-1 rounded-full hover:bg-surface-container-high/40 cursor-pointer" title="Düzenle">
+            <span id="emergency-edit-icon" class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+    </div>
+    <div class="w-full">
+        <h5 class="font-label-md text-label-md text-outline mb-4"><span class="lang-en">Emergency Contact</span><span class="lang-tr">Acil Durum Yakını</span></h5>
+        
+        <!-- View Mode -->
+        <div id="emergency-view-mode" class="space-y-1 mb-4">
+            <p id="emergency-name-display" class="font-body-lg text-body-lg font-medium text-on-surface">Mehmet Dede</p>
+            <p id="emergency-info-display" class="font-body-md text-body-md text-on-surface-variant">Father • +90 500 987 6543</p>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="emergency-edit-mode" class="hidden space-y-2 mb-4">
+            <div>
+                <label class="block text-[11px] font-semibold text-outline-variant mb-1"><span class="lang-en">Name Surname</span><span class="lang-tr">Ad Soyad</span></label>
+                <input id="emergency-name-input" type="text" class="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant/50 bg-white dark:bg-slate-900 text-on-surface" value="Mehmet Dede" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] font-semibold text-outline-variant mb-1"><span class="lang-en">Relation</span><span class="lang-tr">Yakınlık</span></label>
+                    <input id="emergency-relation-input" type="text" class="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant/50 bg-white dark:bg-slate-900 text-on-surface" value="Father" />
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-outline-variant mb-1"><span class="lang-en">Phone</span><span class="lang-tr">Telefon</span></label>
+                    <input id="emergency-phone-input" type="tel" class="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant/50 bg-white dark:bg-slate-900 text-on-surface" value="+90 500 987 6543" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="btn-save-emergency" onclick="saveEmergencyContact()" class="w-full font-label-md text-label-md text-primary border border-primary/30 py-2 rounded-lg hover:bg-primary-container/10 transition-colors">
+        <span id="emergency-btn-text"><span class="lang-en">Update Contact</span><span class="lang-tr">Güncelle</span></span>
+    </button>
+</div>
+<div class="glass-card rounded-xl p-md bg-gradient-to-br from-surface to-surface-container-high border-none">
+<h5 class="font-label-md text-label-md text-primary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+                                <span class="lang-en">Security Options</span><span class="lang-tr">Güvenlik Seçenekleri</span>
+                            </h5>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6"><span class="lang-en">Manage your password and two-factor authentication settings.</span><span class="lang-tr">Şifrenizi ve iki adımlı doğrulama ayarlarınızı yönetin.</span></p>
+<div class="flex gap-2">
+<button onclick="window.location.href='/Settings/Index'" class="flex-1 font-label-sm text-label-sm bg-primary text-on-primary py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
+                                    <span class="lang-en">Change Password</span><span class="lang-tr">Şifre Değiştir</span>
+                                </button>
+<button onclick="setupBiometric()" class="w-10 h-10 flex items-center justify-center border border-outline-variant/50 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="fingerprint">fingerprint</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Cropper Modal -->
+<div id="cropper-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Crop Photo (1:1)</span><span class="lang-tr">Fotoğrafı Kırp (1:1)</span></h3>
+            <button onclick="closeCropper()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="max-h-[300px] overflow-hidden flex items-center justify-center bg-slate-900 rounded-lg">
+            <img id="cropper-image" class="max-w-full max-h-full" />
+        </div>
+        <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+            <button onclick="closeCropper()" class="px-md py-xs border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-variant/50 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+            <button onclick="saveCroppedImage()" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Crop &amp; Upload</span><span class="lang-tr">Kırp ve Yükle</span></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+    let isEditing = false;
+    function toggleProfileEdit() {
+        const btn = document.getElementById('btn-edit-profile');
+        const icon = document.getElementById('edit-icon');
+        const text = document.getElementById('edit-text');
+        const inputs = document.querySelectorAll('.input-field');
+
+        isEditing = !isEditing;
+        if (isEditing) {
+            inputs.forEach(input => {
+                input.removeAttribute('readonly');
+                input.classList.remove('bg-transparent');
+                input.classList.add('bg-white/90', 'border-primary');
+            });
+            text.innerHTML = '<span class="lang-en">Save</span><span class="lang-tr">Kaydet</span>';
+            icon.textContent = "save";
+        } else {
+            const firstName = document.getElementById('input-first-name').value.trim();
+            const lastName = document.getElementById('input-last-name').value.trim();
+            const email = document.getElementById('input-email').value.trim();
+
+            if (!firstName || !lastName || !email) {
+                alert('Lütfen tüm alanları doldurunuz.');
+                isEditing = true;
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('firstName', firstName);
+            formData.append('lastName', lastName);
+            formData.append('email', email);
+
+            fetch('/Settings/UpdateProfile', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    inputs.forEach(input => {
+                        input.setAttribute('readonly', 'true');
+                        input.classList.add('bg-transparent');
+                        input.classList.remove('bg-white/90', 'border-primary');
+                    });
+                    text.innerHTML = '<span class="lang-en">Edit</span><span class="lang-tr">Düzenle</span>';
+                    icon.textContent = "edit";
+
+                    // Update UI elements displaying student name
+                    document.querySelector('h3.font-h2.text-h2').textContent = data.fullName;
+                    
+                    const sidebarName = document.querySelector('nav h2.text-sm.font-semibold');
+                    if (sidebarName) sidebarName.textContent = data.fullName;
+
+                    // Support multi-language toggle
+                    const lang = localStorage.getItem('lang') || 'tr';
+                    document.querySelectorAll('[data-tr]').forEach(function(el) {
+                        el.textContent = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-tr');
+                    });
+
+                    alert('Kişisel detaylar başarıyla kaydedildi!');
+                } else {
+                    alert('Hata: ' + data.message);
+                    isEditing = true;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Bir hata oluştu.');
+                isEditing = true;
+            });
+        }
+    }
+
+    let cropper = null;
+    function triggerPhotoUpload() {
+        document.getElementById('profile-upload-input').click();
+    }
+
+    function initCropper(event) {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('cropper-image');
+                img.src = e.target.result;
+                
+                document.getElementById('cropper-modal').classList.remove('hidden');
+                
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                cropper = new Cropper(img, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function closeCropper() {
+        document.getElementById('cropper-modal').classList.add('hidden');
+        document.getElementById('profile-upload-input').value = "";
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    }
+
+    function saveCroppedImage() {
+        if (!cropper) return;
+        
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300
+        });
+        
+        canvas.toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append('file', blob, 'profile.webp');
+            
+            fetch('/Settings/UploadProfilePicture', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const newUrl = '/profile.png?v=' + new Date().getTime();
+                    document.getElementById('profile-preview-img').src = newUrl;
+                    const headerImgs = document.querySelectorAll('img[alt*="Profile"]');
+                    headerImgs.forEach(img => img.src = newUrl);
+                    
+                    alert('Profil fotoğrafı başarıyla yüklendi (WebP formatında kaydedildi).');
+                    closeCropper();
+                } else {
+                    alert('Yükleme hatası: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Dosya yüklenirken bir hata oluştu.');
+            });
+        }, 'image/webp');
+    }
+
+    let isEmergencyEditing = false;
+    function toggleEmergencyEdit() {
+        isEmergencyEditing = !isEmergencyEditing;
+        const viewMode = document.getElementById('emergency-view-mode');
+        const editMode = document.getElementById('emergency-edit-mode');
+        const editIcon = document.getElementById('emergency-edit-icon');
+        const btnText = document.getElementById('emergency-btn-text');
+
+        if (isEmergencyEditing) {
+            viewMode.classList.add('hidden');
+            editMode.classList.remove('hidden');
+            editIcon.textContent = "close";
+            document.getElementById('btn-edit-emergency').title = "İptal";
+            btnText.innerHTML = '<span class="lang-en">Save Contact</span><span class="lang-tr">Kaydet</span>';
+        } else {
+            viewMode.classList.remove('hidden');
+            editMode.classList.add('hidden');
+            editIcon.textContent = "edit";
+            document.getElementById('btn-edit-emergency').title = "Düzenle";
+            btnText.innerHTML = '<span class="lang-en">Update Contact</span><span class="lang-tr">Güncelle</span>';
+        }
+    }
+
+    function saveEmergencyContact() {
+        if (!isEmergencyEditing) {
+            toggleEmergencyEdit();
+            return;
+        }
+
+        const name = document.getElementById('emergency-name-input').value.trim();
+        const relation = document.getElementById('emergency-relation-input').value.trim();
+        const phone = document.getElementById('emergency-phone-input').value.trim();
+
+        if (!name || !relation || !phone) {
+            alert('Lütfen tüm alanları doldurunuz.');
+            return;
+        }
+
+        // Save to localStorage
+        localStorage.setItem('emergency_name', name);
+        localStorage.setItem('emergency_relation', relation);
+        localStorage.setItem('emergency_phone', phone);
+
+        // Update displays
+        document.getElementById('emergency-name-display').textContent = name;
+        document.getElementById('emergency-info-display').textContent = `${relation} • ${phone}`;
+
+        toggleEmergencyEdit();
+        alert('Acil durum yakını başarıyla güncellendi!');
+    }
+
+    // Load Emergency Contact on startup
+    document.addEventListener('DOMContentLoaded', () => {
+        const name = localStorage.getItem('emergency_name') || 'Mehmet Dede';
+        const relation = localStorage.getItem('emergency_relation') || 'Father';
+        const phone = localStorage.getItem('emergency_phone') || '+90 500 987 6543';
+
+        const nameDisplay = document.getElementById('emergency-name-display');
+        const infoDisplay = document.getElementById('emergency-info-display');
+        const nameInput = document.getElementById('emergency-name-input');
+        const relationInput = document.getElementById('emergency-relation-input');
+        const phoneInput = document.getElementById('emergency-phone-input');
+
+        if (nameDisplay) nameDisplay.textContent = name;
+        if (infoDisplay) infoDisplay.textContent = `${relation} • ${phone}`;
+        if (nameInput) nameInput.value = name;
+        if (relationInput) relationInput.value = relation;
+        if (phoneInput) phoneInput.value = phone;
+    });
+
+    function setupBiometric() {
+        alert('Biyometrik doğrulama / Parmak izi girişi kurulumu başlatıldı.');
+    }
+</script>
+}

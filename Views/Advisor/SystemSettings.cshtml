@@ -1,0 +1,140 @@
+@model Student_Information_System.Models.SystemSetting
+
+@{
+    ViewData["Title"] = "Sistem Ayarları";
+}
+
+@section Styles {
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;900&display=swap');
+    
+    /* Toggle Switch Styling */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: var(--tw-color-primary, #00647e);
+    }
+    input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+    .dark .slider {
+        background-color: #334155;
+    }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <div class="p-gutter flex-1 w-full max-w-3xl mx-auto">
+        <!-- Page Header -->
+        <header class="mb-lg flex flex-col justify-between items-start gap-xs">
+            <div class="flex items-center gap-2 text-on-surface-variant font-label-md">
+                <a href="/Advisor/Dashboard" class="hover:text-primary transition-colors"><span class="lang-en">Advisor Panel</span><span class="lang-tr">Danışman Paneli</span></a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="text-primary font-semibold"><span class="lang-en">System Settings</span><span class="lang-tr">Sistem Ayarları</span></span>
+            </div>
+            <h1 class="font-h1 text-h1 text-primary mb-xs"><span class="lang-en">System Settings</span><span class="lang-tr">Sistem Ayarları</span></h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant">
+                <span class="lang-en">You can manage the OBS academic calendar processes (course registration, grade entry periods) and active period definitions here.</span><span class="lang-tr">OBS akademik takvim süreçlerini (ders kayıtları, not giriş dönemleri) ve aktif dönem tanımlamalarını buradan yönetebilirsiniz.</span>
+            </p>
+        </header>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="mb-md p-4 bg-secondary-container/20 border border-secondary text-on-secondary-container rounded-xl flex items-center gap-3 animate-fade-in">
+                <span class="material-symbols-outlined text-secondary">check_circle</span>
+                <span class="font-label-md">@TempData["SuccessMessage"]</span>
+            </div>
+        }
+
+        <!-- Settings Card -->
+        <div class="glass-card rounded-2xl p-lg shadow-lg border border-white/20">
+            <form asp-action="UpdateSystemSettings" method="post" class="space-y-lg">
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Active Semester -->
+                <div class="space-y-2">
+                    <label asp-for="ActiveSemester" class="block font-semibold text-on-surface text-body-md"><span class="lang-en">Active Academic Semester</span><span class="lang-tr">Aktif Akademik Dönem</span></label>
+                    <p class="text-on-surface-variant text-label-sm"><span class="lang-en">The current active academic term of the system.</span><span class="lang-tr">Sistemin mevcut aktif eğitim öğretim dönemidir.</span></p>
+                    <select asp-for="ActiveSemester" class="w-full bg-surface-container-low border-outline-variant/30 rounded-lg p-3 text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                        <option value="2024-2025 Güz">2024-2025 Güz Dönemi</option>
+                        <option value="2024-2025 Bahar">2024-2025 Bahar Dönemi</option>
+                        <option value="2025-2026 Güz">2025-2026 Güz Dönemi</option>
+                        <option value="2025-2026 Bahar">2025-2026 Bahar Dönemi</option>
+                    </select>
+                </div>
+
+                <hr class="border-outline-variant/20" />
+
+                <!-- Toggle Controls -->
+                <div class="space-y-md">
+                    <!-- Registration Toggle -->
+                    <div class="flex items-center justify-between p-4 rounded-xl hover:bg-surface-bright/50 transition-colors">
+                        <div class="space-y-1 pr-4">
+                            <span class="font-semibold text-on-surface text-body-md block"><span class="lang-en">Course Registration Period</span><span class="lang-tr">Ders Kayıt Dönemi</span></span>
+                            <span class="text-on-surface-variant text-label-sm block"><span class="lang-en">When open, students can add/drop courses. When closed, course registration is locked.</span><span class="lang-tr">Açık olduğunda öğrenciler ders ekleyip çıkarabilir. Kapalı olduğunda ders kayıt işlemleri kilitlenir.</span></span>
+                        </div>
+                        <div>
+                            <label class="switch">
+                                <input type="checkbox" asp-for="IsRegistrationActive" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Grade Entry Toggle -->
+                    <div class="flex items-center justify-between p-4 rounded-xl hover:bg-surface-bright/50 transition-colors">
+                        <div class="space-y-1 pr-4">
+                            <span class="font-semibold text-on-surface text-body-md block"><span class="lang-en">Grade &amp; Attendance Entry</span><span class="lang-tr">Not ve Yoklama Girişi</span></span>
+                            <span class="text-on-surface-variant text-label-sm block"><span class="lang-en">When open, advisor instructors can enter and save midterm/final grades and attendance. When closed, forms are locked.</span><span class="lang-tr">Açık olduğunda danışman hocalar vize/final notu ve devamsızlık girip kaydedebilir. Kapalı olduğunda formlar kilitlenir.</span></span>
+                        </div>
+                        <div>
+                            <label class="switch">
+                                <input type="checkbox" asp-for="IsGradeEntryActive" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-md border-t border-outline-variant/20 flex justify-end gap-sm">
+                    <a href="/Advisor/Dashboard" class="px-5 py-2.5 border border-outline-variant/30 text-on-surface-variant font-label-md rounded-lg hover:bg-surface-variant/20 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></a>
+                    <button type="submit" class="bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-lg hover:bg-primary/95 transition-all shadow-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
+                        <span class="lang-en">Save Settings</span><span class="lang-tr">Ayarları Kaydet</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

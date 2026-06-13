@@ -1,0 +1,732 @@
+@{
+    var langCookie = Context.Request.Cookies["lang"] ?? "tr";
+    var themeCookie = Context.Request.Cookies["theme"] ?? "light";
+}
+<!DOCTYPE html>
+<html class="@themeCookie" lang="@langCookie">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>@ViewData["Title"] - OKÜ OBS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#dce9ff",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#3e484d",
+                        "outline": "#6e797e",
+                        "on-primary-fixed": "#001f29",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary-fixed": "#410004",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-container-low": "#eff4ff",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#fafdff",
+                        "inverse-primary": "#6cd3fa",
+                        "surface-variant": "#d3e4fe",
+                        "surface-tint": "#006781",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-fixed": "#baeaff",
+                        "primary": "var(--color-primary)",
+                        "secondary-container": "#6cf8bb",
+                        "outline-variant": "#bdc8ce",
+                        "surface": "#f8f9ff",
+                        "tertiary": "var(--color-tertiary)",
+                        "on-error": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed": "#002113",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "tertiary-container": "#da3437",
+                        "on-primary-fixed-variant": "#004d62",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-background": "#0b1c30",
+                        "secondary": "var(--color-secondary)",
+                        "secondary-fixed-dim": "#4edea3",
+                        "background": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#6cd3fa",
+                        "on-secondary-container": "#00714d",
+                        "on-primary": "var(--color-on-primary)",
+                        "surface-container-highest": "#d3e4fe",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary": "var(--color-on-secondary)",
+                        "primary-container": "#007f9f",
+                        "tertiary-fixed": "#ffdad7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "xl": "64px",
+                        "md": "24px",
+                        "base": "8px",
+                        "lg": "40px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h1-mobile": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "h1-mobile": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "h1": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --color-primary: #00647e;
+            --color-on-primary: #ffffff;
+            --color-secondary: #006c49;
+            --color-on-secondary: #ffffff;
+            --color-tertiary: #b61722;
+            --color-on-tertiary: #ffffff;
+        }
+
+        body {
+            background-color: #f8f9ff;
+            background-image: radial-gradient(at 0% 0%, hsla(210,100%,95%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(190,100%,90%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(200,100%,92%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            color: inherit;
+        }
+        
+        .dark {
+            --color-primary: #6cd3fa;
+            --color-on-primary: #001f29;
+            --color-secondary: #4edea3;
+            --color-on-secondary: #002113;
+            --color-tertiary: #ffb3ad;
+            --color-on-tertiary: #410004;
+        }
+
+        .dark body {
+            background-color: #000000;
+            background-image: none;
+            color: #d4d4d4;
+        }
+        .dark .bg-surface-container-lowest,
+        .dark [class*="bg-surface-container-lowest/"] {
+            background-color: rgba(10, 10, 10, 0.85) !important;
+        }
+        .dark .bg-surface-container-low,
+        .dark [class*="bg-surface-container-low/"] {
+            background-color: rgba(18, 18, 18, 0.85) !important;
+        }
+        .dark .bg-surface-container,
+        .dark [class*="bg-surface-container/"] {
+            background-color: rgba(26, 26, 26, 0.85) !important;
+        }
+        .dark .bg-surface-container-high,
+        .dark [class*="bg-surface-container-high/"] {
+            background-color: rgba(38, 38, 38, 0.9) !important;
+        }
+        .dark .bg-surface-container-highest,
+        .dark [class*="bg-surface-container-highest/"] {
+            background-color: rgba(50, 50, 50, 0.9) !important;
+        }
+        .dark .bg-surface,
+        .dark [class*="bg-surface/"],
+        .dark .bg-surface-bright,
+        .dark [class*="bg-surface-bright/"] {
+            background-color: rgba(10, 10, 10, 0.85) !important;
+        }
+        .dark .bg-white\/70 {
+            background-color: rgba(18, 18, 18, 0.8) !important;
+        }
+        .dark .text-on-surface,
+        .dark .text-on-background,
+        .dark h1, .dark h2, .dark h3, .dark h4 {
+            color: #f5f5f5 !important;
+        }
+        .dark .text-on-surface-variant {
+            color: #a3a3a3 !important;
+        }
+        .dark .glass-card {
+            background: rgba(18, 18, 18, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            color: #e5e5e5;
+        }
+        .dark nav {
+            background-color: #050505 !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        .dark input, .dark textarea, .dark select {
+            background-color: #1a1a1a !important;
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .dark .glass-card:hover {
+            background: rgba(30, 30, 30, 0.95) !important;
+            box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.5) !important;
+        }
+        .dark [class*="hover:bg-white/"]:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .accordion-content.expanded {
+            max-height: 1000px; /* Arbitrary large number */
+            opacity: 1;
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        .expanded .accordion-icon {
+            transform: rotate(180deg);
+        }
+        html[lang="en"] .lang-tr { display: none !important; }
+        html[lang="tr"] .lang-en { display: none !important; }
+
+        /* Toast Notifications */
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateX(120%);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto;
+            color: #0b1c30;
+        }
+        .dark .toast {
+            background: rgba(18, 18, 18, 0.85) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #f5f5f5 !important;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast-success {
+            border-left: 4px solid #006c49;
+        }
+        .dark .toast-success {
+            border-left: 4px solid #4edea3;
+        }
+        .toast-error {
+            border-left: 4px solid #b61722;
+        }
+        .dark .toast-error {
+            border-left: 4px solid #ffb3ad;
+        }
+        .toast-info {
+            border-left: 4px solid #00647e;
+        }
+        .dark .toast-info {
+            border-left: 4px solid #6cd3fa;
+        }
+
+        /* Collapsible Sidebar Styles */
+        #desktop-sidebar {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #desktop-sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        main#main-content {
+            transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        main#main-content.sidebar-collapsed {
+            margin-left: 40px !important;
+        }
+
+        #sidebar-open-btn {
+            background-color: var(--color-primary) !important;
+            color: var(--color-on-primary) !important;
+        }
+        .dark #sidebar-open-btn {
+            background-color: var(--color-primary) !important;
+            color: #0f172a !important;
+        }
+        #sidebar-open-btn span {
+            color: inherit !important;
+        }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+<body class="text-on-background font-body-md text-body-md flex flex-col md:flex-row relative antialiased min-h-screen">
+
+    <!-- Ambient Background Decor -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] bg-secondary/5 rounded-full blur-3xl"></div>
+    </div>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <!-- SideNavBar (Hidden on Mobile) -->
+        <nav id="desktop-sidebar" class="hidden lg:flex flex-col h-screen py-xs w-64 fixed left-0 top-0 border-r border-white/20 dark:border-slate-700/30 shadow-sm bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl z-50 overflow-y-auto">
+            <button id="sidebar-close-btn" onclick="toggleSidebar(false)" class="hidden lg:flex absolute top-4 right-4 text-white hover:text-white/80 transition-colors flex items-center justify-center w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 z-[60] cursor-pointer" title="Paneli Kapat">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+            <a href="/Settings/Profile" class="px-sm mb-xs mt-10 pt-4 flex flex-col items-center group">
+                <div class="w-12 h-12 rounded-full overflow-hidden mb-xs border border-primary-fixed bg-white group-hover:scale-105 transition-transform duration-200">
+                    <img alt="Student Profile Picture" class="w-full h-full object-contain" src="/profile.png" />
+                </div>
+                <h2 class="text-sm font-semibold text-primary dark:text-primary-fixed text-center group-hover:underline">@(User.Identity.Name ?? "Student")</h2>
+                <p class="text-[11px] text-on-surface-variant text-center"><span class="lang-en">Computer Engineering</span><span class="lang-tr">Bilgisayar Mühendisliği</span></p>
+            </a>
+            <ul class="flex flex-col gap-[2px] px-2 flex-1">
+                @if (User.IsInRole("Advisor"))
+                {
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/Dashboard">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "1" : "0");">dashboard</span>
+                            Danışman Paneli
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "CourseApproval" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/CourseApproval">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "CourseApproval" ? "1" : "0");">fact_check</span>
+                            Ders Onayları
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "StudentManagement" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/StudentManagement">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "StudentManagement" ? "1" : "0");">groups</span>
+                            Öğrenci Yönetimi
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "GradeEntry" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/GradeEntry">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "GradeEntry" ? "1" : "0");">edit_document</span>
+                            Not Girişi
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "AttendanceEntry" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/AttendanceEntry">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "AttendanceEntry" ? "1" : "0");">playlist_add_check</span>
+                            Yoklama Girişi
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "SystemSettings" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/SystemSettings">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "SystemSettings" ? "1" : "0");">settings_applications</span>
+                            Sistem Ayarları
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Message" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Message/Inbox">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Message" ? "1" : "0");">mail</span>
+                            Mesaj Kutusu
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Substitutions" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/Substitutions">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Substitutions" ? "1" : "0");">swap_horizontal_circle</span>
+                            Muafiyet Talepleri
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Objections" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/Objections">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Objections" ? "1" : "0");">gavel</span>
+                            Not İtirazları
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Documents" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Advisor/Documents">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Advisor" && ViewContext.RouteData.Values["action"]?.ToString() == "Documents" ? "1" : "0");">article</span>
+                            Belge Talepleri
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Dashboard/Index">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "1" : "0");">dashboard</span>
+                            <span class="lang-en">Dashboard</span><span class="lang-tr">Panel</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Registration" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Registration/Index">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Registration" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "1" : "0");">how_to_reg</span>
+                            <span class="lang-en">Course Registration</span><span class="lang-tr">Ders Kaydı</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "Materials" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/Materials">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Materials" ? "1" : "0");">folder_open</span>
+                            <span class="lang-en">Course Materials</span><span class="lang-tr">Ders Materyalleri</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Registration" && ViewContext.RouteData.Values["action"]?.ToString() == "Tuition" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Registration/Tuition">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Registration" && ViewContext.RouteData.Values["action"]?.ToString() == "Tuition" ? "1" : "0");">payments</span>
+                            <span class="lang-en">Tuition Payment</span><span class="lang-tr">Harç Ödemesi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dining" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Dining/Index">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dining" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "1" : "0");">restaurant</span>
+                            <span class="lang-en">Dining Hall</span><span class="lang-tr">Yemekhane</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "Schedule" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/Schedule">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Schedule" ? "1" : "0");">calendar_today</span>
+                            <span class="lang-en">Weekly Schedule</span><span class="lang-tr">Haftalık Program</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "Grades" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/Grades">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Grades" ? "1" : "0");">grade</span>
+                            <span class="lang-en">Grades Status</span><span class="lang-tr">Not Durumu</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "Transkript" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/Transkript">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Transkript" ? "1" : "0");">description</span>
+                            <span class="lang-en">Transcript</span><span class="lang-tr">Transkript</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "GraduationStatus" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/GraduationStatus">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "GraduationStatus" ? "1" : "0");">school</span>
+                            <span class="lang-en">Graduation Status</span><span class="lang-tr">Mezuniyet Durumu</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "Attendance" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/Attendance">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Attendance" ? "1" : "0");">fact_check</span>
+                            <span class="lang-en">Attendance Tracking</span><span class="lang-tr">Devamsızlık Takibi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["action"]?.ToString() == "Calendar" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Academic/Calendar">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Calendar" ? "1" : "0");">calendar_month</span>
+                            <span class="lang-en">Academic Calendar</span><span class="lang-tr">Akademik Takvim</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Message" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Message/Inbox">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Message" ? "1" : "0");">mail</span>
+                            <span class="lang-en">Messages & Advisor</span><span class="lang-tr">Mesajlar & Danışman</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Substitution" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Substitution/Index">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Substitution" ? "1" : "0");">swap_horiz</span>
+                            <span class="lang-en">Course Exemption Request</span><span class="lang-tr">Ders Muafiyet Talebi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Document" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Document/Index">
+                            <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Document" ? "1" : "0");">article</span>
+                            <span class="lang-en">Document Request</span><span class="lang-tr">Belge Talep</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+            <div class="mt-auto px-xs mb-xs pt-xs">
+                <a class="flex items-center gap-xs px-2 py-1 rounded-md text-[13px] @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container/50 translate-x-1" : "text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-surface-container-low/50") transition-all duration-200" href="/Settings/Index">
+                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "1" : "0");">settings</span>
+                    <span class="lang-en">Settings</span><span class="lang-tr">Ayarlar</span>
+                </a>
+            </div>
+        </nav>
+        <!-- Sidebar Toggle Button (Left Centered) -->
+        <button id="sidebar-open-btn" onclick="toggleSidebar(true)" class="hidden fixed left-0 top-1/2 -translate-y-1/2 backdrop-blur-md rounded-r-xl w-10 h-16 shadow-xl z-50 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer border border-l-0 border-white/20">
+            <span class="material-symbols-outlined text-[24px]">double_arrow</span>
+        </button>
+    }
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-1 flex flex-col min-h-screen @(User.Identity?.IsAuthenticated == true ? "lg:ml-64" : "") w-full">
+        <!-- TopNavBar -->
+        <header class="flex justify-between items-center w-full px-gutter py-sm sticky top-0 z-40 bg-transparent backdrop-blur-md border-b border-white/10">
+            <div class="flex items-center gap-md">
+                <h1 class="font-h2 text-h2 font-black text-primary dark:text-primary-fixed tracking-tight md:hidden">OKÜ OBS</h1>
+            </div>
+            <div class="flex-1 max-w-md hidden md:flex items-center ml-lg">
+                <div class="relative w-full">
+                    <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+                    <input class="w-full bg-surface-container-low border-outline-variant/30 rounded-full pl-xl py-2 text-label-md focus:ring-2 focus:ring-inverse-primary focus:border-transparent outline-none transition-shadow" placeholder="Dersleri, profesörleri ara..." type="text" data-lang-tr-placeholder="Dersleri, profesörleri ara..." data-lang-en-placeholder="Search courses, professors..." id="global-search-input" />
+                </div>
+            </div>
+            <div class="flex items-center gap-md ml-auto">
+                <a href="/Dashboard/Notifications" class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-all scale-95 duration-150 rounded-full p-2 hover:bg-white/50 relative">
+                    <span class="material-symbols-outlined">notifications</span>
+                </a>
+                <button class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-all scale-95 duration-150 rounded-full p-2 hover:bg-white/50 hidden sm:block" onclick="toggleLanguage()" title="TR / EN">
+                    <span class="material-symbols-outlined">language</span>
+                </button>
+                <button class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-all scale-95 duration-150 rounded-full p-2 hover:bg-white/50" onclick="toggleDarkMode()">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a href="/Auth/Logout" class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-all scale-95 duration-150 rounded-full p-2 hover:bg-white/50 flex items-center gap-1" title="Logout">
+                        <span class="material-symbols-outlined">logout</span>
+                        <span class="text-[13px] font-semibold hidden md:inline"><span class="lang-en">Logout</span><span class="lang-tr">Çıkış Yap</span></span>
+                    </a>
+                }
+                else
+                {
+                    <a href="/Home/Welcome" class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-all scale-95 duration-150 rounded-full p-2 hover:bg-white/50 flex items-center gap-1" title="Login">
+                        <span class="material-symbols-outlined">login</span>
+                        <span class="text-[13px] font-semibold hidden md:inline"><span class="lang-en">Login</span><span class="lang-tr">Giriş Yap</span></span>
+                    </a>
+                }
+                <a href="/Settings/Profile" class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 ml-sm lg:hidden bg-white block">
+                    <img alt="User Profile" class="w-full h-full object-contain" src="/profile.png" />
+                </a>
+            </div>
+        </header>
+
+        @RenderBody()
+
+        <footer class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-container-max mx-auto w-full py-md mt-auto bg-surface-container-lowest dark:bg-[#0a0a0a]/90 dark:backdrop-blur-md border-t border-outline-variant/30 dark:border-white/10 relative z-20">
+            <div class="mb-sm md:mb-0 text-center md:text-left">
+                <p class="font-label-sm text-label-sm text-on-surface-variant/70 dark:text-neutral-400">© @DateTime.Now.Year Osmaniye Korkut Ata University. <span class="lang-en">Developed by Emir Tarık Dede.</span><span class="lang-tr">Emir Tarık Dede tarafından geliştirilmiştir.</span></p>
+            </div>
+            <ul class="flex gap-md">
+                <li><a class="font-label-sm text-label-sm text-on-surface-variant/70 dark:text-neutral-300 hover:text-secondary dark:hover:text-primary-fixed transition-colors" href="/Home/About"><span class="lang-en">About Us</span><span class="lang-tr">Hakkımızda</span></a></li>
+                <li><a class="font-label-sm text-label-sm text-on-surface-variant/70 dark:text-neutral-300 hover:text-secondary dark:hover:text-primary-fixed transition-colors" href="/Support/StudentHandbook"><span class="lang-en">Student Handbook</span><span class="lang-tr">Öğrenci El Kitabı</span></a></li>
+                <li><a class="font-label-sm text-label-sm text-on-surface-variant/70 dark:text-neutral-300 hover:text-secondary dark:hover:text-primary-fixed transition-colors" href="/Support/ITSupport"><span class="lang-en">IT Support</span><span class="lang-tr">BT Destek</span></a></li>
+            </ul>
+        </footer>
+    </main>
+
+    <!-- BottomNavBar (Mobile Only) -->
+    <nav class="md:hidden fixed bottom-0 w-full glass-card border-t border-white/10 z-50 flex justify-around py-sm px-2">
+        <a class="flex flex-col items-center @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "text-primary font-bold" : "text-on-surface-variant")" href="/Dashboard">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "1" : "0");">dashboard</span>
+            <span class="text-[10px] mt-1"><span class="lang-en">Home</span><span class="lang-tr">Ana Sayfa</span></span>
+        </a>
+        <a class="flex flex-col items-center @(ViewContext.RouteData.Values["controller"]?.ToString() == "Registration" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "text-primary font-bold" : "text-on-surface-variant")" href="/Registration">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Registration" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "1" : "0");">how_to_reg</span>
+            <span class="text-[10px] mt-1"><span class="lang-en">Register</span><span class="lang-tr">Kayıt</span></span>
+        </a>
+        <a class="flex flex-col items-center @(ViewContext.RouteData.Values["action"]?.ToString() == "Grades" ? "text-primary font-bold" : "text-on-surface-variant")" href="/Academic/Grades">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["action"]?.ToString() == "Grades" ? "1" : "0");">grade</span>
+            <span class="text-[10px] mt-1"><span class="lang-en">Grades</span><span class="lang-tr">Notlar</span></span>
+        </a>
+        <a class="flex flex-col items-center @(ViewContext.RouteData.Values["controller"]?.ToString() == "News" ? "text-primary font-bold" : "text-on-surface-variant")" href="/News">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "News" ? "1" : "0");">campaign</span>
+            <span class="text-[10px] mt-1"><span class="lang-en">News</span><span class="lang-tr">Haberler</span></span>
+        </a>
+        <a class="flex flex-col items-center @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" && ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "text-primary font-bold" : "text-on-surface-variant")" href="/Settings/Profile">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" && ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "1" : "0");">person</span>
+            <span class="text-[10px] mt-1"><span class="lang-en">Profile</span><span class="lang-tr">Profil</span></span>
+        </a>
+    </nav>
+
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            document.cookie = `theme=${newTheme};path=/;max-age=31536000;samesite=lax`;
+
+            if (document.querySelector('a[href="/Auth/Logout"]')) {
+                syncPreferences();
+            }
+        }
+
+        // Apply theme on load
+        const storedTheme = localStorage.getItem('theme') || "@themeCookie";
+        if (storedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+        }
+
+        // Language Toggle Logic
+        function toggleLanguage() {
+            let currentLang = document.documentElement.getAttribute('lang') || 'tr';
+            let newLang = currentLang === 'tr' ? 'en' : 'tr';
+            document.documentElement.setAttribute('lang', newLang);
+            localStorage.setItem('preferred-language', newLang);
+            document.cookie = `lang=${newLang};path=/;max-age=31536000;samesite=lax`;
+            updatePlaceholders(newLang);
+
+            if (document.querySelector('a[href="/Auth/Logout"]')) {
+                syncPreferences();
+            } else {
+                location.reload();
+            }
+        }
+
+        function syncPreferences() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const theme = isDark ? 'dark' : 'light';
+            const lang = document.documentElement.getAttribute('lang') || 'tr';
+
+            const emailNotifyEl = document.querySelector('[onclick*="toggleSwitch"][data-type="email"]');
+            const smsNotifyEl = document.querySelector('[onclick*="toggleSwitch"][data-type="sms"]');
+
+            const emailNotify = emailNotifyEl ? (emailNotifyEl.getAttribute('data-active') === 'true') : true;
+            const smsNotify = smsNotifyEl ? (smsNotifyEl.getAttribute('data-active') === 'true') : false;
+
+            const formData = new FormData();
+            formData.append('emailNotificationsEnabled', emailNotify);
+            formData.append('smsNotificationsEnabled', smsNotify);
+            formData.append('themePreference', theme);
+            formData.append('languagePreference', lang);
+
+            fetch('/Settings/UpdatePreferences', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof updateDarkModeIndicator === 'function') {
+                        updateDarkModeIndicator();
+                    }
+                    if (lang !== localStorage.getItem('last-synced-lang')) {
+                        localStorage.setItem('last-synced-lang', lang);
+                        location.reload();
+                    }
+                }
+            })
+            .catch(err => console.error('Error syncing preferences:', err));
+        }
+
+        function updatePlaceholders(lang) {
+            const searchInput = document.getElementById('global-search-input');
+            if (searchInput) {
+                searchInput.placeholder = searchInput.getAttribute('data-lang-' + lang + '-placeholder');
+            }
+        }
+
+        // Apply language on load
+        let savedLang = localStorage.getItem('preferred-language') || "@langCookie";
+        document.documentElement.setAttribute('lang', savedLang);
+        updatePlaceholders(savedLang);
+
+        // Toast Notification System
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type} shadow-lg`;
+
+            let iconName = 'check_circle';
+            let iconColor = 'text-secondary dark:text-primary-fixed';
+            if (type === 'error') {
+                iconName = 'error';
+                iconColor = 'text-tertiary';
+            } else if (type === 'info') {
+                iconName = 'info';
+                iconColor = 'text-primary';
+            }
+
+            toast.innerHTML = `
+                <span class="material-symbols-outlined ${iconColor}" style="font-variation-settings: 'FILL' 1;">${iconName}</span>
+                <span class="font-body-md flex-1 text-sm font-medium">${message}</span>
+                <button class="text-on-surface-variant/50 hover:text-on-surface-variant transition-colors flex items-center" onclick="this.parentElement.remove()">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 50);
+
+            // Auto dismiss
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 350);
+            }, 4000);
+        }
+
+        // Global alert wrapper
+        window.alert = function(msg) {
+            const isError = msg.toLowerCase().includes('hata') || 
+                            msg.toLowerCase().includes('error') || 
+                            msg.toLowerCase().includes('uyuşmuyor') || 
+                            msg.toLowerCase().includes('bulunamadı') || 
+                            msg.toLowerCase().includes('geçersiz') || 
+                            msg.toLowerCase().includes('doldurunuz') ||
+                            msg.toLowerCase().includes('seçiniz');
+            showNotification(msg, isError ? 'error' : 'success');
+        };
+
+        // Collapsible Sidebar Functions
+        function toggleSidebar(show) {
+            const sidebar = document.getElementById('desktop-sidebar');
+            const mainContent = document.getElementById('main-content');
+            const openBtn = document.getElementById('sidebar-open-btn');
+            
+            if (!sidebar || !mainContent) return;
+
+            if (show) {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+                if (openBtn) openBtn.classList.add('hidden');
+                localStorage.setItem('sidebar-collapsed', 'false');
+            } else {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                if (openBtn) openBtn.classList.remove('hidden');
+                localStorage.setItem('sidebar-collapsed', 'true');
+            }
+        }
+
+        // Apply sidebar state on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+            if (isCollapsed && window.innerWidth >= 1024) {
+                toggleSidebar(false);
+            }
+        });
+    </script>
+    <div id="toast-container" class="fixed top-24 right-6 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

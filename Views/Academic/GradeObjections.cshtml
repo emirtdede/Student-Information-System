@@ -1,0 +1,92 @@
+@model List<Student_Information_System.Models.GradeObjection>
+@{ ViewData["Title"] = "Grade Objections"; }
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <section class="space-y-sm mb-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+            <div>
+                <h1 class="font-h1 text-h1 text-on-background"><span class="lang-en">Grade Objection History</span><span class="lang-tr">Not İtiraz Geçmişi</span></h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">You can track your past and ongoing grade objection requests here.</span><span class="lang-tr">Geçmiş ve devam eden not itiraz taleplerinizi buradan takip edebilirsiniz.</span></p>
+            </div>
+            <a asp-action="Grades" class="glass-card px-md py-sm rounded-lg text-primary font-label-md flex items-center gap-xs hover:bg-primary/10 transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                <span><span class="lang-en">Back to Grades</span><span class="lang-tr">Notlarıma Dön</span></span>
+            </a>
+        </div>
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary-container/20 border border-secondary text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <section class="space-y-md">
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="glass-card rounded-xl overflow-hidden">
+                <!-- Table Header -->
+                <div class="hidden md:grid grid-cols-12 gap-4 px-md py-sm bg-surface-container-low border-b border-outline-variant font-label-md text-label-md text-on-surface-variant">
+                    <div class="col-span-2"><span class="lang-en">Course Code</span><span class="lang-tr">Ders Kodu</span></div>
+                    <div class="col-span-3"><span class="lang-en">Course Name</span><span class="lang-tr">Ders Adı</span></div>
+                    <div class="col-span-1 text-center"><span class="lang-en">Exam</span><span class="lang-tr">Sınav</span></div>
+                    <div class="col-span-1 text-center"><span class="lang-en">Current Grade</span><span class="lang-tr">Mevcut Not</span></div>
+                    <div class="col-span-1 text-center"><span class="lang-en">New Grade</span><span class="lang-tr">Yeni Not</span></div>
+                    <div class="col-span-2"><span class="lang-en">Date</span><span class="lang-tr">Tarih</span></div>
+                    <div class="col-span-2 text-center"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></div>
+                </div>
+                <div class="divide-y divide-outline-variant/30">
+                    @foreach (var objection in Model)
+                    {
+                        var statusClass = objection.Status switch
+                        {
+                            "Approved" => "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+                            "Rejected" => "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+                            _ => "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                        };
+                        var statusText = objection.Status switch
+                        {
+                            "Approved" => "<span class=\"lang-en\">Approved</span><span class=\"lang-tr\">Onaylandı</span>",
+                            "Rejected" => "<span class=\"lang-en\">Rejected</span><span class=\"lang-tr\">Reddedildi</span>",
+                            _ => "<span class=\"lang-en\">Pending</span><span class=\"lang-tr\">Beklemede</span>"
+                        };
+                        var statusIcon = objection.Status switch
+                        {
+                            "Approved" => "check_circle",
+                            "Rejected" => "cancel",
+                            _ => "pending"
+                        };
+                        var examText = objection.ExamType == "Midterm" ? "<span class=\"lang-en\">Midterm</span><span class=\"lang-tr\">Vize</span>" : "<span class=\"lang-en\">Final</span><span class=\"lang-tr\">Final</span>";
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-md py-sm items-center hover:bg-surface-bright/50 transition-colors">
+                            <div class="md:col-span-2 font-label-sm text-label-sm text-primary font-semibold">@objection.Course.Code</div>
+                            <div class="md:col-span-3 font-body-md text-body-md text-on-background">@objection.Course.Name</div>
+                            <div class="md:col-span-1 text-center font-body-md text-body-md">@Html.Raw(examText)</div>
+                            <div class="md:col-span-1 text-center font-body-md text-body-md font-semibold">@objection.CurrentGrade</div>
+                            <div class="md:col-span-1 text-center font-body-md text-body-md font-semibold">
+                                @(objection.ProposedGrade.HasValue ? objection.ProposedGrade.Value.ToString("0") : "-")
+                            </div>
+                            <div class="md:col-span-2 font-label-sm text-label-sm text-on-surface-variant">@objection.RequestDate.ToString("dd.MM.yyyy HH:mm")</div>
+                            <div class="md:col-span-2 text-center">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full font-label-sm text-label-sm @statusClass">
+                                    <span class="material-symbols-outlined text-[14px]">@statusIcon</span>
+                                    @Html.Raw(statusText)
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="glass-card rounded-xl p-lg text-center">
+                <span class="material-symbols-outlined text-[48px] text-on-surface-variant/50 mb-sm block">gavel</span>
+                <p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">You do not have any grade objection requests yet.</span><span class="lang-tr">Henüz bir not itiraz talebiniz bulunmuyor.</span></p>
+                <p class="font-body-md text-body-md text-outline mt-1"><span class="lang-en">You can appeal any course from your grades page.</span><span class="lang-tr">Notlarınız sayfasından herhangi bir derse itiraz edebilirsiniz.</span></p>
+            </div>
+        }
+    </section>
+</div>

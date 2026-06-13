@@ -1,0 +1,264 @@
+@model List<Student_Information_System.Models.Enrollment>
+@{
+    ViewData["Title"] = "Transkript";
+    bool isCapActive = ViewBag.IsDoubleMajorActive ?? false;
+    string capDept = ViewBag.DoubleMajorDepartment ?? "";
+    double capGpa = ViewBag.DoubleMajorGpa ?? 0.0;
+    
+    var majorEnrollments = Model.Where(e => e.EnrollmentType == "Major" || string.IsNullOrEmpty(e.EnrollmentType)).ToList();
+    var capEnrollments = Model.Where(e => e.EnrollmentType == "DoubleMajor").ToList();
+
+    var passedMajor = majorEnrollments.Where(e => e.LetterGrade != "FF" && e.LetterGrade != "FD" && e.LetterGrade != "FZ" && !string.IsNullOrEmpty(e.LetterGrade)).ToList();
+    var passedCap = capEnrollments.Where(e => e.LetterGrade != "FF" && e.LetterGrade != "FD" && e.LetterGrade != "FZ" && !string.IsNullOrEmpty(e.LetterGrade)).ToList();
+
+    int majorEcts = passedMajor.Sum(e => e.Course.Ects);
+    int capEcts = passedCap.Sum(e => e.Course.Ects);
+}
+
+@section Styles {
+<style>
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined[data-weight="fill"] {
+    font-variation-settings: 'FILL' 1;
+}
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Page Header & Actions -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-lg">
+        <div>
+            <h1 class="font-h1 text-h1 text-on-surface"><span class="lang-en">Transcript</span><span class="lang-tr">Transkript</span></h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-xs"><span class="lang-en">Your comprehensive academic history and program-based transcript.</span><span class="lang-tr">Kapsamlı akademik geçmişiniz ve program bazlı not dökümünüz.</span></p>
+        </div>
+        <div class="flex gap-sm w-full md:w-auto">
+            <button onclick="window.print()" class="bg-primary text-on-primary flex-1 md:flex-none flex items-center justify-center gap-xs px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">print</span>
+                <span data-tr="Yazdır" data-en="Print">Yazdır</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Selection (If Double Major Active) -->
+    @if (isCapActive)
+    {
+        <div class="flex border-b border-outline-variant/30 mb-md gap-sm">
+            <button onclick="switchProgram('major')" id="tab-btn-major" class="px-md py-sm font-label-md text-label-md border-b-2 border-primary text-primary font-bold">
+                <span class="lang-en">Major (Computer Engineering)</span><span class="lang-tr">Anadal (Computer Engineering)</span>
+            </button>
+            <button onclick="switchProgram('cap')" id="tab-btn-cap" class="px-md py-sm font-label-md text-label-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all">
+                <span class="lang-en">Double Major (@capDept)</span><span class="lang-tr">Çift Anadal (@capDept)</span>
+            </button>
+        </div>
+    }
+
+    <!-- Anadal (Major) Program View -->
+    <div id="program-major-view" class="program-view flex flex-col gap-lg">
+        <!-- Bento Grid Layout for Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+            <!-- CGPA Card -->
+            <div class="glass-card rounded-xl p-md flex flex-col justify-center items-center relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
+                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs z-10"><span class="lang-en">MAJOR CGPA</span><span class="lang-tr">ANADAL GNO</span></span>
+                <span class="font-h1 text-h1 text-primary z-10">@ViewBag.StudentGpa.ToString("0.00")</span>
+                <span class="font-label-sm text-label-sm text-secondary z-10 mt-xs"><span class="lang-en">Out of 4.00</span><span class="lang-tr">4.00 Üzerinden</span></span>
+            </div>
+            <!-- Credits Card -->
+            <div class="glass-card rounded-xl p-md flex flex-col justify-center items-center">
+                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs"><span class="lang-en">Completed ECTS</span><span class="lang-tr">Tamamlanan AKTS</span></span>
+                <span class="font-h1 text-h1 text-on-surface">@majorEcts</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">ECTS</span><span class="lang-tr">AKTS</span></span>
+            </div>
+            <!-- Academic Status -->
+            <div class="glass-card rounded-xl p-md flex flex-col justify-center items-center">
+                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></span>
+                <div class="bg-secondary-container text-on-secondary-container px-sm py-xs rounded-full flex items-center gap-xs mt-sm">
+                    <span class="material-symbols-outlined text-[16px]" data-weight="fill">check_circle</span>
+                    <span class="font-label-md text-label-md"><span class="lang-en">Active</span><span class="lang-tr">Aktif</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Table -->
+        <div class="glass-card rounded-xl overflow-hidden border border-outline-variant/15">
+            <div class="px-md py-sm bg-surface-container-low/50">
+                <h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">Major Curriculum Grades</span><span class="lang-tr">Anadal Müfredat Notları</span></h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant/30">
+                            <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">Course</span><span class="lang-tr">Ders</span></th>
+                            <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-center"><span class="lang-en">Midterm</span><span class="lang-tr">Vize</span></th>
+                            <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-center"><span class="lang-en">Final</span><span class="lang-tr">Final</span></th>
+                            <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-right"><span class="lang-en">Letter Grade</span><span class="lang-tr">Harf Notu</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (majorEnrollments.Count > 0)
+                        {
+                            foreach (var enrollment in majorEnrollments)
+                            {
+                                var isFail = enrollment.LetterGrade == "FF" || enrollment.LetterGrade == "FD" || enrollment.LetterGrade == "FZ";
+                                var bgClass = isFail ? "bg-error-container/10" : "hover:bg-surface-container-lowest/50";
+                                var badgeClass = isFail ? "bg-error text-on-error" : "bg-secondary text-on-secondary";
+                                var isSurveyPending = !enrollment.IsSurveyCompleted && !string.IsNullOrEmpty(enrollment.LetterGrade);
+
+                                <tr class="border-b border-outline-variant/10 transition-colors @bgClass">
+                                    <td class="py-sm px-md">
+                                        <div class="font-label-md text-label-md text-on-surface">@enrollment.Course.Name</div>
+                                        <div class="font-label-sm text-label-sm text-on-surface-variant">@enrollment.Course.Code • @enrollment.Course.Ects AKTS</div>
+                                    </td>
+                                    <td class="py-sm px-md text-center font-body-md text-on-surface">@(enrollment.MidtermGrade?.ToString() ?? "-")</td>
+                                    <td class="py-sm px-md text-center font-body-md text-on-surface">
+                                        @if (isSurveyPending)
+                                        {
+                                            <span class="text-amber-600 dark:text-amber-400 font-medium"><span class="lang-en">Locked</span><span class="lang-tr">Kilitli</span></span>
+                                        }
+                                        else
+                                        {
+                                            @(enrollment.FinalGrade?.ToString() ?? "-")
+                                        }
+                                    </td>
+                                    <td class="py-sm px-md text-right">
+                                        @if (isSurveyPending)
+                                        {
+                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-500 text-white font-label-md text-label-md" title="Anket Doldurulmadı">🔒</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full @badgeClass font-label-md text-label-md">@(string.IsNullOrEmpty(enrollment.LetterGrade) ? "-" : enrollment.LetterGrade)</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="py-md text-center text-on-surface-variant"><span class="lang-en">You have no registered courses.</span><span class="lang-tr">Kayıtlı dersiniz bulunmamaktadır.</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Çift Anadal (Double Major) Program View -->
+    @if (isCapActive)
+    {
+        <div id="program-cap-view" class="program-view hidden flex flex-col gap-lg">
+            <!-- Bento Grid Layout for Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+                <!-- CGPA Card -->
+                <div class="glass-card rounded-xl p-md flex flex-col justify-center items-center relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs z-10"><span class="lang-en">DOUBLE MAJOR CGPA</span><span class="lang-tr">ÇİFT ANADAL GNO</span></span>
+                    <span class="font-h1 text-h1 text-primary z-10">@capGpa.ToString("0.00")</span>
+                    <span class="font-label-sm text-label-sm text-secondary z-10 mt-xs"><span class="lang-en">Out of 4.00</span><span class="lang-tr">4.00 Üzerinden</span></span>
+                </div>
+                <!-- Credits Card -->
+                <div class="glass-card rounded-xl p-md flex flex-col justify-center items-center">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs"><span class="lang-en">Completed ECTS</span><span class="lang-tr">Tamamlanan AKTS</span></span>
+                    <span class="font-h1 text-h1 text-on-surface">@capEcts</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">ECTS</span><span class="lang-tr">AKTS</span></span>
+                </div>
+                <!-- Academic Status -->
+                <div class="glass-card rounded-xl p-md flex flex-col justify-center items-center">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs"><span class="lang-en">Double Major Status</span><span class="lang-tr">ÇAP Durum</span></span>
+                    <div class="bg-secondary-container text-on-secondary-container px-sm py-xs rounded-full flex items-center gap-xs mt-sm">
+                        <span class="material-symbols-outlined text-[16px]" data-weight="fill">check_circle</span>
+                        <span class="font-label-md text-label-md"><span class="lang-en">Active</span><span class="lang-tr">Aktif</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Table -->
+            <div class="glass-card rounded-xl overflow-hidden border border-outline-variant/15">
+                <div class="px-md py-sm bg-surface-container-low/50">
+                    <h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">Double Major Curriculum Grades (@capDept)</span><span class="lang-tr">Çift Anadal Müfredat Notları (@capDept)</span></h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-outline-variant/30">
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">Course</span><span class="lang-tr">Ders</span></th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-center"><span class="lang-en">Midterm</span><span class="lang-tr">Vize</span></th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-center"><span class="lang-en">Final</span><span class="lang-tr">Final</span></th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-right"><span class="lang-en">Letter Grade</span><span class="lang-tr">Harf Notu</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (capEnrollments.Count > 0)
+                            {
+                                foreach (var enrollment in capEnrollments)
+                                {
+                                    var isFail = enrollment.LetterGrade == "FF" || enrollment.LetterGrade == "FD" || enrollment.LetterGrade == "FZ";
+                                    var bgClass = isFail ? "bg-error-container/10" : "hover:bg-surface-container-lowest/50";
+                                    var badgeClass = isFail ? "bg-error text-on-error" : "bg-secondary text-on-secondary";
+                                    var isSurveyPending = !enrollment.IsSurveyCompleted && !string.IsNullOrEmpty(enrollment.LetterGrade);
+
+                                    <tr class="border-b border-outline-variant/10 transition-colors @bgClass">
+                                        <td class="py-sm px-md">
+                                            <div class="font-label-md text-label-md text-on-surface">@enrollment.Course.Name</div>
+                                            <div class="font-label-sm text-label-sm text-on-surface-variant">@enrollment.Course.Code • @enrollment.Course.Ects AKTS</div>
+                                        </td>
+                                        <td class="py-sm px-md text-center font-body-md text-on-surface">@(enrollment.MidtermGrade?.ToString() ?? "-")</td>
+                                        <td class="py-sm px-md text-center font-body-md text-on-surface">
+                                            @if (isSurveyPending)
+                                            {
+                                                <span class="text-amber-600 dark:text-amber-400 font-medium"><span class="lang-en">Locked</span><span class="lang-tr">Kilitli</span></span>
+                                            }
+                                            else
+                                            {
+                                                @(enrollment.FinalGrade?.ToString() ?? "-")
+                                            }
+                                        </td>
+                                        <td class="py-sm px-md text-right">
+                                            @if (isSurveyPending)
+                                            {
+                                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-500 text-white font-label-md text-label-md" title="Anket Doldurulmadı">🔒</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full @badgeClass font-label-md text-label-md">@(string.IsNullOrEmpty(enrollment.LetterGrade) ? "-" : enrollment.LetterGrade)</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="py-md text-center text-on-surface-variant"><span class="lang-en">You have no registered courses in your double major program.</span><span class="lang-tr">Çift Anadal programınızda kayıtlı ders bulunmamaktadır.</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+function switchProgram(program) {
+    document.querySelectorAll('.program-view').forEach(v => v.classList.add('hidden'));
+    
+    document.getElementById('tab-btn-major').className = "px-md py-sm font-label-md text-label-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all";
+    document.getElementById('tab-btn-cap').className = "px-md py-sm font-label-md text-label-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all";
+
+    if (program === 'major') {
+        document.getElementById('program-major-view').classList.remove('hidden');
+        document.getElementById('tab-btn-major').className = "px-md py-sm font-label-md text-label-md border-b-2 border-primary text-primary font-bold";
+    } else {
+        document.getElementById('program-cap-view').classList.remove('hidden');
+        document.getElementById('tab-btn-cap').className = "px-md py-sm font-label-md text-label-md border-b-2 border-primary text-primary font-bold";
+    }
+}
+</script>
+}

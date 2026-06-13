@@ -1,0 +1,98 @@
+@model List<Student_Information_System.Models.Student>
+@{ ViewData["Title"] = "Yoklama Girişi"; }
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
+        <div>
+            <h1 class="font-h1 text-h1 text-on-surface mb-xs"><span class="lang-en">Attendance Entry</span><span class="lang-tr">Yoklama Girişi</span></h1>
+            <p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Enter student absences on a weekly basis. Students with more than 4 weeks of absence will automatically receive FZ.</span><span class="lang-tr">Öğrencilerin devamsızlık durumlarını hafta bazında girin. 4 haftadan fazla devamsızlık durumunda öğrenci otomatik olarak (FZ) kalır.</span></p>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">error</span>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (ViewBag.IsGradeEntryActive == false)
+    {
+        <div class="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">event_busy</span>
+            <div>
+                <strong><span class="lang-en">Attendance Entry Period is Closed.</span><span class="lang-tr">Yoklama Giriş Dönemi Kapatılmıştır.</span></strong> <span class="lang-en">You cannot submit or update attendance at this time.</span><span class="lang-tr">Şu anda yoklama girişi veya yoklama güncellemesi yapamıyorsunuz.</span>
+            </div>
+        </div>
+    }
+
+    <div class="flex flex-col gap-sm">
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var student in Model)
+            {
+                <div class="glass-panel rounded-xl p-md shadow-sm">
+                    <div class="flex items-center gap-md mb-sm border-b border-outline-variant/30 pb-sm">
+                        <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[18px]">
+                            @student.FirstName.Substring(0, 1)@student.LastName.Substring(0, 1)
+                        </div>
+                        <div>
+                            <h3 class="font-h3 text-[18px] font-bold text-on-surface">@student.FirstName @student.LastName</h3>
+                            <span class="font-label-sm text-on-surface-variant">@student.StudentNumber | @student.Department</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-on-surface-variant font-label-sm uppercase border-b border-outline-variant/20">
+                                    <th class="py-sm font-medium"><span class="lang-en">Course Code</span><span class="lang-tr">Ders Kodu</span></th>
+                                    <th class="py-sm font-medium"><span class="lang-en">Course Name</span><span class="lang-tr">Ders Adı</span></th>
+                                    <th class="py-sm font-medium"><span class="lang-en">Absences (Weeks)</span><span class="lang-tr">Devamsızlık (Hafta)</span></th>
+                                    <th class="py-sm font-medium"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></th>
+                                    <th class="py-sm font-medium text-right"><span class="lang-en">Action</span><span class="lang-tr">İşlem</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrollment in student.Enrollments)
+                                {
+                                    var isFailed = enrollment.AbsentCount > 4;
+                                    <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                                        <td class="py-sm font-label-md">@enrollment.Course.Code</td>
+                                        <td class="py-sm font-body-md">@enrollment.Course.Name</td>
+                                        <form method="post" asp-action="SaveAttendance">
+                                            <input type="hidden" name="studentId" value="@student.Id" />
+                                            <input type="hidden" name="courseId" value="@enrollment.CourseId" />
+                                            <td class="py-sm">
+                                                <input type="number" name="absentCount" value="@enrollment.AbsentCount" min="0" max="14" class="w-20 bg-surface border border-outline-variant rounded px-2 py-1 focus:outline-primary" @(ViewBag.IsGradeEntryActive == false ? "disabled" : "") />
+                                                <span class="text-label-sm text-on-surface-variant ml-xs">/ 14 Hafta</span>
+                                            </td>
+                                            <td class="py-sm">
+                                                @if (isFailed)
+                                                {
+                                                    <span class="px-2 py-1 bg-error-container text-on-error-container rounded font-label-sm"><span class="lang-en">Failed (FZ - Absence)</span><span class="lang-tr">Devamsızlıktan Kaldı (FZ)</span></span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="px-2 py-1 bg-secondary-container text-on-secondary-container rounded font-label-sm"><span class="lang-en">Attending</span><span class="lang-tr">Devam Ediyor</span></span>
+                                                }
+                                            </td>
+                                            <td class="py-sm text-right">
+                                                <button type="submit" @(ViewBag.IsGradeEntryActive == false ? "disabled" : "") class="bg-primary text-on-primary px-3 py-1 rounded hover:bg-primary-container transition-colors font-label-md disabled:opacity-50 disabled:cursor-not-allowed"><span class="lang-en">Save</span><span class="lang-tr">Kaydet</span></button>
+                                            </td>
+                                        </form>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="glass-panel p-lg text-center text-on-surface-variant"><span class="lang-en">No students found.</span><span class="lang-tr">Öğrenci bulunmamaktadır.</span></div>
+        }
+    </div>
+</div>

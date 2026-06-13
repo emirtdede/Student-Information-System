@@ -1,0 +1,94 @@
+@model List<Student_Information_System.Models.Student>
+@{ ViewData["Title"] = "Student Management"; }
+
+@section Styles {
+<style>
+/* Glassmorphism Utilities */
+        .glass-input {
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(189, 200, 206, 0.5);
+        }
+        .glass-input:focus {
+            border-color: #00647e;
+            box-shadow: 0 0 0 2px rgba(0, 100, 126, 0.2);
+            background-color: rgba(255, 255, 255, 0.8);
+            outline: none;
+        }
+        .ambient-shadow {
+            box-shadow: 0 10px 30px -10px rgba(11, 28, 48, 0.08);
+        }
+        .status-active {
+            background-color: #6cf8bb;
+            color: #005236;
+        }
+        .table-row-glass {
+            transition: background-color 0.2s ease;
+        }
+        .table-row-glass:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-lg gap-md mt-md">
+<div>
+<h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-on-surface mb-xs tracking-tight"><span class="lang-en">Student Management</span><span class="lang-tr">Öğrenci Yönetimi</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">View and track the students you advise.</span><span class="lang-tr">Danışmanlığını yaptığınız öğrencileri görüntüleyin ve takip edin.</span></p>
+</div>
+<div class="hidden md:flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full border-2 border-surface-bright bg-surface-variant flex items-center justify-center font-label-sm text-label-sm text-on-surface-variant font-bold">
+    @Model.Count
+</div>
+</div>
+</div>
+
+<!-- Data Table Area -->
+<div class="glass-panel rounded-2xl overflow-hidden ambient-shadow flex-grow flex flex-col mb-xl">
+<!-- Table Header -->
+<div class="bg-surface-container-low/50 border-b border-outline-variant/30 py-sm px-md grid grid-cols-12 gap-sm items-center font-label-md text-label-md text-on-surface-variant">
+<div class="col-span-3"><span class="lang-en">Student No</span><span class="lang-tr">Öğrenci No</span></div>
+<div class="col-span-5"><span class="lang-en">Full Name</span><span class="lang-tr">İsim Soyisim</span></div>
+<div class="col-span-2 hidden md:block"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></div>
+<div class="col-span-2 text-center"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></div>
+</div>
+<!-- Table Body -->
+<div class="flex-grow overflow-y-auto no-scrollbar relative min-h-[400px]">
+    @if(Model != null && Model.Count > 0)
+    {
+        foreach(var student in Model)
+        {
+            <div class="border-b border-outline-variant/10 py-sm px-md grid grid-cols-12 gap-sm items-center table-row-glass group">
+            <div class="col-span-3 font-body-md text-body-md text-on-surface-variant font-mono">@student.StudentNumber</div>
+            <div class="col-span-5 flex items-center gap-sm">
+            <div class="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center font-label-sm text-label-sm font-bold flex-shrink-0">@student.FirstName.Substring(0,1)@student.LastName.Substring(0,1)</div>
+            <span class="font-body-md text-body-md text-on-surface font-medium truncate">@student.FirstName @student.LastName</span>
+            </div>
+            <div class="col-span-2 hidden md:block font-body-md text-body-md text-on-surface-variant truncate">@student.Department</div>
+            <div class="col-span-2 flex justify-center">
+            <span class="px-2.5 py-1 rounded-full status-active font-label-sm text-label-sm inline-flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span>
+                                        <span class="lang-en">Active</span><span class="lang-tr">Aktif</span>
+            </span>
+            </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="p-lg text-center font-body-lg text-on-surface-variant">
+            <span class="lang-en">No students have been assigned to you.</span><span class="lang-tr">Size atanmış öğrenci bulunmamaktadır.</span>
+        </div>
+    }
+</div>
+</div>
+</div>

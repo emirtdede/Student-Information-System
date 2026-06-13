@@ -1,0 +1,208 @@
+@model List<Student_Information_System.Models.DocumentRequest>
+@{ ViewData["Title"] = "Document Requests"; }
+
+@section Styles {
+<style>
+    .doc-type-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+    }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <section class="space-y-sm mb-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+            <div>
+                <h1 class="font-h1 text-h1 text-on-background"><span class="lang-en">Document Request</span><span class="lang-tr">Belge Talep</span></h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">You can create your transcript, student certificate, and other official document requests here.</span><span class="lang-tr">Transkript, öğrenci belgesi ve diğer resmi belge taleplerinizi buradan oluşturabilirsiniz.</span></p>
+            </div>
+            <button onclick="document.getElementById('newRequestModal').classList.remove('hidden')" 
+                    class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg hover:bg-primary/90 transition-all shadow-sm flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                <span><span class="lang-en">New Document Request</span><span class="lang-tr">Yeni Belge Talebi</span></span>
+            </button>
+        </div>
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary-container/20 border border-secondary text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-error-container/20 border border-error text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-error">error</span>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Document Type Quick Stats -->
+    <section class="grid grid-cols-2 md:grid-cols-5 gap-md mb-lg">
+        @{
+            var docTypes = new[] {
+                new { Type = "Transkript", Icon = "description", Color = "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+                new { Type = "OgrenciBelgesi", Icon = "badge", Color = "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+                new { Type = "IliskiKesmeBelgesi", Icon = "link_off", Color = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+                new { Type = "DisiplinBelgesi", Icon = "gavel", Color = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+                new { Type = "BursYazisi", Icon = "savings", Color = "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" }
+            };
+            var typeLabels = new Dictionary<string, string> {
+                { "Transkript", "Transkript" },
+                { "OgrenciBelgesi", "<span class=\"lang-en\">Student Certificate</span><span class=\"lang-tr\">Öğrenci Belgesi</span>" },
+                { "IliskiKesmeBelgesi", "<span class=\"lang-en\">Discharge</span><span class=\"lang-tr\">İlişik Kesme</span>" },
+                { "DisiplinBelgesi", "<span class=\"lang-en\">Disciplinary Record</span><span class=\"lang-tr\">Disiplin Belgesi</span>" },
+                { "BursYazisi", "<span class=\"lang-en\">Scholarship Letter</span><span class=\"lang-tr\">Burs Yazısı</span>" }
+            };
+        }
+        @foreach (var dt in docTypes)
+        {
+            var count = Model?.Count(d => d.DocumentType == dt.Type) ?? 0;
+            <div class="glass-card rounded-xl p-sm flex items-center gap-sm hover:shadow-lg transition-shadow">
+                <div class="doc-type-icon @dt.Color">
+                    <span class="material-symbols-outlined">@dt.Icon</span>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">@Html.Raw(typeLabels[dt.Type])</p>
+                    <p class="font-h3 text-h3 text-on-background font-bold">@count</p>
+                </div>
+            </div>
+        }
+    </section>
+
+    <!-- Requests Table -->
+    <section class="space-y-md">
+        <h2 class="font-h2 text-h2 text-on-background"><span class="lang-en">My Requests</span><span class="lang-tr">Taleplerim</span></h2>
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="glass-card rounded-xl overflow-hidden">
+                <div class="hidden md:grid grid-cols-12 gap-4 px-md py-sm bg-surface-container-low border-b border-outline-variant font-label-md text-label-md text-on-surface-variant">
+                    <div class="col-span-2"><span class="lang-en">Document Type</span><span class="lang-tr">Belge Türü</span></div>
+                    <div class="col-span-3"><span class="lang-en">Purpose</span><span class="lang-tr">Amaç</span></div>
+                    <div class="col-span-1 text-center"><span class="lang-en">Copy</span><span class="lang-tr">Kopya</span></div>
+                    <div class="col-span-2"><span class="lang-en">Request Date</span><span class="lang-tr">Talep Tarihi</span></div>
+                    <div class="col-span-2 text-center"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></div>
+                    <div class="col-span-2"><span class="lang-en">Note / Action</span><span class="lang-tr">Not / İşlem</span></div>
+                </div>
+                <div class="divide-y divide-outline-variant/30">
+                    @foreach (var req in Model)
+                    {
+                        var statusClass = req.Status switch
+                        {
+                            "Ready" => "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+                            "Rejected" => "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+                            "Approved" => "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+                            _ => "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                        };
+                        var statusText = req.Status switch
+                        {
+                            "Ready" => "<span class=\"lang-en\">Ready</span><span class=\"lang-tr\">Hazır</span>",
+                            "Rejected" => "<span class=\"lang-en\">Rejected</span><span class=\"lang-tr\">Reddedildi</span>",
+                            "Approved" => "<span class=\"lang-en\">Approved</span><span class=\"lang-tr\">Onaylandı</span>",
+                            _ => "<span class=\"lang-en\">Pending</span><span class=\"lang-tr\">Beklemede</span>"
+                        };
+                        var statusIcon = req.Status switch
+                        {
+                            "Ready" => "inventory",
+                            "Rejected" => "cancel",
+                            "Approved" => "check_circle",
+                            _ => "pending"
+                        };
+                        var typeLabel = typeLabels.ContainsKey(req.DocumentType) ? typeLabels[req.DocumentType] : req.DocumentType;
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-md py-sm items-center hover:bg-surface-bright/50 transition-colors">
+                            <div class="md:col-span-2 font-body-md text-body-md text-primary font-semibold">@Html.Raw(typeLabel)</div>
+                            <div class="md:col-span-3 font-body-md text-body-md text-on-background">@req.Purpose</div>
+                            <div class="md:col-span-1 text-center font-body-md text-body-md">@req.CopyCount</div>
+                            <div class="md:col-span-2 font-label-sm text-label-sm text-on-surface-variant">@req.RequestDate.ToString("dd.MM.yyyy HH:mm")</div>
+                            <div class="md:col-span-2 text-center">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full font-label-sm text-label-sm @statusClass">
+                                    <span class="material-symbols-outlined text-[14px]">@statusIcon</span>
+                                    @Html.Raw(statusText)
+                                </span>
+                            </div>
+                            <div class="md:col-span-2 flex items-center gap-sm">
+                                @if (!string.IsNullOrEmpty(req.AdminNote))
+                                {
+                                    <span class="font-label-sm text-label-sm text-on-surface-variant truncate" title="@req.AdminNote">@req.AdminNote</span>
+                                }
+                                @if (req.Status == "Pending")
+                                {
+                                    <form method="post" asp-action="Cancel">
+                                        <input type="hidden" name="id" value="@req.Id" />
+                                        <button type="submit" class="text-error hover:text-error/80 transition-colors" title="İptal Et">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="glass-card rounded-xl p-lg text-center">
+                <span class="material-symbols-outlined text-[48px] text-on-surface-variant/50 mb-sm block">folder_open</span>
+                <p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">You do not have any document requests yet.</span><span class="lang-tr">Henüz bir belge talebiniz bulunmuyor.</span></p>
+                <p class="font-body-md text-body-md text-outline mt-1"><span class="lang-en">You can create a request using the "New Document Request" button above.</span><span class="lang-tr">Yukarıdaki "Yeni Belge Talebi" butonunu kullanarak talep oluşturabilirsiniz.</span></p>
+            </div>
+        }
+    </section>
+</div>
+
+<!-- New Request Modal -->
+<div id="newRequestModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-2xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <form method="post" asp-action="Create">
+            <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+                <h3 class="font-h3 text-h3 text-primary flex items-center gap-1">
+                    <span class="material-symbols-outlined">post_add</span>
+                    <span class="lang-en">New Document Request</span><span class="lang-tr">Yeni Belge Talebi</span>
+                </h3>
+                <button type="button" onclick="document.getElementById('newRequestModal').classList.add('hidden')" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-md mb-md">
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Document Type *</span><span class="lang-tr">Belge Türü *</span></label>
+                    <select name="documentType" required class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary">
+                        <option value="">-- <span class="lang-en">Select</span><span class="lang-tr">Seçiniz</span> --</option>
+                        <option value="Transkript">📄 Transkript</option>
+                        <option value="OgrenciBelgesi">🪪 Öğrenci Belgesi</option>
+                        <option value="IliskiKesmeBelgesi">🔗 İlişik Kesme Belgesi</option>
+                        <option value="DisiplinBelgesi">⚖️ Disiplin Belgesi</option>
+                        <option value="BursYazisi">💰 Burs Yazısı</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Purpose of Request *</span><span class="lang-tr">Talep Amacı *</span></label>
+                    <textarea name="purpose" rows="3" required minlength="10" placeholder="Belge talebinizin amacını açıklayın... (Min. 10 karakter)" data-tr-placeholder="Belge talebinizin amacını açıklayın... (Min. 10 karakter)" data-en-placeholder="Explain the purpose of your document request... (Min. 10 characters)"
+                              class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary"></textarea>
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Number of Copies</span><span class="lang-tr">Kopya Sayısı</span></label>
+                    <input type="number" name="copyCount" value="1" min="1" max="5" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary" />
+                    <p class="font-label-sm text-label-sm text-outline"><span class="lang-en">A maximum of 5 copies can be requested.</span><span class="lang-tr">Maksimum 5 kopya talep edilebilir.</span></p>
+                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-sm">
+                    <p class="font-label-sm text-label-sm text-blue-800 dark:text-blue-300 flex items-start gap-1">
+                        <span class="material-symbols-outlined text-[16px] mt-0.5">info</span>
+                        <span class="lang-en">Your document request will be prepared by the student affairs unit after it is approved by your advisor. Ready documents will transition to the "Ready" status.</span><span class="lang-tr">Belge talebiniz danışmanınız tarafından onaylandıktan sonra öğrenci işleri birimi tarafından hazırlanacaktır. Hazır olan belgeler "Hazır" durumuna geçecektir.</span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant/30">
+                <button type="button" onclick="document.getElementById('newRequestModal').classList.add('hidden')" class="px-md py-xs border border-outline text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-variant/20 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Create Request</span><span class="lang-tr">Talep Oluştur</span></button>
+            </div>
+        </form>
+    </div>
+</div>

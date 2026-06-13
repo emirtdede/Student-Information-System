@@ -1,0 +1,121 @@
+@model Student_Information_System.Models.Student
+@{ ViewData["Title"] = "Yemekhane"; }
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-lg">
+        <div>
+            <h1 class="font-h1 text-h1 text-on-surface"><span class="lang-en">Campus Dining Hall</span><span class="lang-tr">Kampüs Yemekhane</span></h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-xs"><span class="lang-en">Check the daily menu and purchase your lunch with your smart card.</span><span class="lang-tr">Günlük yemek menüsünü inceleyin ve akıllı kartınızla öğle yemeği satın alın.</span></p>
+        </div>
+        <div class="glass-card px-md py-sm rounded-xl flex flex-col items-end border border-primary/20">
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Campus Card Balance</span><span class="lang-tr">Kampüs Kart Bakiye</span></span>
+            <span class="font-h3 text-h3 text-primary font-bold">@Model.DiningBalance.ToString("N2") ₺</span>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary-container text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">error</span>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+        <!-- Daily Menu (Spans 8) -->
+        <div class="md:col-span-8 glass-card rounded-xl p-md md:p-lg border border-outline-variant/30 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-sm">
+                    <h3 class="font-h3 text-h3 text-on-surface flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-secondary text-3xl">restaurant_menu</span>
+                        <span class="lang-en">Menu of the Day</span><span class="lang-tr">Günün Menüsü</span>
+                    </h3>
+                    <span class="bg-surface-container text-on-surface-variant font-label-md px-3 py-1 rounded-full">@DateTime.Now.ToString("dd MMMM yyyy, dddd")</span>
+                </div>
+                <div class="space-y-sm">
+                    <div class="flex items-center gap-md p-sm hover:bg-surface-container-lowest/50 transition-colors rounded-lg">
+                        <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">soup_kitchen</span>
+                        </div>
+                        <div>
+                            <h4 class="font-label-md text-label-md font-bold text-on-surface"><span class="lang-en">Lentil Soup</span><span class="lang-tr">Mercimek Çorbası</span></h4>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">150 Calories</span><span class="lang-tr">150 Kalori</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-md p-sm hover:bg-surface-container-lowest/50 transition-colors rounded-lg">
+                        <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">kebab_dining</span>
+                        </div>
+                        <div>
+                            <h4 class="font-label-md text-label-md font-bold text-on-surface"><span class="lang-en">Forest Kebab</span><span class="lang-tr">Orman Kebabı</span></h4>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">450 Calories</span><span class="lang-tr">450 Kalori</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-md p-sm hover:bg-surface-container-lowest/50 transition-colors rounded-lg">
+                        <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">rice_bowl</span>
+                        </div>
+                        <div>
+                            <h4 class="font-label-md text-label-md font-bold text-on-surface"><span class="lang-en">Rice Pilaf</span><span class="lang-tr">Pirinç Pilavı</span></h4>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">320 Calories</span><span class="lang-tr">320 Kalori</span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-md p-sm hover:bg-surface-container-lowest/50 transition-colors rounded-lg">
+                        <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">icecream</span>
+                        </div>
+                        <div>
+                            <h4 class="font-label-md text-label-md font-bold text-on-surface"><span class="lang-en">Rice Pudding</span><span class="lang-tr">Sütlaç</span></h4>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">250 Calories</span><span class="lang-tr">250 Kalori</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-md pt-sm border-t border-outline-variant/30 flex justify-end text-on-surface-variant font-label-sm uppercase tracking-wider">
+                <span class="lang-en">Total: 1170 Calories</span><span class="lang-tr">Toplam: 1170 Kalori</span>
+            </div>
+        </div>
+
+        <div class="md:col-span-4 glass-card rounded-xl p-md border border-outline-variant/30 flex flex-col relative overflow-hidden bg-gradient-to-br from-surface to-surface-container-high">
+            <div class="z-10 flex-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-h3 text-h3 text-on-surface mb-xs"><span class="lang-en">Lunch Ticket</span><span class="lang-tr">Öğle Yemeği Fişi</span></h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">It will be charged at the discounted student meal price.</span><span class="lang-tr">Öğrenci indirimli yemek fiyatı üzerinden tahsil edilecektir.</span></p>
+                </div>
+                
+                <div class="my-md flex flex-col items-center">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-xs"><span class="lang-en">Amount</span><span class="lang-tr">Tutar</span></span>
+                    <h2 class="font-h1 text-h1 text-primary mb-md">25.00 ₺</h2>
+                    
+                    <!-- Centered QR Code -->
+                    <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm border border-outline-variant/20 w-36 h-36 relative">
+                        <span class="material-symbols-outlined text-[110px] text-neutral-900">qr_code_2</span>
+                    </div>
+                    <p class="text-[11px] text-on-surface-variant text-center mt-2"><span class="lang-en">Use this QR code to scan at the turnstile.</span><span class="lang-tr">Turnikede okutmak için bu QR kodu kullanın.</span></p>
+                </div>
+
+                <form method="post" asp-action="PurchaseMeal" class="mt-auto z-10">
+                    <button type="submit" class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-xl shadow hover:bg-primary-container hover:shadow-lg transition-all flex items-center justify-center gap-sm" @(Model.DiningBalance < 25.00m ? "disabled" : "")>
+                        <span class="material-symbols-outlined">point_of_sale</span>
+                        @(Model.DiningBalance < 25.00m ? Html.Raw("<span class=\"lang-en\">Insufficient Balance</span><span class=\"lang-tr\">Yetersiz Bakiye</span>") : Html.Raw("<span class=\"lang-en\">Purchase</span><span class=\"lang-tr\">Satın Al</span>"))
+                    </button>
+                    @if (Model.DiningBalance < 25.00m)
+                    {
+                        <div class="text-center mt-sm">
+                            <a href="/Dashboard" class="font-label-sm text-primary hover:underline"><span class="lang-en">Top up balance via Dashboard</span><span class="lang-tr">Dashboard üzerinden bakiye yükleyin</span></a>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

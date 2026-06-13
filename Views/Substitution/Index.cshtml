@@ -1,0 +1,146 @@
+@model List<Student_Information_System.Models.SubstitutionRequest>
+@{
+    ViewData["Title"] = "Ders Muafiyet Talepleri";
+    var courses = ViewBag.Courses as List<Student_Information_System.Models.Course> ?? new();
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-lg">
+        <div>
+            <h1 class="font-h1 text-h1 text-on-surface"><span class="lang-en">Course Exemption and Substitution</span><span class="lang-tr">Ders Muafiyeti ve İntibak</span></h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-xs"><span class="lang-en">Requests to substitute other courses for failed or obsolete courses from the curriculum.</span><span class="lang-tr">Başarısız olunan veya müfredattan kalkan derslerin yerine başka ders saydırma talepleri.</span></p>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary/10 border border-secondary/30 text-secondary p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">error</span>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter items-start">
+        <!-- Substitution History -->
+        <div class="xl:col-span-8 glass-card rounded-xl p-md flex flex-col">
+            <h3 class="font-h3 text-h3 text-on-surface mb-md"><span class="lang-en">My Requests</span><span class="lang-tr">Taleplerim</span></h3>
+            
+            @if (Model.Count > 0)
+            {
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-outline-variant/30">
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">Old Course</span><span class="lang-tr">Eski Ders</span></th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase">&nbsp;</th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">New Course</span><span class="lang-tr">Yeni Ders</span></th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></th>
+                                <th class="py-sm px-md font-label-sm text-label-sm text-on-surface-variant uppercase text-right"><span class="lang-en">Action</span><span class="lang-tr">İşlem</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var req in Model)
+                            {
+                                <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/30 transition-colors">
+                                    <td class="py-sm px-md">
+                                        <div class="font-label-md text-label-md text-on-surface">@req.OldCourse.Name</div>
+                                        <div class="font-label-sm text-label-sm text-on-surface-variant">@req.OldCourse.Code</div>
+                                    </td>
+                                    <td class="py-sm px-md text-center">
+                                        <span class="material-symbols-outlined text-outline">swap_horiz</span>
+                                    </td>
+                                    <td class="py-sm px-md">
+                                        <div class="font-label-md text-label-md text-on-surface">@req.NewCourse.Name</div>
+                                        <div class="font-label-sm text-label-sm text-on-surface-variant">@req.NewCourse.Code</div>
+                                    </td>
+                                    <td class="py-sm px-md">
+                                        @if (req.Status == "Pending")
+                                        {
+                                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-xs font-semibold"><span class="lang-en">Pending Approval</span><span class="lang-tr">Onay Bekliyor</span></span>
+                                        }
+                                        else if (req.Status == "Approved")
+                                        {
+                                            <span class="px-2.5 py-0.5 rounded-full bg-secondary/15 text-secondary text-xs font-semibold"><span class="lang-en">Approved</span><span class="lang-tr">Onaylandı</span></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="px-2.5 py-0.5 rounded-full bg-error/15 text-error text-xs font-semibold"><span class="lang-en">Rejected</span><span class="lang-tr">Reddedildi</span></span>
+                                        }
+                                    </td>
+                                    <td class="py-sm px-md text-right">
+                                        @if (req.Status == "Pending")
+                                        {
+                                            <form method="post" asp-action="Cancel" class="m-0 inline">
+                                                <input type="hidden" name="id" value="@req.Id" />
+                                                <button type="submit" class="text-error hover:underline text-xs font-bold"><span class="lang-en">Cancel</span><span class="lang-tr">İptal Et</span></button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-outline text-xs">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="py-lg text-center opacity-50 flex flex-col items-center">
+                    <span class="material-symbols-outlined text-[48px] mb-sm">swap_horiz</span>
+                    <p class="font-body-md text-body-md"><span class="lang-en">You do not have any course exemption requests yet.</span><span class="lang-tr">Henüz herhangi bir ders muafiyet talebiniz bulunmuyor.</span></p>
+                </div>
+            }
+        </div>
+
+        <!-- Create Request Form -->
+        <aside class="xl:col-span-4 glass-card rounded-xl p-md flex flex-col gap-md border border-outline-variant/20">
+            <h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">New Substitution Request</span><span class="lang-tr">Yeni İntibak Talebi</span></h3>
+            
+            <form method="post" asp-action="Create" class="flex flex-col gap-md m-0">
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Course to be Substituted (Dropped/Failed)</span><span class="lang-tr">Yerine Saydırılacak (Bırakılan/Başarısız) Ders</span></label>
+                    <select name="oldCourseId" class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md" required>
+                        <option value="">-- <span class="lang-en">Select Course</span><span class="lang-tr">Ders Seçin</span> --</option>
+                        @foreach (var c in courses)
+                        {
+                            <option value="@c.Id">@c.Code - @c.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Course to be Taken Instead (New/Exempted)</span><span class="lang-tr">Yerine Alınacak (Yeni/Muaf Olunacak) Ders</span></label>
+                    <select name="newCourseId" class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md" required>
+                        <option value="">-- <span class="lang-en">Select Course</span><span class="lang-tr">Ders Seçin</span> --</option>
+                        @foreach (var c in courses)
+                        {
+                            <option value="@c.Id">@c.Code - @c.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Reason / Explanation</span><span class="lang-tr">Gerekçe / Açıklama</span></label>
+                    <textarea name="reason" rows="4" placeholder="Örn: Müfredat değişikliği nedeniyle..." data-tr-placeholder="Örn: Müfredat değişikliği nedeniyle..." data-en-placeholder="e.g. Due to curriculum change..." class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md resize-none" required></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-md hover:scale-[1.02] transition-transform flex items-center justify-center gap-sm">
+                    <span class="material-symbols-outlined text-[20px]">send</span>
+                    <span class="lang-en">Submit Request</span><span class="lang-tr">Talebi Gönder</span>
+                </button>
+            </form>
+        </aside>
+    </div>
+</div>

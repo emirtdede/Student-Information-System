@@ -1,0 +1,125 @@
+@{ ViewData["Title"] = "Contact Support"; }
+
+@section Styles {
+<style>
+.input-glass {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid theme('colors.outline-variant');
+            transition: all 0.3s ease;
+        }
+        
+        .input-glass:focus {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: theme('colors.primary');
+            box-shadow: 0 0 0 2px rgba(0, 100, 126, 0.2);
+            outline: none;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<div class="mb-12 text-center">
+<h1 class="font-h1 text-h1 text-on-surface mb-2"><span class="lang-en">Contact Us</span><span class="lang-tr">Bize Ulaşın</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                <span class="lang-en">You can contact us for your questions, suggestions, or technical support needs.</span><span class="lang-tr">Sorularınız, önerileriniz veya teknik destek ihtiyaçlarınız için bizimle iletişime geçebilirsiniz.</span>
+            </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="lg:col-span-5 flex flex-col gap-gutter">
+<div class="glass-panel rounded-xl p-md flex flex-col gap-md">
+<h2 class="font-h3 text-h3 text-on-surface border-b border-outline-variant/30 pb-sm"><span class="lang-en">Contact Information</span><span class="lang-tr">İletişim Bilgileri</span></h2>
+<div class="flex items-start gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1"><span class="lang-en">Address</span><span class="lang-tr">Adres</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                <span class="lang-en">Osmaniye Korkut Ata University<br/>Karacaoğlan Campus<br/>80000 Center / Osmaniye</span><span class="lang-tr">Osmaniye Korkut Ata Üniversitesi<br/>Karacaoğlan Yerleşkesi<br/>80000 Merkez / Osmaniye</span>
+                            </p>
+</div>
+</div>
+<div class="flex items-start gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">phone</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1"><span class="lang-en">Phone</span><span class="lang-tr">Telefon</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                +90 (328) 825 18 18
+                            </p>
+<p class="font-label-sm text-label-sm text-outline mt-1"><span class="lang-en">Please call the switchboard for extension lines.</span><span class="lang-tr">Dahili Hatlar için santrali arayınız.</span></p>
+</div>
+</div>
+<div class="flex items-start gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mail</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1"><span class="lang-en">Email</span><span class="lang-tr">E-Posta</span></h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                bilgiislem@@osmaniye.edu.tr
+                            </p>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden h-[300px] relative border border-outline-variant/30">
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3184.697848969418!2d36.21790957627817!3d37.04085005409653!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x152f237c131541ab%3A0x39eb83f68e320b8c!2sOsmaniye%20Korkut%20Ata%20%C3%9Cniversitesi!5e0!3m2!1str!2str!4v1781334641512!5m2!1str!2str" class="w-full h-full border-0 opacity-100" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+</div>
+<div class="lg:col-span-7">
+<div class="glass-panel rounded-xl p-md lg:p-lg">
+<h2 class="font-h2 text-h2 text-on-surface mb-6"><span class="lang-en">Contact Form</span><span class="lang-tr">İletişim Formu</span></h2>
+<form class="flex flex-col gap-md" onsubmit="event.preventDefault(); alert('İletişim formu gönderim entegrasyonu daha sonra yapılacaktır. / Contact form submission integration will be implemented later.'); return false;">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="firstName"><span class="lang-en">First Name</span><span class="lang-tr">Ad</span></label>
+<input class="input-glass rounded-DEFAULT px-3 py-2 w-full font-body-md text-body-md text-on-surface" id="firstName" name="firstName" placeholder="Adınız" data-tr-placeholder="Adınız" data-en-placeholder="Your Name" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="lastName"><span class="lang-en">Last Name</span><span class="lang-tr">Soyad</span></label>
+<input class="input-glass rounded-DEFAULT px-3 py-2 w-full font-body-md text-body-md text-on-surface" id="lastName" name="lastName" placeholder="Soyadınız" data-tr-placeholder="Soyadınız" data-en-placeholder="Your Last Name" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email"><span class="lang-en">Email</span><span class="lang-tr">E-Posta</span></label>
+<input class="input-glass rounded-DEFAULT px-3 py-2 w-full font-body-md text-body-md text-on-surface" id="email" name="email" placeholder="ogrenci@@oku.edu.tr" type="email"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="studentId"><span class="lang-en">Student ID (Optional)</span><span class="lang-tr">Öğrenci Numarası (Opsiyonel)</span></label>
+<input class="input-glass rounded-DEFAULT px-3 py-2 w-full font-body-md text-body-md text-on-surface" id="studentId" name="studentId" placeholder="Örn: 2023123456" data-tr-placeholder="Örn: 2023123456" data-en-placeholder="e.g. 2023123456" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="subject"><span class="lang-en">Subject</span><span class="lang-tr">Konu</span></label>
+<select class="input-glass rounded-DEFAULT px-3 py-2 w-full font-body-md text-body-md text-on-surface appearance-none bg-no-repeat bg-[right_0.5rem_center] bg-[length:1.5em_1.5em]" id="subject" name="subject" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236e797e%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');">
+<option disabled="" selected="" value=""><span class="lang-en">Please select a subject</span><span class="lang-tr">Lütfen bir konu seçin</span></option>
+<option value="teknik"><span class="lang-en">Technical Issue / Bug Report</span><span class="lang-tr">Teknik Sorun / Hata Bildirimi</span></option>
+<option value="ders"><span class="lang-en">Course Registration Operations</span><span class="lang-tr">Ders Kayıt İşlemleri</span></option>
+<option value="not"><span class="lang-en">Grade and Exam Objections</span><span class="lang-tr">Not ve Sınav İtirazları</span></option>
+<option value="belge"><span class="lang-en">Document Requests (Transcript etc.)</span><span class="lang-tr">Belge Talepleri (Transkript vb.)</span></option>
+<option value="diger"><span class="lang-en">Other</span><span class="lang-tr">Diğer</span></option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="message"><span class="lang-en">Your Message</span><span class="lang-tr">Mesajınız</span></label>
+<textarea class="input-glass rounded-DEFAULT px-3 py-2 w-full font-body-md text-body-md text-on-surface resize-y" id="message" name="message" placeholder="Lütfen sorununuzu veya talebinizi detaylı bir şekilde açıklayın..." data-tr-placeholder="Lütfen sorununuzu veya talebinizi detaylı bir şekilde açıklayın..." data-en-placeholder="Please explain your issue or request in detail..." rows="5"></textarea>
+</div>
+<div class="mt-4 flex justify-end">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2" type="submit">
+<span><span class="lang-en">Submit</span><span class="lang-tr">Gönder</span></span>
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts {
+<script>
+
+</script>
+}

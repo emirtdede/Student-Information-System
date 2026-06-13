@@ -1,0 +1,207 @@
+@model Student_Information_System.Models.GraduationViewModel
+@{
+    ViewData["Title"] = "Mezuniyet Durumu";
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md mb-lg">
+        <div>
+            <h1 class="font-h1 text-h1 text-on-surface">Mezuniyet Durum Analizi</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Akademik program mezuniyet şartlarının güncel tamamlanma durumu.</p>
+        </div>
+    </div>
+
+    <!-- Overall Status Glass Card -->
+    <div class="glass-card rounded-2xl p-lg mb-gutter flex flex-col md:flex-row justify-between items-center gap-md">
+        <div class="flex items-center gap-md">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center @(Model.IsGraduationEligible ? "bg-secondary/15 text-secondary" : "bg-amber-500/15 text-amber-500")">
+                <span class="material-symbols-outlined text-[36px]">@(Model.IsGraduationEligible ? "workspace_premium" : "pending_actions")</span>
+            </div>
+            <div>
+                <h2 class="font-h2 text-h2 text-on-surface">
+                    @(Model.IsGraduationEligible ? "Mezuniyet Durumu: Hazır" : "Mezuniyet Durumu: Devam Ediyor")
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-xs">
+                    @(Model.IsGraduationEligible 
+                        ? "Tebrikler! Tüm mezuniyet şartlarını başarıyla tamamladınız." 
+                        : "Mezuniyet için tamamlanması gereken eksik şartlarınız bulunmaktadır.")
+                </p>
+            </div>
+        </div>
+        <div class="px-6 py-3 rounded-full text-label-md font-semibold font-label-md @(Model.IsGraduationEligible ? "bg-secondary text-on-secondary" : "bg-amber-500/20 text-amber-700 dark:text-amber-400")">
+            @(Model.IsGraduationEligible ? "Mezun Olabilir" : "Mezun Adayı")
+        </div>
+    </div>
+
+    <!-- Grid Layout for Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-gutter mb-gutter">
+        
+        <!-- ECTS Metric -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-sm">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Toplam AKTS</span>
+                    <span class="material-symbols-outlined text-primary">analytics</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-xs">
+                    <span class="text-[32px] font-bold text-on-surface">@Model.CompletedEcts</span>
+                    <span class="text-on-surface-variant">/ @Model.RequiredEcts</span>
+                </div>
+            </div>
+            <div class="mt-md">
+                @{
+                    double ectsPercent = Math.Min(100.0, (double)Model.CompletedEcts / Model.RequiredEcts * 100);
+                }
+                <div class="w-full bg-surface-container rounded-full h-2">
+                    <div class="bg-primary h-2 rounded-full" style="width: @ectsPercent.ToString("0.0")%"></div>
+                </div>
+                <div class="flex justify-between items-center mt-sm">
+                    <span class="text-xs text-on-surface-variant">%@ectsPercent.ToString("0") tamamlandı</span>
+                    <span class="text-xs font-semibold @(Model.CompletedEcts >= Model.RequiredEcts ? "text-secondary" : "text-amber-500")">
+                        @(Model.CompletedEcts >= Model.RequiredEcts ? "Tamamlandı" : "Eksik")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPA Metric -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-sm">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">GNO Barajı</span>
+                    <span class="material-symbols-outlined text-secondary">insights</span>
+                </div>
+                <div class="flex items-baseline gap-1 mt-xs">
+                    <span class="text-[32px] font-bold text-on-surface">@Model.CurrentGpa.ToString("0.00")</span>
+                    <span class="text-on-surface-variant">/ @Model.RequiredGpa.ToString("0.00")</span>
+                </div>
+            </div>
+            <div class="mt-md">
+                <div class="flex items-center gap-sm">
+                    <span class="material-symbols-outlined @(Model.CurrentGpa >= Model.RequiredGpa ? "text-secondary" : "text-error")">
+                        @(Model.CurrentGpa >= Model.RequiredGpa ? "check_circle" : "cancel")
+                    </span>
+                    <span class="text-body-md text-on-surface-variant">
+                        @(Model.CurrentGpa >= Model.RequiredGpa ? "GNO Barajı Sağlandı" : "GNO Barajı Sağlanamadı")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mandatory Courses Metric -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-sm">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Müfredat Dersleri</span>
+                    <span class="material-symbols-outlined text-tertiary">menu_book</span>
+                </div>
+                @{
+                    int completedCourses = Model.CourseStatuses.Count(c => c.IsCompleted);
+                    int totalCourses = Model.CourseStatuses.Count;
+                    double coursePercent = totalCourses > 0 ? (double)completedCourses / totalCourses * 100 : 0;
+                }
+                <div class="flex items-baseline gap-1 mt-xs">
+                    <span class="text-[32px] font-bold text-on-surface">@completedCourses</span>
+                    <span class="text-on-surface-variant">/ @totalCourses Ders</span>
+                </div>
+            </div>
+            <div class="mt-md">
+                <div class="w-full bg-surface-container rounded-full h-2">
+                    <div class="bg-tertiary h-2 rounded-full" style="width: @coursePercent.ToString("0.0")%"></div>
+                </div>
+                <div class="flex justify-between items-center mt-sm">
+                    <span class="text-xs text-on-surface-variant">%@coursePercent.ToString("0") tamamlandı</span>
+                    <span class="text-xs font-semibold @(completedCourses == totalCourses ? "text-secondary" : "text-amber-500")">
+                        @(completedCourses == totalCourses ? "Tamamlandı" : "Eksik")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Internship Metric -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-sm">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Zorunlu Stajlar</span>
+                    <span class="material-symbols-outlined text-amber-500">work</span>
+                </div>
+                @{
+                    int completedInternships = (Model.Student.IsInternship1Completed ? 1 : 0) + (Model.Student.IsInternship2Completed ? 1 : 0);
+                }
+                <div class="flex items-baseline gap-1 mt-xs">
+                    <span class="text-[32px] font-bold text-on-surface">@completedInternships</span>
+                    <span class="text-on-surface-variant">/ 2 Staj</span>
+                </div>
+            </div>
+            <div class="mt-md flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-on-surface-variant">
+                    <span>Staj I (30 Gün):</span>
+                    <span class="font-semibold @(Model.Student.IsInternship1Completed ? "text-secondary" : "text-outline")">
+                        @(Model.Student.IsInternship1Completed ? "Kabul Edildi" : "Eksik")
+                    </span>
+                </div>
+                <div class="flex justify-between text-xs text-on-surface-variant">
+                    <span>Staj II (30 Gün):</span>
+                    <span class="font-semibold @(Model.Student.IsInternship2Completed ? "text-secondary" : "text-outline")">
+                        @(Model.Student.IsInternship2Completed ? "Kabul Edildi" : "Eksik")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Requirements Detail Tabs -->
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter items-start">
+        <!-- Curriculum Progress List -->
+        <div class="xl:col-span-8 glass-card rounded-xl p-md flex flex-col">
+            <h3 class="font-h3 text-h3 text-on-surface mb-md">Zorunlu Müfredat Kontrol Listesi</h3>
+            <div class="flex flex-col">
+                @foreach (var cs in Model.CourseStatuses)
+                {
+                    <div class="flex justify-between items-center py-md border-b border-outline-variant/20">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant">@cs.Course.Code</span>
+                                <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error-container text-on-error-container">Zorunlu</span>
+                            </div>
+                            <h4 class="font-label-md text-label-md text-on-surface font-semibold">@cs.Course.Name</h4>
+                        </div>
+                        <div class="flex items-center gap-md">
+                            @if (cs.IsCompleted)
+                            {
+                                <span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-secondary/15 text-secondary font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                    Başarılı (@cs.Grade)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">pending</span>
+                                    Alınmadı / Geçilmedi
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Academic Advisor Box -->
+        <aside class="xl:col-span-4 glass-card rounded-xl p-md flex flex-col gap-md">
+            <h3 class="font-h3 text-h3 text-on-surface">Akademik Danışman</h3>
+            <div class="bg-surface-bright rounded-lg p-md border border-outline-variant/30 flex items-center gap-md">
+                <span class="material-symbols-outlined text-[36px] text-primary">account_circle</span>
+                <div>
+                    <div class="font-label-md text-label-md text-on-surface font-semibold">Prof. Dr. Ahmet Yılmaz</div>
+                    <div class="text-[12px] text-on-surface-variant">ahmet.yilmaz@oku.edu.tr</div>
+                </div>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+                Eksik mezuniyet gereksinimleriniz veya intibak işlemleriniz hakkında bilgi almak için akademik danışmanınızla görüşebilirsiniz.
+            </p>
+        </aside>
+    </div>
+</div>

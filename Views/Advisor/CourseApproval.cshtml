@@ -1,0 +1,174 @@
+@model List<Student_Information_System.Models.Student>
+@{ ViewData["Title"] = "Course Approval Center"; }
+
+@section Styles {
+<style>
+.material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Decorative Ambient Background -->
+<div class="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-fixed/30 rounded-full blur-[120px] -z-10 pointer-events-none opacity-60"></div>
+<div class="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-secondary-fixed/20 rounded-full blur-[100px] -z-10 pointer-events-none opacity-50"></div>
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-xs"><span class="lang-en">Course Approvals</span><span class="lang-tr">Ders Onayları</span></h1>
+<p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Review and approve courses selected by your students.</span><span class="lang-tr">Öğrencilerinizin seçtiği dersleri inceleyin ve onaylayın.</span></p>
+</div>
+<div class="flex gap-sm">
+<div class="glass-panel rounded-xl px-md py-sm flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">Pending</span><span class="lang-tr">Bekleyen</span></span>
+<span id="pendingCount" class="font-h3 text-h3 text-secondary font-bold">@Model.Count</span>
+</div>
+</div>
+</div>
+<!-- Filters / Tabs -->
+<div class="flex items-center justify-between mb-md border-b border-outline-variant/30 pb-sm">
+<div class="flex gap-md">
+<button class="font-label-md text-label-md text-primary border-b-2 border-primary pb-sm -mb-[14px] font-bold px-base">
+                    <span class="lang-en">Pending Approvals (<span id="pendingTabCount">@Model.Count</span>)</span><span class="lang-tr">Bekleyen Onaylar (<span id="pendingTabCount">@Model.Count</span>)</span>
+                </button>
+</div>
+</div>
+<!-- List Content -->
+<div class="flex flex-col gap-sm" id="studentListContainer">
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var student in Model)
+        {
+            var pendingEnrollments = student.Enrollments.Where(e => e.Status == "Pending").ToList();
+            var totalEcts = pendingEnrollments.Sum(e => e.Course.Ects);
+            var isOverLimit = totalEcts > 30;
+            var coursesJson = System.Text.Json.JsonSerializer.Serialize(pendingEnrollments.Select(e => e.Course.Code + " " + e.Course.Name + " (" + e.Course.Ects + " AKTS)"));
+
+            <div class="glass-panel rounded-xl p-md flex flex-col md:flex-row md:items-center justify-between gap-md hover:bg-white/80 transition-all shadow-sm group">
+            <div class="flex items-center gap-md flex-1">
+            <div class="relative">
+            <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-h3 text-[18px] font-bold border-2 border-surface-container-lowest shadow-sm">
+                @student.FirstName.Substring(0,1)@student.LastName.Substring(0,1)
+            </div>
+            <div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-white"></div>
+            </div>
+            <div>
+            <h3 class="font-h3 text-[18px] leading-snug text-on-surface font-bold group-hover:text-primary transition-colors cursor-pointer">@student.FirstName @student.LastName</h3>
+            <div class="flex items-center gap-sm mt-xs">
+            <span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container rounded px-2 py-0.5"><span class="lang-en">Student No:</span><span class="lang-tr">Öğrenci No:</span> @student.StudentNumber</span>
+            <span class="w-1 h-1 bg-outline-variant rounded-full"></span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant">@student.Department</span>
+            </div>
+            </div>
+            </div>
+            <div class="flex items-center gap-xl md:justify-end flex-1">
+            <div class="flex flex-col items-start md:items-end">
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase"><span class="lang-en">Total ECTS</span><span class="lang-tr">Toplam AKTS</span></span>
+            <div class="flex items-center gap-xs mt-xs @(isOverLimit ? "text-error" : "")">
+            @if(isOverLimit){ <span class="material-symbols-outlined text-[16px]">warning</span> }
+            <span class="font-h3 text-[20px] font-bold">@totalEcts</span>
+            <span class="font-label-md text-label-md">AKTS</span>
+            </div>
+            </div>
+            <div class="flex items-center gap-sm">
+            <div class="bg-tertiary-fixed-dim/30 text-tertiary border border-tertiary-fixed-dim rounded-full px-sm py-1 flex items-center gap-xs">
+            <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+            <span class="font-label-sm text-label-sm font-bold"><span class="lang-en">Pending Approval</span><span class="lang-tr">Onay Bekliyor</span></span>
+            </div>
+            <button onclick='reviewStudent(@student.Id, "@student.FirstName @student.LastName", "@student.Department", @totalEcts, @Html.Raw(coursesJson), @(isOverLimit ? "true" : "false"))' class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-colors rounded-lg px-md py-sm font-label-md text-label-md font-bold shadow-sm flex items-center gap-xs ml-sm">
+                                         <span class="lang-en">Review</span><span class="lang-tr">İncele</span>
+                                         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+            </div>
+            </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="glass-panel rounded-xl p-lg text-center font-body-lg text-on-surface-variant">
+            <span class="lang-en">No pending course approval requests.</span><span class="lang-tr">Bekleyen ders onay talebi bulunmamaktadır.</span>
+        </div>
+    }
+</div>
+</div>
+
+<!-- Review Modal -->
+<div id="reviewModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <div>
+                <h3 class="font-h3 text-h3 text-primary" id="modalStudentName"><span class="lang-en">Registration Review</span><span class="lang-tr">Kayıt İnceleme</span></h3>
+                <p class="font-label-sm text-label-sm text-on-surface-variant" id="modalStudentInfo"><span class="lang-en">Student Details</span><span class="lang-tr">Öğrenci Detayları</span></p>
+            </div>
+            <button onclick="closeReviewModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <!-- ECTS Warning Banner -->
+        <div id="ectsWarning" class="hidden mb-md bg-error-container text-on-error-container p-sm rounded-lg flex items-start gap-xs">
+            <span class="material-symbols-outlined text-error text-[20px] mt-0.5">warning</span>
+            <div>
+                <h4 class="font-label-md text-label-md font-bold"><span class="lang-en">ECTS Limit Exceeded</span><span class="lang-tr">AKTS Sınırı Aşıldı</span></h4>
+                <p class="font-label-sm text-label-sm"><span class="lang-en">The student has selected courses exceeding the 30 ECTS limit.</span><span class="lang-tr">Öğrenci 30 AKTS sınırını aşan ders seçimi yapmıştır.</span></p>
+            </div>
+        </div>
+
+        <div class="space-y-md">
+            <div>
+                <h4 class="font-label-md text-label-md text-on-surface-variant uppercase mb-xs"><span class="lang-en">Selected Courses</span><span class="lang-tr">Seçilen Dersler</span></h4>
+                <ul class="divide-y divide-outline-variant/10 max-h-60 overflow-y-auto border border-outline-variant/20 rounded-lg bg-surface-bright/50" id="modalCoursesList">
+                    <!-- Dynamic courses -->
+                </ul>
+            </div>
+            
+            <div class="flex justify-between items-center bg-surface-container/50 p-sm rounded-lg">
+                <span class="font-label-md text-label-md text-on-surface-variant font-medium"><span class="lang-en">Total Load:</span><span class="lang-tr">Toplam Yük:</span></span>
+                <span class="font-h3 text-[20px] text-primary font-bold" id="modalTotalEcts">30 AKTS</span>
+            </div>
+            
+            <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+                <button type="button" onclick="closeReviewModal()" class="px-md py-xs border border-error text-error font-label-md text-label-md rounded-lg hover:bg-error-container/20 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <form method="post" asp-action="ApproveAll" class="m-0">
+                    <input type="hidden" name="studentId" id="modalFormStudentId" value="" />
+                    <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 focus:ring-4 focus:ring-primary/20 transition-all shadow-sm"><span class="lang-en">Approve All</span><span class="lang-tr">Tümünü Onayla</span></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function reviewStudent(studentId, name, dept, ects, courses, exceedsLimit) {
+        document.getElementById('modalStudentName').textContent = name;
+        document.getElementById('modalStudentInfo').textContent = dept;
+        document.getElementById('modalTotalEcts').textContent = ects + ' AKTS';
+        document.getElementById('modalFormStudentId').value = studentId;
+        
+        const warning = document.getElementById('ectsWarning');
+        if (exceedsLimit) {
+            warning.classList.remove('hidden');
+        } else {
+            warning.classList.add('hidden');
+        }
+        
+        const list = document.getElementById('modalCoursesList');
+        list.innerHTML = '';
+        courses.forEach(course => {
+            const li = document.createElement('li');
+            li.className = 'px-sm py-xs font-body-md text-body-md text-on-surface';
+            li.textContent = course;
+            list.appendChild(li);
+        });
+        
+        document.getElementById('reviewModal').classList.remove('hidden');
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewModal').classList.add('hidden');
+    }
+</script>
+}

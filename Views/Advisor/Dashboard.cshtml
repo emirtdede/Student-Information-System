@@ -1,0 +1,281 @@
+@{ ViewData["Title"] = "Advisor Dashboard"; }
+
+@section Styles {
+<style>
+@@import url('https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;900&display=swap');
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<div class="p-gutter flex-1 w-full max-w-container-max mx-auto">
+<!-- Page Header -->
+<header class="mb-lg flex flex-col md:flex-row justify-between items-start md:items-end gap-md">
+    <div>
+        <h1 class="font-h1 text-h1 text-primary mb-xs"><span class="lang-en">Advisor Dashboard</span><span class="lang-tr">Danışman Paneli</span></h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">Manage your students, approve course registrations, and coordinate department activities.</span><span class="lang-tr">Öğrencilerinizi yönetin, ders kayıtlarını onaylayın ve bölüm faaliyetlerini koordine edin.</span></p>
+    </div>
+</header>
+
+<!-- Bento Grid Summary Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md mb-lg">
+<!-- Card 1 -->
+<div onclick="window.location.href='/Advisor/StudentManagement'" class="glass-card rounded-xl p-md flex flex-col justify-between hover:-translate-y-1 hover:shadow-md transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-container/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">groups</span>
+</div>
+</div>
+<div>
+<div class="font-h2 text-h2 text-on-surface mb-1">@ViewBag.TotalStudents</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Advised Students</span><span class="lang-tr">Danışmanlık Verilen Öğrenciler</span></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div onclick="window.location.href='/Advisor/CourseApproval'" class="glass-card rounded-xl p-md flex flex-col justify-between border-l-4 border-l-tertiary hover:-translate-y-1 hover:shadow-md transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary-container/20 rounded-lg text-tertiary">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-2 py-1 rounded-full"><span class="lang-en">Action Needed</span><span class="lang-tr">Onay Gerekli</span></span>
+</div>
+<div>
+<div id="pendingCountDashboard" class="font-h2 text-h2 text-on-surface mb-1">@ViewBag.PendingApprovals</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Pending Course Approvals</span><span class="lang-tr">Bekleyen Ders Onayları</span></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-card rounded-xl p-md flex flex-col justify-between hover:-translate-y-1 transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary-container/30 rounded-lg text-secondary">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+</div>
+<div>
+<div class="font-h2 text-h2 text-on-surface mb-1">@ViewBag.AverageGpa</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Department Average</span><span class="lang-tr">Bölüm Ortalaması</span></div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="glass-card rounded-xl p-md flex flex-col justify-between hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-primary">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-container/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">workspace_premium</span>
+</div>
+</div>
+<div>
+<div class="font-h3 text-h3 text-on-surface mb-1 truncate" title="@ViewBag.TopStudentName">@ViewBag.TopStudentName</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Top Performing Student</span><span class="lang-tr">En Başarılı Öğrenci</span></div>
+</div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md mb-xl">
+<!-- Recent Activities (Takes 2 columns) -->
+<div class="lg:col-span-2">
+<h2 class="font-h3 text-h3 text-on-surface mb-4"><span class="lang-en">Recent Activities</span><span class="lang-tr">Son Aktiviteler</span></h2>
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="divide-y divide-outline-variant/20" id="activityList">
+<!-- Activity Item 1 -->
+<div class="p-md flex items-start gap-4 hover:bg-surface-bright/50 transition-colors" id="act-1">
+<div class="w-10 h-10 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface"><span class="font-semibold">Elif Kaya</span> submitted course registration for Spring 2024.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">2 hours ago • Computer Engineering Dept.</p>
+</div>
+<button onclick="window.location.href='/Advisor/CourseApproval'" class="text-primary font-label-md text-label-md hover:underline"><span class="lang-en">Review</span><span class="lang-tr">İncele</span></button>
+</div>
+<!-- Activity Item 2 -->
+<div class="p-md flex items-start gap-4 hover:bg-surface-bright/50 transition-colors" id="act-2">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface"><span class="font-semibold">Caner Demir</span> requested an override for Prerequisite CENG 213.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">5 hours ago • Software Architecture</p>
+</div>
+<button onclick="reviewOverride('Caner Demir', 'CENG 213 Prerequisite Override', 'act-2')" class="text-primary font-label-md text-label-md hover:underline"><span class="lang-en">Review</span><span class="lang-tr">İncele</span></button>
+</div>
+<!-- Activity Item 3 -->
+<div class="p-md flex items-start gap-4 hover:bg-surface-bright/50 transition-colors" id="act-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">New advising message from <span class="font-semibold">Ayşe Yıldız</span> regarding thesis topic selection.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Yesterday • Graduate Program</p>
+</div>
+<button onclick="replyMessage('Ayşe Yıldız')" class="text-primary font-label-md text-label-md hover:underline"><span class="lang-en">Reply</span><span class="lang-tr">Yanıtla</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column Placeholder (e.g. Quick Actions / System Status) -->
+<div class="space-y-md">
+<div class="glass-card rounded-xl p-md">
+<h3 class="font-h3 text-h3 text-on-surface mb-4"><span class="lang-en">Quick Actions</span><span class="lang-tr">Hızlı İşlemler</span></h3>
+<div class="space-y-3">
+<button onclick="window.location.href='/Advisor/SystemSettings'" class="w-full flex items-center justify-between p-3 rounded-lg border border-primary/20 hover:bg-primary-container/20 transition-colors group bg-primary/5">
+<span class="font-label-md text-label-md text-primary font-semibold"><span class="lang-en">Manage System Settings</span><span class="lang-tr">Sistem Ayarlarını Yönet</span></span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">settings_applications</span>
+</button>
+<button onclick="batchApprove()" class="w-full flex items-center justify-between p-3 rounded-lg border border-outline-variant/30 hover:bg-primary-container/10 transition-colors group">
+<span class="font-label-md text-label-md text-on-surface font-medium"><span class="lang-en">Batch Approve Registrations</span><span class="lang-tr">Toplu Ders Onayı</span></span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button onclick="scheduleOfficeHours()" class="w-full flex items-center justify-between p-3 rounded-lg border border-outline-variant/30 hover:bg-primary-container/10 transition-colors group">
+<span class="font-label-md text-label-md text-on-surface font-medium"><span class="lang-en">Schedule Office Hours</span><span class="lang-tr">Ofis Saatleri Planla</span></span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button onclick="downloadRoster()" class="w-full flex items-center justify-between p-3 rounded-lg border border-outline-variant/30 hover:bg-primary-container/10 transition-colors group">
+<span class="font-label-md text-label-md text-on-surface font-medium"><span class="lang-en">Download Advisee Roster</span><span class="lang-tr">Öğrenci Listesini İndir</span></span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+
+<!-- Academic Performance Reports Section -->
+<h2 class="font-h3 text-h3 text-on-surface mb-4 mt-lg"><span class="lang-en">Academic Achievement Reports</span><span class="lang-tr">Akademik Başarı Raporları</span></h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-xl">
+    <!-- CGPA Honor / Warning Distribution -->
+    <div class="glass-card rounded-xl p-md">
+        <h3 class="font-label-md text-label-md text-on-surface font-semibold mb-sm uppercase tracking-wider"><span class="lang-en">Student Achievement Distribution</span><span class="lang-tr">Öğrenci Başarı Dağılımı</span></h3>
+        <div class="space-y-sm">
+            <div>
+                <div class="flex justify-between text-label-sm mb-1">
+                    <span class="text-on-surface-variant font-medium"><span class="lang-en">High Honor (GPA &gt;= 3.50)</span><span class="lang-tr">Yüksek Onur (GNO &gt;= 3.50)</span></span>
+                    <span class="text-primary font-bold">@ViewBag.HighHonorCount <span class="lang-en">Students</span><span class="lang-tr">Öğrenci</span></span>
+                </div>
+                <div class="w-full bg-surface-container-high rounded-full h-2">
+                    <div class="bg-primary h-2 rounded-full" style="width: @(ViewBag.TotalStudents > 0 ? (double)ViewBag.HighHonorCount / ViewBag.TotalStudents * 100 : 0)%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-label-sm mb-1">
+                    <span class="text-on-surface-variant font-medium"><span class="lang-en">Honor Roll (3.00 &lt;= GPA &lt; 3.50)</span><span class="lang-tr">Onur Listesi (3.00 &lt;= GNO &lt; 3.50)</span></span>
+                    <span class="text-secondary font-bold">@ViewBag.HonorCount <span class="lang-en">Students</span><span class="lang-tr">Öğrenci</span></span>
+                </div>
+                <div class="w-full bg-surface-container-high rounded-full h-2">
+                    <div class="bg-secondary h-2 rounded-full" style="width: @(ViewBag.TotalStudents > 0 ? (double)ViewBag.HonorCount / ViewBag.TotalStudents * 100 : 0)%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-label-sm mb-1">
+                    <span class="text-on-surface-variant font-medium"><span class="lang-en">Academic Warning (GPA &lt; 2.00)</span><span class="lang-tr">Akademik Uyarı (GNO &lt; 2.00)</span></span>
+                    <span class="text-error font-bold">@ViewBag.WarningCount <span class="lang-en">Students</span><span class="lang-tr">Öğrenci</span></span>
+                </div>
+                <div class="w-full bg-surface-container-high rounded-full h-2">
+                    <div class="bg-error h-2 rounded-full" style="width: @(ViewBag.TotalStudents > 0 ? (double)ViewBag.WarningCount / ViewBag.TotalStudents * 100 : 0)%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Success Ratios -->
+    <div class="glass-card rounded-xl p-md flex flex-col justify-between">
+        <div>
+            <h3 class="font-label-md text-label-md text-on-surface font-semibold mb-xs uppercase tracking-wider"><span class="lang-en">Course Pass Rate</span><span class="lang-tr">Ders Başarı Oranı</span></h3>
+            <p class="text-label-sm text-on-surface-variant mb-md"><span class="lang-en">Pass/fail statistics for all letter grades entered for your assigned students.</span><span class="lang-tr">Sorumluluğunuzdaki öğrencilere girilen toplam harf notlarının başarı/kalma istatistiği.</span></p>
+        </div>
+        <div class="flex items-center gap-md">
+            <div class="relative w-20 h-20 rounded-full border-8 border-outline-variant/20 flex items-center justify-center shrink-0">
+                <span class="font-bold text-[16px] text-primary">%@ViewBag.PassingRate</span>
+            </div>
+            <div class="space-y-1">
+                <div class="text-label-sm text-on-surface"><strong class="text-primary font-bold">@ViewBag.PassingGradesCount</strong> <span class="lang-en">courses passed successfully.</span><span class="lang-tr">ders başarıyla geçildi.</span></div>
+                <div class="text-label-sm text-on-surface"><strong class="text-error font-bold">@ViewBag.FailingGradesCount</strong> <span class="lang-en">courses failed (FF/FD/FZ).</span><span class="lang-tr">dersten kalındı (FF/FD/FZ).</span></div>
+                <div class="text-[10px] text-on-surface-variant mt-1"><span class="lang-en">Total grades entered:</span><span class="lang-tr">Toplam girilen not sayısı:</span> @ViewBag.TotalGradesCount</div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Override Review Modal -->
+<div id="overrideModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-md w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Prerequisite Override Request</span><span class="lang-tr">Önkoşul Muafiyet Talebi</span></h3>
+            <button onclick="closeOverrideModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="space-y-sm mb-md">
+            <p class="font-body-md text-body-md text-on-surface"><strong><span class="lang-en">Student:</span><span class="lang-tr">Öğrenci:</span></strong> <span id="overrideStudent">Student Name</span></p>
+            <p class="font-body-md text-body-md text-on-surface"><strong><span class="lang-en">Request:</span><span class="lang-tr">Talep:</span></strong> <span id="overrideTitle">Request Details</span></p>
+            <p class="font-body-md text-body-md text-on-surface-variant">The student is requesting to enroll in CENG 316 (Software Architecture) without passing the prerequisite CENG 213 (Data Structures).</p>
+        </div>
+        <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant/30">
+            <button onclick="resolveOverride('deny')" class="px-md py-xs border border-error text-error font-label-md text-label-md rounded-lg hover:bg-error-container/20 transition-all"><span class="lang-en">Deny</span><span class="lang-tr">Reddet</span></button>
+            <button onclick="resolveOverride('approve')" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Approve</span><span class="lang-tr">Onayla</span></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let activeActId = null;
+
+    function reviewOverride(student, title, actId) {
+        activeActId = actId;
+        document.getElementById('overrideStudent').textContent = student;
+        document.getElementById('overrideTitle').textContent = title;
+        document.getElementById('overrideModal').classList.remove('hidden');
+    }
+
+    function closeOverrideModal() {
+        document.getElementById('overrideModal').classList.add('hidden');
+    }
+
+    function resolveOverride(decision) {
+        if (activeActId) {
+            const el = document.getElementById(activeActId);
+            if (el) {
+                el.style.transition = 'all 0.5s ease';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            }
+        }
+        alert(decision === 'approve' ? 'Prerequisite override approved.' : 'Prerequisite override denied.');
+        closeOverrideModal();
+    }
+
+    function replyMessage(student) {
+        const reply = prompt(`Reply to ${student}:`);
+        if (reply) {
+            alert(`Message sent to ${student}!`);
+            const el = document.getElementById('act-3');
+            if (el) {
+                el.style.transition = 'all 0.5s ease';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            }
+        }
+    }
+
+    function batchApprove() {
+        const countEl = document.getElementById('pendingCountDashboard');
+        let val = parseInt(countEl.textContent);
+        if (val === 0) {
+            alert('No pending approvals remaining.');
+            return;
+        }
+        const approveCount = Math.min(val, 15);
+        val -= approveCount;
+        countEl.textContent = val;
+        alert(`Batch approval complete: Approved ${approveCount} clean registrations successfully. Remaining: ${val}`);
+    }
+
+    function scheduleOfficeHours() {
+        const date = prompt('Select date & time for office hours (e.g. Wednesday 14:00-16:00):');
+        if (date) {
+            alert(`Office hours successfully updated to: ${date}`);
+        }
+    }
+
+    function downloadRoster() {
+        alert('Starting download for advisee roster (Advisee_Roster_Fall2024.xlsx)...');
+    }
+</script>
+}

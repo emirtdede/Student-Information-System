@@ -1,0 +1,260 @@
+@model Student_Information_System.Models.DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- TopNavBar -->
+
+<!-- Dashboard Canvas -->
+<div class="flex-1 p-gutter max-w-container-max mx-auto w-full">
+<div class="mb-lg">
+<h2 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-on-surface"><span class="lang-en">Welcome, @Model.Student.FirstName</span><span class="lang-tr">Hoş Geldiniz, @Model.Student.FirstName</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-xs"><span class="lang-en">2024-2025 Academic Year</span><span class="lang-tr">2024-2025 Eğitim Yılı</span></p>
+</div>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-secondary-container text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">check_circle</span>
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-xl">
+<!-- Student Info Card (Spans 1 col on desktop) -->
+<div class="glass-card rounded-xl p-md flex flex-col md:col-span-1">
+<div class="flex items-center gap-md mb-md border-b border-outline-variant/20 pb-md">
+<span class="material-symbols-outlined text-primary text-3xl">badge</span>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">Student Profile</span><span class="lang-tr">Öğrenci Profili</span></h3>
+</div>
+</div>
+<div class="space-y-sm flex-1">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-label-md"><span class="lang-en">Student ID</span><span class="lang-tr">Öğrenci No</span></span>
+<span class="font-semibold text-on-surface text-label-md">@Model.Student.StudentNumber</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-label-md"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></span>
+<span class="font-semibold text-on-surface text-label-md text-right">@Model.Student.Department</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-label-md"><span class="lang-en">Enrollment Year</span><span class="lang-tr">Kayıt Yılı</span></span>
+<span class="font-semibold text-on-surface text-label-md">@Model.Student.EnrollmentYear</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-label-md"><span class="lang-en">Advisor</span><span class="lang-tr">Danışman</span></span>
+<span class="font-semibold text-primary text-label-md">@(Model.Student.Advisor?.Title) @(Model.Student.Advisor?.FirstName) @(Model.Student.Advisor?.LastName)</span>
+</div>
+</div>
+<button onclick="window.location.href='/Settings/Profile'" class="mt-md w-full py-2 rounded-lg bg-surface-container-low text-primary border border-primary/20 font-label-md hover:bg-surface-variant transition-colors">
+                        <span class="lang-en">View Full Details</span><span class="lang-tr">Tüm Detayları Gör</span>
+                    </button>
+</div>
+
+<!-- Dining Balance / Smart Card -->
+<div class="glass-card rounded-xl p-md flex flex-col md:col-span-1 bg-gradient-to-br from-surface to-surface-container-high border border-outline-variant/30">
+    <div class="flex items-center gap-sm mb-md pb-xs border-b border-outline-variant/20">
+        <span class="material-symbols-outlined text-secondary text-2xl">credit_card</span>
+        <h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">Campus Card</span><span class="lang-tr">Kampüs Kart</span></h3>
+    </div>
+    
+    <div class="flex-1 flex flex-col justify-center items-center py-sm">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs"><span class="lang-en">Current Balance</span><span class="lang-tr">Mevcut Bakiye</span></span>
+        <h4 class="font-h1 text-h1 text-secondary">₺ @Model.Student.DiningBalance.ToString("N2")</h4>
+    </div>
+    
+    <form id="balanceForm" asp-action="AddDiningBalance" method="post" onsubmit="handleBalanceSubmit(event)" class="mt-md space-y-sm">
+        <div class="flex flex-col gap-md">
+            <input type="number" id="balanceAmount" name="amount" min="10" step="10" placeholder="Örn: 50" required class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors" />
+            <button type="submit" class="w-full bg-primary text-on-primary font-label-md text-label-md py-2 rounded-lg hover:bg-primary-container transition-colors text-center mt-6">
+                <span class="lang-en">Add Balance</span><span class="lang-tr">Bakiye Yükle</span>
+            </button>
+        </div>
+        <p class="text-[10px] text-center text-outline mt-1"><span class="lang-en">Minimum load is 10 TL.</span><span class="lang-tr">En az 10 TL yüklenebilir.</span></p>
+    </form>
+</div>
+<!-- Academic Summary Grid (Spans 2 cols on desktop) -->
+<div class="md:col-span-2 grid grid-cols-2 gap-sm md:gap-md">
+<!-- GNO -->
+<div class="glass-card rounded-xl p-md flex flex-col justify-center items-center text-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-primary/40 text-5xl absolute -right-4 -bottom-4">school</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs"><span class="lang-en">Cumulative GPA</span><span class="lang-tr">Genel Not Ortalaması (GNO)</span></p>
+<h4 class="font-h1 text-h1 text-primary">@Model.Student.Gpa.ToString("0.00")</h4>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold mt-sm"><span class="lang-en">Active</span><span class="lang-tr">Aktif</span></span>
+</div>
+<!-- YNO -->
+<div class="glass-card rounded-xl p-md flex flex-col justify-center items-center text-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-secondary/40 text-5xl absolute -right-4 -bottom-4">trending_up</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs"><span class="lang-en">Taken Courses</span><span class="lang-tr">Alınan Ders Sayısı</span></p>
+<h4 class="font-h1 text-h1 text-secondary">@Model.TodayClasses.Count</h4>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-xs font-bold mt-sm"><span class="lang-en">This Semester</span><span class="lang-tr">Bu Dönem</span></span>
+</div>
+<!-- ECTS & Progress (Spans 2 cols within the inner grid) -->
+<div class="col-span-2 glass-card rounded-xl p-md flex flex-col justify-center">
+<div class="flex justify-between items-end mb-sm">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs"><span class="lang-en">Graduation Progress</span><span class="lang-tr">Mezuniyet İlerlemesi</span></p>
+<div class="flex items-baseline gap-xs">
+<h4 class="font-h2 text-h2 text-on-surface">180</h4>
+<span class="text-on-surface-variant text-label-md">/ 240 ECTS</span>
+</div>
+</div>
+<span class="font-h3 text-h3 text-primary font-bold">75%</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-inverse-primary rounded-full w-[75%] relative">
+<div class="absolute right-0 top-0 bottom-0 w-4 bg-white/30 skew-x-12 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Weekly Schedule -->
+<div class="glass-card rounded-xl p-md md:p-lg mb-xl">
+<div class="flex justify-between items-center mb-md border-b border-outline-variant/20 pb-sm">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+                        <span class="lang-en">Today's Schedule</span><span class="lang-tr">Günün Programı</span>
+                    </h3>
+<span class="text-on-surface-variant text-label-md font-medium">Tuesday, Oct 24</span>
+</div>
+<div class="space-y-sm">
+@if (Model.TodayClasses.Count > 0)
+{
+    foreach (var course in Model.TodayClasses)
+    {
+        <!-- Class Item -->
+        <div class="flex items-start gap-md p-sm rounded-lg hover:bg-white/50 transition-colors group border border-transparent hover:border-outline-variant/20">
+            <div class="w-16 shrink-0 text-center flex flex-col items-center">
+                <span class="font-label-md text-label-md text-on-surface-variant group-hover:text-primary transition-colors">--:--</span>
+                <div class="w-0.5 h-full bg-outline-variant/30 my-1 group-hover:bg-primary/50 transition-colors"></div>
+            </div>
+            <div class="flex-1 bg-surface-container-low rounded-lg p-sm border-l-4 border-primary">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-label-md text-label-md text-on-surface font-bold">@course.Name</h4>
+                        <p class="text-label-sm text-on-surface-variant mt-xs">@course.Code • <span class="lang-en">Lecture</span><span class="lang-tr">Teorik</span></p>
+                    </div>
+                    <span class="px-2 py-1 rounded bg-white text-xs font-semibold text-primary shadow-sm flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">person</span>
+                        @course.Instructor
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="p-md text-center text-on-surface-variant font-label-md">
+        <span class="lang-en">You have no classes today.</span><span class="lang-tr">Bugün için dersiniz bulunmamaktadır.</span>
+    </div>
+}
+</div>
+</div>
+</div>
+<!-- Footer -->
+</div>
+
+<!-- Credit Card Modal -->
+<div id="paymentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-md w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Credit/Debit Card Payment</span><span class="lang-tr">Kredi/Banka Kartı ile Ödeme</span></h3>
+            <button type="button" onclick="closePaymentModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="mb-sm text-center">
+            <p class="font-body-md text-on-surface-variant"><span class="lang-en">Amount to load:</span><span class="lang-tr">Yüklenecek Tutar:</span> <span id="paymentAmountDisplay" class="font-bold text-secondary text-lg">₺0.00</span></p>
+        </div>
+        <form id="paymentForm" onsubmit="confirmPayment(event)" class="space-y-sm">
+            <div>
+                <label for="cardName" class="block font-label-md text-label-md text-on-surface mb-xs"><span class="lang-en">Name on Card</span><span class="lang-tr">Kart Üzerindeki İsim</span></label>
+                <input type="text" id="cardName" required class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none" placeholder="AD SOYAD">
+            </div>
+            <div>
+                <label for="cardNumber" class="block font-label-md text-label-md text-on-surface mb-xs"><span class="lang-en">Card Number</span><span class="lang-tr">Kart Numarası</span></label>
+                <input type="text" id="cardNumber" maxlength="19" required class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none" placeholder="0000 0000 0000 0000">
+            </div>
+            <div class="grid grid-cols-2 gap-sm">
+                <div>
+                    <label for="cardExpiry" class="block font-label-md text-label-md text-on-surface mb-xs"><span class="lang-en">Expiry Date</span><span class="lang-tr">Son Kullanma Tarihi</span></label>
+                    <input type="text" id="cardExpiry" maxlength="5" required class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none" placeholder="AA/YY">
+                </div>
+                <div>
+                    <label for="cardCvv" class="block font-label-md text-label-md text-on-surface mb-xs">CVV</label>
+                    <input type="text" id="cardCvv" maxlength="3" required class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none" placeholder="000">
+                </div>
+            </div>
+            <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+                <button type="button" onclick="closePaymentModal()" class="px-md py-xs border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-variant/50 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 focus:ring-4 focus:ring-primary/20 transition-all shadow-sm"><span class="lang-en">Complete Payment</span><span class="lang-tr">Ödemeyi Tamamla</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function handleBalanceSubmit(e) {
+        e.preventDefault();
+        const amount = document.getElementById('balanceAmount').value;
+        if (!amount || amount < 10) {
+            alert('Lütfen en az 10 TL geçerli bir miktar giriniz.');
+            return;
+        }
+        document.getElementById('paymentAmountDisplay').textContent = '₺' + parseFloat(amount).toFixed(2);
+        document.getElementById('paymentModal').classList.remove('hidden');
+    }
+    
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.add('hidden');
+        document.getElementById('paymentForm').reset();
+    }
+    
+    function confirmPayment(e) {
+        e.preventDefault();
+        document.getElementById('balanceForm').submit();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const cardNo = document.getElementById('cardNumber');
+        if (cardNo) {
+            cardNo.addEventListener('input', (e) => {
+                let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let matches = v.match(/\d{4,16}/g);
+                let match = matches && matches[0] || '';
+                let parts = [];
+                for (let i = 0, len = match.length; i < len; i += 4) {
+                    parts.push(match.substring(i, i + 4));
+                }
+                if (parts.length > 0) {
+                    e.target.value = parts.join(' ');
+                } else {
+                    e.target.value = v;
+                }
+            });
+        }
+        const cardExp = document.getElementById('cardExpiry');
+        if (cardExp) {
+            cardExp.addEventListener('input', (e) => {
+                let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                if (v.length >= 2) {
+                    e.target.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+                } else {
+                    e.target.value = v;
+                }
+            });
+        }
+        const cardCvv = document.getElementById('cardCvv');
+        if (cardCvv) {
+            cardCvv.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            });
+        }
+    });
+</script>
+}

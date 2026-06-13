@@ -1,0 +1,263 @@
+@{ ViewData["Title"] = "IT Support"; }
+
+@section Styles {
+<style>
+.ambient-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+<!-- Header Section -->
+<header class="mb-lg flex flex-col md:flex-row justify-between items-start md:items-end gap-md">
+    <div>
+        <h1 class="font-h1 text-h1 text-primary mb-xs hidden md:block"><span class="lang-en">IT Support Portal</span><span class="lang-tr">BT Destek Portalı</span></h1>
+        <h1 class="font-h1-mobile text-h1-mobile text-primary mb-xs md:hidden"><span class="lang-en">IT Support</span><span class="lang-tr">BT Destek</span></h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">Find solutions to common technical issues or reach out to the IT department for specialized assistance.</span><span class="lang-tr">Sık karşılaşılan teknik sorunlara çözümler bulun veya özel destek için Bilgi İşlem departmanına ulaşın.</span></p>
+    </div>
+    <button onclick="openTicketModal()" class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-md py-sm rounded-lg shadow-sm transition-all flex items-center gap-xs flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]" data-icon="add_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+        <span class="lang-en">Open Support Ticket</span><span class="lang-tr">Destek Talebi Aç</span>
+    </button>
+</header>
+
+<!-- Support Ticket Modal -->
+<div id="ticketModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Open Support Ticket</span><span class="lang-tr">Destek Talebi Aç</span></h3>
+            <button onclick="closeTicketModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="ticketForm" onsubmit="submitTicket(event)" class="space-y-sm">
+            <div>
+                <label for="ticketSubject" class="block font-label-md text-label-md text-on-surface mb-xs"><span class="lang-en">Subject</span><span class="lang-tr">Konu</span></label>
+                <input type="text" id="ticketSubject" required class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none" placeholder="e.g. Wi-Fi connection issues in library" data-tr-placeholder="Örn. Kütüphanede Wi-Fi bağlantı sorunları" data-en-placeholder="e.g. Wi-Fi connection issues in library">
+            </div>
+            <div>
+                <label for="ticketCategory" class="block font-label-md text-label-md text-on-surface mb-xs"><span class="lang-en">Category</span><span class="lang-tr">Kategori</span></label>
+                <select id="ticketCategory" class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none">
+                    <option value="Network / Wi-Fi"><span class="lang-en">Network / Wi-Fi</span><span class="lang-tr">Ağ / Wi-Fi</span></option>
+                    <option value="Email / Login"><span class="lang-en">Email / Login</span><span class="lang-tr">E-posta / Giriş</span></option>
+                    <option value="Course Materials (Moodle)"><span class="lang-en">Course Materials (Moodle)</span><span class="lang-tr">Ders Materyalleri (Moodle)</span></option>
+                    <option value="Software / Licensing"><span class="lang-en">Software / Licensing</span><span class="lang-tr">Yazılım / Lisanslama</span></option>
+                    <option value="Other"><span class="lang-en">Other</span><span class="lang-tr">Diğer</span></option>
+                </select>
+            </div>
+            <div>
+                <label for="ticketMessage" class="block font-label-md text-label-md text-on-surface mb-xs"><span class="lang-en">Message</span><span class="lang-tr">Mesaj</span></label>
+                <textarea id="ticketMessage" rows="4" required class="w-full px-sm py-xs border border-outline-variant rounded-lg bg-surface-bright/50 focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface outline-none" placeholder="Describe your issue in detail..." data-tr-placeholder="Sorununuzu detaylı bir şekilde açıklayın..." data-en-placeholder="Describe your issue in detail..."></textarea>
+            </div>
+            <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+                <button type="button" onclick="closeTicketModal()" class="px-md py-xs border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-variant/50 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 focus:ring-4 focus:ring-primary/20 transition-all shadow-sm"><span class="lang-en">Submit Ticket</span><span class="lang-tr">Talep Gönder</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-xl">
+<!-- Quick Actions (Spans 8 cols on desktop) -->
+<div class="col-span-1 md:col-span-8 glass-card ambient-shadow rounded-xl p-md">
+<h2 class="font-h3 text-h3 text-on-surface mb-md"><span class="lang-en">Common Issues</span><span class="lang-tr">Sık Karşılaşılan Sorunlar</span></h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+<a class="group flex items-start gap-sm p-sm rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/30" href="#">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="mail">mail</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors"><span class="lang-en">Email Login Issues</span><span class="lang-tr">E-posta Giriş Sorunları</span></h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Troubleshoot access to your university email.</span><span class="lang-tr">Üniversite e-postanıza erişim sorunlarını giderin.</span></p>
+</div>
+</a>
+<a class="group flex items-start gap-sm p-sm rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/30" href="#">
+<div class="w-12 h-12 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="wifi">wifi</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors"><span class="lang-en">Wi-Fi Access (Eduroam)</span><span class="lang-tr">Wi-Fi Erişimi (Eduroam)</span></h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Connect your devices to the campus network.</span><span class="lang-tr">Cihazlarınızı kampüs ağına bağlayın.</span></p>
+</div>
+</a>
+<a class="group flex items-start gap-sm p-sm rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/30" href="#">
+<div class="w-12 h-12 rounded-lg bg-tertiary-container/20 text-tertiary flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="password">password</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-tertiary transition-colors"><span class="lang-en">Password Reset</span><span class="lang-tr">Parola Sıfırlama</span></h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Reset your OKÜ-OBS or central account password.</span><span class="lang-tr">OKÜ-OBS veya merkezi hesap parolanızı sıfırlayın.</span></p>
+</div>
+</a>
+<a class="group flex items-start gap-sm p-sm rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/30" href="#">
+<div class="w-12 h-12 rounded-lg bg-surface-tint/20 text-surface-tint flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="laptop_chromebook">laptop_chromebook</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-surface-tint transition-colors"><span class="lang-en">Software Downloads</span><span class="lang-tr">Yazılım İndirmeleri</span></h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Access licensed software for students.</span><span class="lang-tr">Öğrenciler için lisanslı yazılımlara erişin.</span></p>
+</div>
+</a>
+</div>
+</div>
+<!-- Contact Info (Spans 4 cols on desktop) -->
+<div class="col-span-1 md:col-span-4 glass-card ambient-shadow rounded-xl p-md flex flex-col h-full relative overflow-hidden">
+<div class="absolute -right-10 -top-10 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[150px]" data-icon="support_agent">support_agent</span>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-sm relative z-10"><span class="lang-en">Contact IT</span><span class="lang-tr">BT İletişim</span></h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-md relative z-10"><span class="lang-en">Available Mon-Fri, 08:00 - 17:00</span><span class="lang-tr">Mevcut: Pzt-Cum, 08:00 - 17:00</span></p>
+<div class="space-y-sm flex-grow relative z-10">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="call">call</span>
+<span class="font-body-md text-body-md text-on-surface">+90 (328) 825 18 18 / 1234</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="email">email</span>
+<a class="font-body-md text-body-md text-primary hover:underline" href="mailto:bilgiislem@@osmaniye.edu.tr">bilgiislem@@osmaniye.edu.tr</a>
+</div>
+<div class="flex items-start gap-xs">
+<span class="material-symbols-outlined text-outline-variant text-[20px] mt-xs" data-icon="location_on">location_on</span>
+<span class="font-body-md text-body-md text-on-surface"><span class="lang-en">Rectorate Building, Ground Floor<br/>Karacaoğlan Campus</span><span class="lang-tr">Rektörlük Binası, Zemin Kat<br/>Karacaoğlan Kampüsü</span></span>
+</div>
+</div>
+<div class="mt-md pt-sm border-t border-outline-variant/30 relative z-50">
+<a class="inline-flex items-center gap-xs text-secondary hover:text-secondary-container transition-colors font-label-md text-label-md cursor-pointer py-1 px-2 -ml-2 rounded hover:bg-secondary/10" href="/Support/Contact">
+                        <span class="lang-en">View Campus Map</span><span class="lang-tr">Kampüs Haritasını Görüntüle</span>
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Recent Tickets (Spans full width) -->
+<div class="col-span-1 md:col-span-12 glass-card ambient-shadow rounded-xl overflow-hidden mt-md">
+<div class="p-md border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest/50">
+<h2 class="font-h3 text-h3 text-on-surface"><span class="lang-en">My Recent Tickets</span><span class="lang-tr">Son Taleplerim</span></h2>
+<a id="view-all-tickets" class="font-label-sm text-label-sm text-primary hover:underline cursor-pointer"><span class="lang-en">View All</span><span class="lang-tr">Tümünü Gör</span></a>
+</div>
+<div class="divide-y divide-outline-variant/20">
+<!-- Ticket Item -->
+<div class="p-md flex flex-col sm:flex-row sm:items-center justify-between gap-sm hover:bg-surface-container-low/50 transition-colors">
+<div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">TKT-8921</span>
+<span class="px-2 py-1 rounded-full bg-secondary/10 text-secondary font-label-sm text-[10px] uppercase tracking-wider flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> <span class="lang-en">Open</span><span class="lang-tr">Açık</span>
+                                </span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface"><span class="lang-en">Cannot access specific course materials on Moodle</span><span class="lang-tr">Moodle'da belirli ders materyallerine erişemiyorum</span></h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Updated 2 hours ago</span><span class="lang-tr">2 saat önce güncellendi</span></p>
+</div>
+<div class="flex items-center gap-xs sm:flex-col sm:items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Assigned to:</span><span class="lang-tr">Atanan:</span></span>
+<span class="font-body-md text-body-md text-on-surface"><span class="lang-en">Helpdesk Team</span><span class="lang-tr">Yardım Masası Ekibi</span></span>
+</div>
+</div>
+<!-- Ticket Item -->
+<div class="p-md flex flex-col sm:flex-row sm:items-center justify-between gap-sm hover:bg-surface-container-low/50 transition-colors">
+<div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">TKT-8845</span>
+<span class="px-2 py-1 rounded-full bg-outline-variant/20 text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span> <span class="lang-en">Closed</span><span class="lang-tr">Kapalı</span>
+                                </span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface line-through opacity-70"><span class="lang-en">Eduroam connection drops frequently</span><span class="lang-tr">Eduroam bağlantısı sık sık kopuyor</span></h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Closed 3 days ago</span><span class="lang-tr">3 gün önce kapatıldı</span></p>
+</div>
+<div class="flex items-center gap-xs sm:flex-col sm:items-end opacity-70">
+<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Assigned to:</span><span class="lang-tr">Atanan:</span></span>
+<span class="font-body-md text-body-md text-on-surface"><span class="lang-en">Network Admin</span><span class="lang-tr">Ağ Yöneticisi</span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts {
+<script>
+    function openTicketModal() {
+        document.getElementById('ticketModal').classList.remove('hidden');
+    }
+    function closeTicketModal() {
+        document.getElementById('ticketModal').classList.add('hidden');
+        document.getElementById('ticketForm').reset();
+    }
+    function submitTicket(e) {
+        e.preventDefault();
+        const subject = document.getElementById('ticketSubject').value;
+        const category = document.getElementById('ticketCategory').value;
+        
+        // Generate a new ticket ID
+        const ticketId = 'TKT-' + Math.floor(1000 + Math.random() * 9000);
+        
+        // Append to list of tickets
+        const container = document.querySelector('.divide-y');
+        const newTicketHtml = `
+            <div class="p-md flex flex-col sm:flex-row sm:items-center justify-between gap-sm hover:bg-surface-container-low/50 transition-colors">
+                <div>
+                    <div class="flex items-center gap-xs mb-xs">
+                        <span class="px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">${ticketId}</span>
+                        <span class="px-2 py-1 rounded-full bg-secondary/10 text-secondary font-label-sm text-[10px] uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> <span class="lang-en">Open</span><span class="lang-tr">Açık</span>
+                        </span>
+                    </div>
+                    <h3 class="font-label-md text-label-md text-on-surface">${subject}</h3>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant mt-xs"><span class="lang-en">Just created</span><span class="lang-tr">Yeni oluşturuldu</span></p>
+                </div>
+                <div class="flex items-center gap-xs sm:flex-col sm:items-end">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Assigned to:</span><span class="lang-tr">Atanan:</span></span>
+                    <span class="font-body-md text-body-md text-on-surface"><span class="lang-en">Helpdesk Team</span><span class="lang-tr">Yardım Masası Ekibi</span></span>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('afterbegin', newTicketHtml);
+        
+        alert('Destek talebi başarıyla oluşturuldu! / Support ticket created successfully! Ticket ID: ' + ticketId);
+        closeTicketModal();
+    }
+
+    document.getElementById('view-all-tickets').addEventListener('click', (e) => {
+        e.preventDefault();
+        const btn = e.target;
+        if (btn.classList.contains('loaded')) {
+            return;
+        }
+        
+        const container = document.querySelector('.divide-y');
+        const extraTickets = [
+            { id: "TKT-8712", subject: "Student email password reset request", status: "Closed", time: "Closed 10 days ago", assigned: "IT Helpdesk" },
+            { id: "TKT-8540", subject: "Need Matlab license key for project", status: "Closed", time: "Closed 1 month ago", assigned: "Software Team" }
+        ];
+        
+        extraTickets.forEach(t => {
+            const ticketHtml = `
+                <div class="p-md flex flex-col sm:flex-row sm:items-center justify-between gap-sm hover:bg-surface-container-low/50 transition-colors opacity-80 hover:opacity-100">
+                    <div>
+                        <div class="flex items-center gap-xs mb-xs">
+                            <span class="px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">${t.id}</span>
+                            <span class="px-2 py-1 rounded-full bg-outline-variant/20 text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span> ${t.status}
+                            </span>
+                        </div>
+                        <h3 class="font-label-md text-label-md text-on-surface line-through opacity-70">${t.subject}</h3>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">${t.time}</p>
+                    </div>
+                    <div class="flex items-center gap-xs sm:flex-col sm:items-end opacity-70">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Assigned to:</span><span class="lang-tr">Atanan:</span></span>
+                        <span class="font-body-md text-body-md text-on-surface">${t.assigned}</span>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', ticketHtml);
+        });
+        
+        btn.innerHTML = '<span class="lang-en">All Tickets Loaded</span><span class="lang-tr">Tüm Talepler Yüklendi</span>';
+        btn.classList.add('loaded', 'text-outline-variant');
+        btn.style.pointerEvents = 'none';
+    });
+</script>
+}

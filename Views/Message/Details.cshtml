@@ -1,0 +1,71 @@
+@model Student_Information_System.Models.Message
+@{
+    ViewData["Title"] = "Mesaj Detayı";
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Page Header -->
+    <div class="flex items-center gap-sm mb-lg">
+        <a href="/Message/Inbox" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div>
+            <h1 class="font-h1 text-h3 text-on-surface"><span class="lang-en">Message Content</span><span class="lang-tr">Mesaj İletisi</span></h1>
+            <p class="font-body-md text-[13px] text-on-surface-variant"><span class="lang-en">Message history and quick reply form.</span><span class="lang-tr">İleti geçmişi ve hızlı yanıt formu.</span></p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter items-start">
+        <!-- Message Content Card -->
+        <div class="xl:col-span-8 flex flex-col gap-md">
+            <div class="glass-card rounded-2xl p-lg border border-outline-variant/20 flex flex-col gap-md">
+                
+                <div class="flex justify-between items-start border-b border-outline-variant/20 pb-md">
+                    <div>
+                        <h2 class="font-h2 text-h2 text-on-surface">@Model.Subject</h2>
+                        <div class="flex items-center gap-sm mt-sm flex-wrap text-[13px] text-on-surface-variant">
+                            <span class="font-semibold text-primary"><span class="lang-en">From:</span><span class="lang-tr">Kimden:</span> @Model.Sender.FirstName @Model.Sender.LastName (@Model.Sender.Role)</span>
+                            <span>&bull;</span>
+                            <span><span class="lang-en">To:</span><span class="lang-tr">Kime:</span> @Model.Receiver.FirstName @Model.Receiver.LastName (@Model.Receiver.Role)</span>
+                        </div>
+                    </div>
+                    <span class="text-xs text-outline font-label-sm font-semibold whitespace-nowrap">@Model.SentDate.ToString("dd MMMM yyyy HH:mm")</span>
+                </div>
+
+                <div class="font-body-lg text-body-md text-on-surface leading-relaxed py-sm whitespace-pre-line">
+                    @Model.Content
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Quick Reply Form -->
+        <aside class="xl:col-span-4 glass-card rounded-xl p-md flex flex-col gap-md border border-outline-variant/20">
+            <h3 class="font-h3 text-h3 text-on-surface"><span class="lang-en">Quick Reply</span><span class="lang-tr">Hızlı Yanıtla</span></h3>
+            
+            <form method="post" asp-action="SendMessage" class="flex flex-col gap-md m-0">
+                <input type="hidden" name="receiverId" value="@Model.SenderId" />
+                
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Recipient</span><span class="lang-tr">Alıcı</span></label>
+                    <input type="text" readonly value="@Model.Sender.FirstName @Model.Sender.LastName" class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-container-low cursor-not-allowed outline-none font-body-md" />
+                </div>
+
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Subject</span><span class="lang-tr">Konu</span></label>
+                    <input type="text" name="subject" value="Re: @Model.Subject" class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md" required />
+                </div>
+
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Your Message</span><span class="lang-tr">Mesajınız</span></label>
+                    <textarea name="content" rows="6" placeholder="Cevabınızı buraya yazın..." data-tr-placeholder="Cevabınızı buraya yazın..." data-en-placeholder="Type your reply here..." class="w-full px-md py-sm rounded-lg border border-outline-variant/40 bg-surface-bright outline-none font-body-md resize-none" required></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-md hover:scale-[1.02] transition-transform flex items-center justify-center gap-sm">
+                    <span class="material-symbols-outlined text-[20px]">reply</span>
+                    <span class="lang-en">Send Reply</span><span class="lang-tr">Yanıtı Gönder</span>
+                </button>
+            </form>
+        </aside>
+    </div>
+</div>

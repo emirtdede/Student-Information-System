@@ -1,0 +1,457 @@
+@model List<Student_Information_System.Models.Enrollment>
+@{ ViewData["Title"] = "Grades Status"; }
+
+@section Styles {
+<style>
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 50%, rgba(0, 108, 73, 0.05), transparent 25%),
+                        radial-gradient(circle at 85% 30%, rgba(0, 100, 126, 0.05), transparent 25%);
+        }
+        .grade-input {
+            width: 60px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 100, 126, 0.2);
+            background: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .grade-input:focus {
+            border-color: #00647e;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 2px rgba(0, 100, 126, 0.2);
+        }
+        .dark .grade-input {
+            background: rgba(18, 18, 18, 0.6);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .dark .grade-input:focus {
+            border-color: #008FB3;
+            background: rgba(18, 18, 18, 0.95);
+        }
+</style>
+}
+
+<div class="flex-grow p-gutter relative overflow-hidden w-full">
+    <!-- Header Section -->
+    <section class="space-y-sm mb-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+            <div>
+                <h1 class="font-h1 text-h1 text-on-background"><span class="lang-en">Academic Performance</span><span class="lang-tr">Akademik Performans</span></h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">View your current semester grades and simulate changes to calculate your GPA dynamically.</span><span class="lang-tr">Mevcut dönem notlarınızı görüntüleyin ve GNO'nuzu dinamik olarak hesaplamak için değişiklikleri simüle edin.</span></p>
+            </div>
+            <button id="toggle-sim-btn" class="glass-card px-md py-sm rounded-lg text-primary font-label-md flex items-center gap-xs hover:bg-primary/10 transition-colors shadow-sm" onclick="toggleSimulator()">
+                <span class="material-symbols-outlined text-[20px]">calculate</span>
+                <span><span class="lang-en">Enable GPA Simulator</span><span class="lang-tr">GNO Simülatörünü Aç</span></span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Bento Grid: Performance Summary -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+        <!-- GPA Card -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between h-48 hover:shadow-lg transition-shadow">
+            <div>
+                <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Cumulative GPA (CGPA)</span><span class="lang-tr">Genel Not Ortalaması (GNO)</span></h3>
+            </div>
+            <div class="flex items-end justify-between">
+                @{
+                    var completedCourses = Model.Where(e => e.LetterGrade != "FF" && e.LetterGrade != "FD" && !string.IsNullOrEmpty(e.LetterGrade)).ToList();
+                    var totalCredits = completedCourses.Sum(e => e.Course.Credits);
+                    var totalPoints = completedCourses.Sum(e => e.Course.Credits * (
+                        e.LetterGrade == "AA" ? 4.0 :
+                        e.LetterGrade == "BA" ? 3.5 :
+                        e.LetterGrade == "BB" ? 3.0 :
+                        e.LetterGrade == "CB" ? 2.5 :
+                        e.LetterGrade == "CC" ? 2.0 :
+                        e.LetterGrade == "DC" ? 1.5 :
+                        e.LetterGrade == "DD" ? 1.0 : 0
+                    ));
+                    var cgpa = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+                }
+                <span id="cgpa-val" class="font-h1 text-[48px] leading-none text-secondary font-bold">@cgpa.ToString("0.00")</span>
+                <span class="font-label-sm text-label-sm text-secondary bg-secondary-container px-2 py-1 rounded-full flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">trending_up</span> +0.12
+                </span>
+            </div>
+        </div>
+        <!-- Semester GPA Card -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between h-48 hover:shadow-lg transition-shadow">
+            <div>
+                <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Semester GPA (SGPA)</span><span class="lang-tr">Dönem Not Ortalaması (ANO)</span></h3>
+                <p class="font-label-sm text-label-sm text-outline mt-1"><span class="lang-en">Fall 2023-2024</span><span class="lang-tr">Güz 2023-2024</span></p>
+            </div>
+            <div class="flex items-end justify-between">
+                <span id="sgpa-val" class="font-h1 text-[48px] leading-none text-primary font-bold">@cgpa.ToString("0.00")</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">This Term</span><span class="lang-tr">Bu Dönem</span></span>
+            </div>
+        </div>
+        <!-- Total Credits Card -->
+        <div class="glass-card rounded-xl p-md flex flex-col justify-between h-48 hover:shadow-lg transition-shadow">
+            <div>
+                <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider"><span class="lang-en">Credits Completed</span><span class="lang-tr">Tamamlanan AKTS</span></h3>
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-end">
+                    @{
+                        var totalEcts = completedCourses.Sum(e => e.Course.Ects);
+                        var progressPercent = (totalEcts * 100.0) / 240.0;
+                    }
+                    <span class="font-h2 text-h2 text-on-background">@totalEcts</span>
+                    <span class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">/ 240 ECTS</span><span class="lang-tr">/ 240 AKTS</span></span>
+                </div>
+                <div class="w-full bg-surface-variant rounded-full h-2 mt-2">
+                    <div class="bg-secondary h-2 rounded-full" style="width: @Math.Min(100, progressPercent)%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary-container/20 border border-secondary text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-secondary">check_circle</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Current Semester Grades List -->
+    <section class="space-y-md">
+        <h2 class="font-h2 text-h2 text-on-background"><span class="lang-en">Current Semester Grades</span><span class="lang-tr">Mevcut Dönem Notları</span></h2>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <!-- Table Header -->
+            <div class="hidden md:grid grid-cols-12 gap-4 px-md py-sm bg-surface-container-low border-b border-outline-variant font-label-md text-label-md text-on-surface-variant">
+                <div class="col-span-1"><span class="lang-en">Code</span><span class="lang-tr">Kod</span></div>
+                <div class="col-span-4"><span class="lang-en">Course Name</span><span class="lang-tr">Ders Adı</span></div>
+                <div class="col-span-1 text-center"><span class="lang-en">ECTS</span><span class="lang-tr">AKTS</span></div>
+                <div class="col-span-2 text-center"><span class="lang-en">Midterm</span><span class="lang-tr">Vize</span></div>
+                <div class="col-span-2 text-center"><span class="lang-en">Final</span><span class="lang-tr">Final</span></div>
+                <div class="col-span-1 text-center"><span class="lang-en">Avg</span><span class="lang-tr">Ort.</span></div>
+                <div class="col-span-1 text-center"><span class="lang-en">Grade</span><span class="lang-tr">Not</span></div>
+            </div>
+            <!-- Course Rows -->
+            <div class="divide-y divide-outline-variant/30" id="grades-table-body">
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var enrollment in Model)
+                    {
+                        var mid = enrollment.MidtermGrade ?? 0;
+                        var fin = enrollment.FinalGrade ?? 0;
+                        var avg = (mid * 0.4) + (fin * 0.6);
+                        var lgrade = string.IsNullOrEmpty(enrollment.LetterGrade) ? "-" : enrollment.LetterGrade;
+                        var isFail = lgrade == "FF" || lgrade == "FD" || lgrade == "FZ";
+                        var isSurveyPending = !enrollment.IsSurveyCompleted && !string.IsNullOrEmpty(enrollment.LetterGrade);
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-md py-sm items-center hover:bg-surface-bright/50 transition-colors course-row" data-ects="@enrollment.Course.Ects">
+                            <div class="md:col-span-1 font-label-sm text-label-sm text-outline">@enrollment.Course.Code</div>
+                            <div class="md:col-span-4 font-body-md text-body-md font-medium text-on-background">@enrollment.Course.Name</div>
+                            <div class="hidden md:block md:col-span-1 text-center font-body-md text-body-md">@enrollment.Course.Ects</div>
+                            <div class="flex justify-between md:block md:col-span-2 text-center">
+                                <span class="md:hidden font-label-sm text-on-surface-variant"><span class="lang-en">Midterm:</span><span class="lang-tr">Vize:</span></span>
+                                <span class="grade-static font-body-md text-body-md font-medium">@mid</span>
+                                <input type="number" min="0" max="100" class="grade-input hidden" value="@mid" oninput="calculateRow(this)">
+                            </div>
+                            <div class="flex justify-between md:block md:col-span-2 text-center">
+                                <span class="md:hidden font-label-sm text-on-surface-variant"><span class="lang-en">Final:</span><span class="lang-tr">Final:</span></span>
+                                @if (isSurveyPending)
+                                {
+                                    <span class="font-body-md text-body-md font-medium text-amber-600 dark:text-amber-400 flex items-center justify-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[15px]">lock</span>
+                                        <span class="lang-en">Locked</span><span class="lang-tr">Kilitli</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="grade-static font-body-md text-body-md font-medium @(isFail ? "text-error" : "")">@fin</span>
+                                    <input type="number" min="0" max="100" class="grade-input hidden" value="@fin" oninput="calculateRow(this)">
+                                }
+                            </div>
+                            <div class="flex justify-between md:block md:col-span-1 text-center">
+                                <span class="md:hidden font-label-sm text-on-surface-variant"><span class="lang-en">Average:</span><span class="lang-tr">Ortalama:</span></span>
+                                @if (isSurveyPending)
+                                {
+                                    <span class="font-body-md text-body-md font-medium text-amber-600 dark:text-amber-400"><span class="lang-en">Locked</span><span class="lang-tr">Kilitli</span></span>
+                                }
+                                else
+                                {
+                                    <span class="grade-avg font-body-md text-body-md font-medium @(isFail ? "text-error" : "")">@avg.ToString("0.0")</span>
+                                }
+                            </div>
+                            <div class="flex justify-between md:block md:col-span-1 text-center">
+                                <span class="md:hidden font-label-sm text-on-surface-variant"><span class="lang-en">Grade:</span><span class="lang-tr">Not:</span></span>
+                                @if (isSurveyPending)
+                                {
+                                    <button onclick="openSurveyModal(@enrollment.CourseId, '@enrollment.Course.Name')" class="px-2 py-1 bg-amber-500 text-white hover:bg-amber-600 rounded font-label-sm text-label-sm shadow-sm flex items-center gap-0.5 whitespace-nowrap mx-auto">
+                                        <span class="material-symbols-outlined text-[13px]">rate_review</span>
+                                        <span class="lang-en">Fill Survey</span><span class="lang-tr">Anketi Doldur</span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="grade-letter inline-flex items-center justify-center px-2 py-1 rounded-full @(isFail ? "bg-error-container text-on-error-container" : "bg-secondary-container text-on-secondary-container") font-label-sm text-label-sm">@lgrade</span>
+                                    @if (!string.IsNullOrEmpty(enrollment.LetterGrade))
+                                    {
+                                        <button onclick="openObjectionModal(@enrollment.CourseId, '@enrollment.Course.Code', '@enrollment.Course.Name', @(enrollment.MidtermGrade ?? 0), @(enrollment.FinalGrade ?? 0))" 
+                                                class="ml-1 text-amber-600 dark:text-amber-400 hover:text-amber-800 transition-colors" title="Not İtirazı">
+                                            <span class="material-symbols-outlined text-[16px]">gavel</span>
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="p-lg text-center text-on-surface-variant font-label-md">
+                        <span class="lang-en">You don't have any graded courses yet.</span><span class="lang-tr">Henüz notlandırılmış bir dersiniz bulunmuyor.</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Objection History Link -->
+        <div class="mt-md flex justify-end">
+            <a asp-action="GradeObjections" class="glass-card px-md py-sm rounded-lg text-primary font-label-md flex items-center gap-xs hover:bg-primary/10 transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">history</span>
+                <span><span class="lang-en">Objection History</span><span class="lang-tr">İtiraz Geçmişi</span></span>
+            </a>
+        </div>
+    </section>
+</div>
+
+<!-- Survey Modal -->
+<div id="surveyModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-2xl p-md max-w-md w-full mx-4 shadow-2xl border border-white/20">
+        <form method="post" asp-action="SubmitSurvey">
+            <input type="hidden" name="courseId" id="surveyCourseId" />
+            <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+                <h3 class="font-h3 text-h3 text-primary flex items-center gap-1">
+                    <span class="material-symbols-outlined">rate_review</span>
+                    <span class="lang-en">Course Evaluation Survey</span><span class="lang-tr">Ders Değerlendirme Anketi</span>
+                </h3>
+                <button type="button" onclick="closeSurveyModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-md mb-md">
+                <p class="font-body-md text-body-md text-on-surface">
+                    <span class="lang-en">Please evaluate the teaching quality of the <strong id="surveyCourseName" class="text-primary">Course Name</strong> course.</span><span class="lang-tr">Lütfen <strong id="surveyCourseName" class="text-primary">Course Name</strong> dersi öğretim kalitesini değerlendirin.</span>
+                </p>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Instructor's Teaching Performance</span><span class="lang-tr">Öğretim Üyesinin Dersi Anlatım Performansı</span></label>
+                    <select name="rating" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary">
+                        <option value="5"><span class="lang-en">5 - Very Good</span><span class="lang-tr">5 - Çok İyi</span></option>
+                        <option value="4"><span class="lang-en">4 - Good</span><span class="lang-tr">4 - İyi</span></option>
+                        <option value="3"><span class="lang-en">3 - Average</span><span class="lang-tr">3 - Orta</span></option>
+                        <option value="2"><span class="lang-en">2 - Poor</span><span class="lang-tr">2 - Yetersiz</span></option>
+                        <option value="1"><span class="lang-en">1 - Very Poor</span><span class="lang-tr">1 - Çok Kötü</span></option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Feedback and Suggestions</span><span class="lang-tr">Görüş ve Önerileriniz</span></label>
+                    <textarea name="feedback" rows="3" placeholder="Görüşlerinizi buraya yazabilirsiniz..." data-tr-placeholder="Görüşlerinizi buraya yazabilirsiniz..." data-en-placeholder="You can write your feedback here..." class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant/30">
+                <button type="button" onclick="closeSurveyModal()" class="px-md py-xs border border-outline text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-variant/20 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Save Survey and Unlock</span><span class="lang-tr">Anketi Kaydet ve Kilidi Aç</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Grade Objection Modal -->
+<div id="objectionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-2xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <form method="post" asp-action="CreateObjection">
+            <input type="hidden" name="courseId" id="objectionCourseId" />
+            <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+                <h3 class="font-h3 text-h3 text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <span class="material-symbols-outlined">gavel</span>
+                    <span class="lang-en">Grade Objection Request</span><span class="lang-tr">Not İtiraz Talebi</span>
+                </h3>
+                <button type="button" onclick="closeObjectionModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-md mb-md">
+                <div class="bg-surface-container-low rounded-lg p-sm">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Course</span><span class="lang-tr">Ders</span></p>
+                    <p class="font-body-md text-body-md text-on-surface font-semibold">
+                        <span id="objectionCourseCode" class="text-primary"></span> - <span id="objectionCourseName"></span>
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-sm">
+                    <div class="bg-surface-container-low rounded-lg p-sm text-center">
+                        <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Midterm Grade</span><span class="lang-tr">Vize Notu</span></p>
+                        <p id="objectionMidterm" class="font-h3 text-h3 text-on-surface font-bold">-</p>
+                    </div>
+                    <div class="bg-surface-container-low rounded-lg p-sm text-center">
+                        <p class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Final Grade</span><span class="lang-tr">Final Notu</span></p>
+                        <p id="objectionFinal" class="font-h3 text-h3 text-on-surface font-bold">-</p>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Exam Type *</span><span class="lang-tr">Sınav Türü *</span></label>
+                    <select name="examType" required class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary">
+                        <option value="Midterm"><span class="lang-en">Midterm Exam</span><span class="lang-tr">Vize Sınavı</span></option>
+                        <option value="Final"><span class="lang-en">Final Exam</span><span class="lang-tr">Final Sınavı</span></option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-label-md text-on-surface"><span class="lang-en">Reason for Objection *</span><span class="lang-tr">İtiraz Gerekçeniz *</span></label>
+                    <textarea name="explanation" rows="4" required minlength="20" placeholder="Lütfen itiraz gerekçenizi detaylı şekilde açıklayın. (Min. 20 karakter)" 
+                              data-tr-placeholder="Lütfen itiraz gerekçenizi detaylı şekilde açıklayın. (Min. 20 karakter)" data-en-placeholder="Please explain the reason for your objection in detail. (Min. 20 characters)"
+                              class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-body-md focus:outline-primary"></textarea>
+                </div>
+                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-sm">
+                    <p class="font-label-sm text-label-sm text-amber-800 dark:text-amber-300 flex items-start gap-1">
+                        <span class="material-symbols-outlined text-[16px] mt-0.5">info</span>
+                        <span class="lang-en">Your objection will be reviewed by your advisor. If approved, your grade will be updated and your CGPA will be recalculated.</span><span class="lang-tr">İtiraz talebiniz danışmanınız tarafından incelenecektir. Onay verilmesi durumunda notunuz güncellenecek ve GNO'nuz yeniden hesaplanacaktır.</span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-sm pt-sm border-t border-outline-variant/30">
+                <button type="button" onclick="closeObjectionModal()" class="px-md py-xs border border-outline text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-variant/20 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-amber-600 text-white font-label-md text-label-md px-md py-xs rounded-lg hover:bg-amber-700 transition-all shadow-sm"><span class="lang-en">Submit Objection</span><span class="lang-tr">İtiraz Gönder</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let simMode = false;
+
+    function toggleSimulator() {
+        simMode = !simMode;
+        const btn = document.getElementById("toggle-sim-btn");
+        const inputs = document.querySelectorAll(".grade-input");
+        const statics = document.querySelectorAll(".grade-static");
+
+        if (simMode) {
+            btn.innerHTML = `<span class="material-symbols-outlined text-[20px]">check</span><span><span class="lang-en">Exit Simulator Mode</span><span class="lang-tr">Simülatörden Çık</span></span>`;
+            btn.classList.add("bg-primary", "text-white");
+            inputs.forEach(el => el.classList.remove("hidden"));
+            statics.forEach(el => el.classList.add("hidden"));
+        } else {
+            btn.innerHTML = `<span class="material-symbols-outlined text-[20px]">calculate</span><span><span class="lang-en">Enable GPA Simulator</span><span class="lang-tr">GNO Simülatörünü Aç</span></span>`;
+            btn.classList.remove("bg-primary", "text-white");
+            inputs.forEach(el => el.classList.add("hidden"));
+            statics.forEach(el => el.classList.remove("hidden"));
+        }
+    }
+
+    function calculateRow(inputEl) {
+        const row = inputEl.closest(".course-row");
+        const inputs = row.querySelectorAll(".grade-input");
+        const midterm = parseFloat(inputs[0].value) || 0;
+        const final = parseFloat(inputs[1].value) || 0;
+
+        // Recalculate average
+        const avg = (midterm * 0.4) + (final * 0.6);
+        const avgEl = row.querySelector(".grade-avg");
+        avgEl.textContent = avg.toFixed(1);
+
+        // Determine letter grade
+        let letter = "FF";
+        let points = 0.0;
+        let isPass = true;
+
+        if (avg >= 90) { letter = "AA"; points = 4.0; }
+        else if (avg >= 85) { letter = "BA"; points = 3.5; }
+        else if (avg >= 80) { letter = "BB"; points = 3.0; }
+        else if (avg >= 75) { letter = "CB"; points = 2.5; }
+        else if (avg >= 70) { letter = "CC"; points = 2.0; }
+        else if (avg >= 65) { letter = "DC"; points = 1.5; }
+        else if (avg >= 60) { letter = "DD"; points = 1.0; }
+        else if (avg >= 50) { letter = "FD"; points = 0.5; isPass = false; }
+        else { letter = "FF"; points = 0.0; isPass = false; }
+
+        const letterEl = row.querySelector(".grade-letter");
+        letterEl.textContent = letter;
+
+        if (isPass) {
+            letterEl.className = "grade-letter inline-flex items-center justify-center px-2 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm";
+            avgEl.classList.remove("text-error");
+        } else {
+            letterEl.className = "grade-letter inline-flex items-center justify-center px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm";
+            avgEl.classList.add("text-error");
+        }
+
+        row.dataset.points = points;
+
+        // Recalculate global GPA
+        recalculateGPA();
+    }
+
+    function recalculateGPA() {
+        const rows = document.querySelectorAll(".course-row");
+        let totalEcts = 0;
+        let totalPoints = 0;
+
+        rows.forEach(row => {
+            const ects = parseFloat(row.dataset.ects) || 0;
+            const points = parseFloat(row.dataset.points) || getPointsFromLetter(row.querySelector(".grade-letter").textContent);
+            totalEcts += ects;
+            totalPoints += (points * ects);
+        });
+
+        const newSgpa = totalEcts > 0 ? (totalPoints / totalEcts) : 0.0;
+        document.getElementById("sgpa-val").textContent = newSgpa.toFixed(2);
+
+        // Simulating Cumulative GPA update
+        // GNO = (Old ECTS * Old GNO + New ECTS * New SGPA) / (Old ECTS + New ECTS)
+        const oldEcts = 109;
+        const oldGpa = 3.40;
+        const newCgpa = ((oldEcts * oldGpa) + totalPoints) / (oldEcts + totalEcts);
+        document.getElementById("cgpa-val").textContent = newCgpa.toFixed(2);
+    }
+
+    function getPointsFromLetter(letter) {
+        switch(letter) {
+            case "AA": return 4.0;
+            case "BA": return 3.5;
+            case "BB": return 3.0;
+            case "CB": return 2.5;
+            case "CC": return 2.0;
+            case "DC": return 1.5;
+            case "DD": return 1.0;
+            case "FD": return 0.5;
+            case "FF": return 0.0;
+            default: return 0.0;
+        }
+    }
+
+    function openSurveyModal(courseId, courseName) {
+        document.getElementById('surveyCourseId').value = courseId;
+        document.getElementById('surveyCourseName').textContent = courseName;
+        document.getElementById('surveyModal').classList.remove('hidden');
+    }
+
+    function closeSurveyModal() {
+        document.getElementById('surveyModal').classList.add('hidden');
+    }
+
+    function openObjectionModal(courseId, courseCode, courseName, midterm, final) {
+        document.getElementById('objectionCourseId').value = courseId;
+        document.getElementById('objectionCourseCode').textContent = courseCode;
+        document.getElementById('objectionCourseName').textContent = courseName;
+        document.getElementById('objectionMidterm').textContent = midterm;
+        document.getElementById('objectionFinal').textContent = final;
+        document.getElementById('objectionModal').classList.remove('hidden');
+    }
+
+    function closeObjectionModal() {
+        document.getElementById('objectionModal').classList.add('hidden');
+    }
+</script>
+}
