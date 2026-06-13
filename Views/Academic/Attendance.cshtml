@@ -39,15 +39,15 @@
                 <div class="flex justify-between items-start mb-sm relative z-10">
                     <div>
                         @if(isFailed) {
-                            <span class="inline-block px-sm py-xs rounded-full bg-error text-on-error font-label-sm text-label-sm mb-sm flex items-center gap-xs shadow-sm">
+                            <span class="inline-flex px-sm py-xs rounded-full bg-error text-on-error font-label-sm text-label-sm mb-sm items-center gap-xs shadow-sm">
                                 <span class="material-symbols-outlined text-[14px]">cancel</span> <span class="lang-en">Failed due to Absences (FZ)</span><span class="lang-tr">Devamsızlıktan Kaldı (FZ)</span>
                             </span>
                         } else if(isWarning) {
-                            <span class="inline-block px-sm py-xs rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm mb-sm flex items-center gap-xs">
+                            <span class="inline-flex px-sm py-xs rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm mb-sm items-center gap-xs">
                                 <span class="material-symbols-outlined text-[14px]">warning</span> <span class="lang-en">Warning Limit</span><span class="lang-tr">Uyarı Sınırı</span>
                             </span>
                         } else {
-                            <span class="inline-block px-sm py-xs rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm mb-sm flex items-center gap-xs">
+                            <span class="inline-flex px-sm py-xs rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm mb-sm items-center gap-xs">
                                 <span class="material-symbols-outlined text-[14px]">check_circle</span> <span class="lang-en">Normal</span><span class="lang-tr">Normal</span>
                             </span>
                         }
