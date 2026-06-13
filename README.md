@@ -86,6 +86,8 @@ This project is built following modern web design trends (bento grid layout, gla
 
 # 🎓 OKÜ Öğrenci Bilgi Sistemi - OBS
 
+## Türkçe Versiyon (Ekran Görüntüleri ile)
+
 OKÜ Öğrenci Bilgi Sistemi (OBS), bilgisayar mühendisliği öğrencileri ve akademik danışmanları için özel olarak tasarlanmış, yüksek bilgi yoğunluğuna sahip, modern ve responsive bir akademik portaldır. 
 
 ---
