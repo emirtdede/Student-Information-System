@@ -27,12 +27,12 @@ namespace Student_Information_System.Data
                 FirstName = "Ahmet",
                 LastName = "Yılmaz",
                 TcKimlikNo = "12345678900",
-                Password = "password",
                 Email = "ahmet.yilmaz@oku.edu.tr",
                 Role = "Advisor",
                 Department = "Computer Engineering",
                 Title = "Prof. Dr."
             };
+            advisor.Password = SecurityHelper.HashPassword(advisor, "password");
             context.Advisors.Add(advisor);
             context.SaveChanges();
 
@@ -57,6 +57,46 @@ namespace Student_Information_System.Data
             };
             student.Password = SecurityHelper.HashPassword(student, "EtdRke3101");
             context.Students.Add(student);
+
+            // Seed additional students under same advisor
+            var student2 = new Student
+            {
+                FirstName = "Elif",
+                LastName = "Kaya",
+                TcKimlikNo = "22222222222",
+                Email = "20217170042@ogr.oku.edu.tr",
+                Role = "Student",
+                StudentNumber = "20217170042",
+                Department = "Computer Engineering",
+                EnrollmentYear = 2021,
+                Gpa = 3.25,
+                AdvisorId = advisor.Id,
+                TuitionDebt = 0,
+                IsInternship1Completed = false,
+                IsInternship2Completed = false
+            };
+            student2.Password = SecurityHelper.HashPassword(student2, "password");
+            context.Students.Add(student2);
+
+            var student3 = new Student
+            {
+                FirstName = "Mustafa",
+                LastName = "Yıldız",
+                TcKimlikNo = "33333333333",
+                Email = "20217170055@ogr.oku.edu.tr",
+                Role = "Student",
+                StudentNumber = "20217170055",
+                Department = "Computer Engineering",
+                EnrollmentYear = 2021,
+                Gpa = 2.80,
+                AdvisorId = advisor.Id,
+                TuitionDebt = 1200.00m,
+                IsInternship1Completed = true,
+                IsInternship2Completed = false
+            };
+            student3.Password = SecurityHelper.HashPassword(student3, "password");
+            context.Students.Add(student3);
+
             context.SaveChanges();
 
             var course1 = new Course
