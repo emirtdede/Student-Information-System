@@ -132,6 +132,51 @@ namespace StudentInformationSystem.Controllers
             return View(students);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddStudent(string firstName, string lastName, string tcKimlikNo, string email, string studentNumber, string department, string password)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int advisorId)) return RedirectToAction("Logout", "Auth");
+
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName) ||
+                string.IsNullOrWhiteSpace(tcKimlikNo) || string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(studentNumber) || string.IsNullOrWhiteSpace(department) ||
+                string.IsNullOrWhiteSpace(password))
+            {
+                TempData["ErrorMessage"] = "Lütfen tüm alanları doldurunuz.";
+                return RedirectToAction("StudentManagement");
+            }
+
+            var exists = await _context.Users.AnyAsync(u => u.TcKimlikNo == tcKimlikNo || u.Email == email || (u is Student && ((Student)u).StudentNumber == studentNumber));
+            if (exists)
+            {
+                TempData["ErrorMessage"] = "Bu TC Kimlik No, E-posta veya Öğrenci Numarası zaten kayıtlı.";
+                return RedirectToAction("StudentManagement");
+            }
+
+            var newStudent = new Student
+            {
+                FirstName = firstName.Trim(),
+                LastName = lastName.Trim(),
+                TcKimlikNo = tcKimlikNo.Trim(),
+                Email = email.Trim(),
+                StudentNumber = studentNumber.Trim(),
+                Department = department.Trim(),
+                Role = "Student",
+                EnrollmentYear = DateTime.Now.Year,
+                Gpa = 0.0,
+                AdvisorId = advisorId,
+                TuitionDebt = 0
+            };
+            newStudent.Password = SecurityHelper.HashPassword(newStudent, password);
+
+            _context.Students.Add(newStudent);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi.";
+            return RedirectToAction("StudentManagement");
+        }
+
         public async Task<IActionResult> GradeEntry()
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -146,6 +191,8 @@ namespace StudentInformationSystem.Controllers
                 .Include(s => s.Enrollments.Where(e => e.Status == "Approved"))
                     .ThenInclude(e => e.Course)
                 .ToListAsync();
+
+            ViewBag.Courses = await _context.Courses.OrderBy(c => c.Code).ToListAsync();
 
             return View(students);
         }
@@ -182,6 +229,59 @@ namespace StudentInformationSystem.Controllers
             return RedirectToAction("GradeEntry");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddGrade(int studentId, int courseId, int? midtermGrade, int? finalGrade)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int advisorId)) return RedirectToAction("Logout", "Auth");
+
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == studentId && s.AdvisorId == advisorId);
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Öğrenci bulunamadı veya yetkiniz yok.";
+                return RedirectToAction("GradeEntry");
+            }
+
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null)
+            {
+                TempData["ErrorMessage"] = "Ders bulunamadı.";
+                return RedirectToAction("GradeEntry");
+            }
+
+            var enrollment = await _context.Enrollments.FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+            if (enrollment == null)
+            {
+                enrollment = new Enrollment
+                {
+                    StudentId = studentId,
+                    CourseId = courseId,
+                    Status = "Approved",
+                    EnrollmentType = "Major"
+                };
+                _context.Enrollments.Add(enrollment);
+            }
+
+            if (midtermGrade.HasValue) enrollment.MidtermGrade = midtermGrade.Value;
+            if (finalGrade.HasValue) enrollment.FinalGrade = finalGrade.Value;
+
+            if (enrollment.AbsentCount > 4)
+            {
+                enrollment.LetterGrade = "FZ";
+            }
+            else if (enrollment.MidtermGrade.HasValue && enrollment.FinalGrade.HasValue)
+            {
+                double average = (enrollment.MidtermGrade.Value * 0.4) + (enrollment.FinalGrade.Value * 0.6);
+                enrollment.LetterGrade = CalculateLetterGrade(average);
+            }
+
+            await _context.SaveChangesAsync();
+            await UpdateStudentGpa(studentId);
+
+            TempData["SuccessMessage"] = "Not başarıyla eklendi/güncellendi.";
+            return RedirectToAction("GradeEntry");
+        }
+
         private string CalculateLetterGrade(double average)
         {
             if (average >= 90) return "AA";
@@ -208,6 +308,8 @@ namespace StudentInformationSystem.Controllers
                 .Include(s => s.Enrollments.Where(e => e.Status == "Approved"))
                     .ThenInclude(e => e.Course)
                 .ToListAsync();
+
+            ViewBag.Courses = await _context.Courses.OrderBy(c => c.Code).ToListAsync();
 
             return View(students);
         }
@@ -247,6 +349,64 @@ namespace StudentInformationSystem.Controllers
                 await _context.SaveChangesAsync();
                 await UpdateStudentGpa(studentId);
             }
+            return RedirectToAction("AttendanceEntry");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddAttendance(int studentId, int courseId, int absentCount)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int advisorId)) return RedirectToAction("Logout", "Auth");
+
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == studentId && s.AdvisorId == advisorId);
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Öğrenci bulunamadı veya yetkiniz yok.";
+                return RedirectToAction("AttendanceEntry");
+            }
+
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null)
+            {
+                TempData["ErrorMessage"] = "Ders bulunamadı.";
+                return RedirectToAction("AttendanceEntry");
+            }
+
+            var enrollment = await _context.Enrollments.FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+            if (enrollment == null)
+            {
+                enrollment = new Enrollment
+                {
+                    StudentId = studentId,
+                    CourseId = courseId,
+                    Status = "Approved",
+                    EnrollmentType = "Major"
+                };
+                _context.Enrollments.Add(enrollment);
+            }
+
+            enrollment.AbsentCount = absentCount;
+            if (enrollment.AbsentCount > 4)
+            {
+                enrollment.LetterGrade = "FZ";
+            }
+            else if (enrollment.LetterGrade == "FZ" && enrollment.AbsentCount <= 4)
+            {
+                if (enrollment.MidtermGrade.HasValue && enrollment.FinalGrade.HasValue)
+                {
+                    double average = (enrollment.MidtermGrade.Value * 0.4) + (enrollment.FinalGrade.Value * 0.6);
+                    enrollment.LetterGrade = CalculateLetterGrade(average);
+                }
+                else
+                {
+                    enrollment.LetterGrade = string.Empty;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            await UpdateStudentGpa(studentId);
+
+            TempData["SuccessMessage"] = "Yoklama bilgisi başarıyla güncellendi.";
             return RedirectToAction("AttendanceEntry");
         }
 

@@ -1,4 +1,4 @@
-@model Student_Information_System.Models.Student
+@model Student_Information_System.Models.ApplicationUser
 @{ ViewData["Title"] = "Settings"; }
 
 @section Styles {
@@ -65,10 +65,20 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-sm mb-md">
-                            <div>
-                                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Student ID</span><span class="lang-tr">Öğrenci Numarası</span></label>
-                                <input class="w-full bg-surface-container border border-outline-variant/30 rounded-lg px-sm py-sm font-body-md text-body-md text-on-surface-variant cursor-not-allowed opacity-70" disabled="" type="text" value="@Model.StudentNumber"/>
-                            </div>
+                            @if (Model is Student_Information_System.Models.Student student)
+                            {
+                                <div>
+                                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Student ID</span><span class="lang-tr">Öğrenci Numarası</span></label>
+                                    <input class="w-full bg-surface-container border border-outline-variant/30 rounded-lg px-sm py-sm font-body-md text-body-md text-on-surface-variant cursor-not-allowed opacity-70" disabled="" type="text" value="@student.StudentNumber"/>
+                                </div>
+                            }
+                            else if (Model is Student_Information_System.Models.Advisor advisor)
+                            {
+                                <div>
+                                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Title & Department</span><span class="lang-tr">Unvan & Bölüm</span></label>
+                                    <input class="w-full bg-surface-container border border-outline-variant/30 rounded-lg px-sm py-sm font-body-md text-body-md text-on-surface-variant cursor-not-allowed opacity-70" disabled="" type="text" value="@advisor.Title @advisor.Department"/>
+                                </div>
+                            }
                             <div>
                                 <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Email Address</span><span class="lang-tr">E-posta Adresi</span></label>
                                 <input id="profile-email" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-sm py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" type="email" value="@Model.Email"/>

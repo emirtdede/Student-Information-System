@@ -210,6 +210,38 @@ namespace Student_Information_System.Data
                 IsSurveyCompleted = true
             };
             context.Enrollments.Add(capEnrollment);
+
+            // Seed pending registrations for student2 (Elif Kaya) and student3 (Mustafa Yıldız)
+            context.Enrollments.Add(new Enrollment
+            {
+                StudentId = student2.Id,
+                CourseId = course2.Id,
+                Status = "Pending",
+                EnrollmentType = "Major"
+            });
+            context.Enrollments.Add(new Enrollment
+            {
+                StudentId = student2.Id,
+                CourseId = course4.Id,
+                Status = "Pending",
+                EnrollmentType = "Major"
+            });
+
+            context.Enrollments.Add(new Enrollment
+            {
+                StudentId = student3.Id,
+                CourseId = course2.Id,
+                Status = "Pending",
+                EnrollmentType = "Major"
+            });
+            context.Enrollments.Add(new Enrollment
+            {
+                StudentId = student3.Id,
+                CourseId = course5.Id,
+                Status = "Pending",
+                EnrollmentType = "Major"
+            });
+
             context.SaveChanges();
 
             var message1 = new Message

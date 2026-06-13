@@ -2,11 +2,18 @@
 @{ ViewData["Title"] = "Yoklama Girişi"; }
 
 <div class="flex-grow p-gutter relative overflow-hidden w-full">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-lg gap-md mt-md border-b border-outline-variant/30 pb-sm">
         <div>
             <h1 class="font-h1 text-h1 text-on-surface mb-xs"><span class="lang-en">Attendance Entry</span><span class="lang-tr">Yoklama Girişi</span></h1>
             <p class="font-body-md text-body-md text-on-surface-variant"><span class="lang-en">Enter student absences on a weekly basis. Students with more than 4 weeks of absence will automatically receive FZ.</span><span class="lang-tr">Öğrencilerin devamsızlık durumlarını hafta bazında girin. 4 haftadan fazla devamsızlık durumunda öğrenci otomatik olarak (FZ) kalır.</span></p>
         </div>
+        @if (ViewBag.IsGradeEntryActive != false)
+        {
+            <button onclick="openAddAttendanceModal()" class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[20px]">add</span>
+                <span class="lang-en">Add/Update Attendance</span><span class="lang-tr">Yoklama Ekle/Güncelle</span>
+            </button>
+        }
     </div>
 
     @if (TempData["ErrorMessage"] != null)
@@ -14,6 +21,14 @@
         <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
             <span class="material-symbols-outlined">error</span>
             @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-secondary-container text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+            <span class="material-symbols-outlined">check_circle</span>
+            @TempData["SuccessMessage"]
         </div>
     }
 
@@ -96,3 +111,65 @@
         }
     </div>
 </div>
+
+<!-- Add Attendance Modal -->
+<div id="addAttendanceModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Add/Update Attendance</span><span class="lang-tr">Yoklama Ekle/Güncelle</span></h3>
+            <button onclick="closeAddAttendanceModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form method="post" asp-action="AddAttendance" class="space-y-sm">
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Select Student</span><span class="lang-tr">Öğrenci Seçin</span></label>
+                <select name="studentId" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary">
+                    @if(Model != null)
+                    {
+                        foreach(var student in Model)
+                        {
+                            <option value="@student.Id">@student.FirstName @student.LastName (@student.StudentNumber)</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Select Course</span><span class="lang-tr">Ders Seçin</span></label>
+                <select name="courseId" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary">
+                    @if(ViewBag.Courses != null)
+                    {
+                        foreach(var course in (List<Student_Information_System.Models.Course>)ViewBag.Courses)
+                        {
+                            <option value="@course.Id">@course.Code - @course.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Absences (Weeks)</span><span class="lang-tr">Devamsızlık (Hafta)</span></label>
+                <input type="number" name="absentCount" min="0" max="14" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+            </div>
+
+            <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+                <button type="button" onclick="closeAddAttendanceModal()" class="px-md py-xs border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-variant/50 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Save</span><span class="lang-tr">Kaydet</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openAddAttendanceModal() {
+        document.getElementById('addAttendanceModal').classList.remove('hidden');
+    }
+    
+    function closeAddAttendanceModal() {
+        document.getElementById('addAttendanceModal').classList.add('hidden');
+    }
+</script>
+}

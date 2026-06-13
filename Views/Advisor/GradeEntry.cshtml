@@ -22,9 +22,18 @@
 
 <div class="flex-grow p-gutter relative overflow-hidden w-full">
 <div class="p-gutter flex-1 w-full max-w-container-max mx-auto">
-<div class="mb-lg">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-lg gap-md mt-md border-b border-outline-variant/30 pb-sm">
+<div>
 <h1 class="font-h1 text-h1 text-primary mb-xs"><span class="lang-en">Grade Entry System</span><span class="lang-tr">Not Girişi Sistemi</span></h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant"><span class="lang-en">Enter midterm (Midterm) and semester-end (Final) grades for the students you advise.</span><span class="lang-tr">Danışmanlığını yaptığınız öğrencilerin ara sınav (Vize) ve yarıyıl sonu (Final) notlarını girin.</span></p>
+</div>
+@if (ViewBag.IsGradeEntryActive != false)
+{
+    <button onclick="openAddGradeModal()" class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-xs">
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span class="lang-en">Add/Update Grade</span><span class="lang-tr">Not Ekle/Güncelle</span>
+    </button>
+}
 </div>
 
 @if (TempData["ErrorMessage"] != null)
@@ -32,6 +41,14 @@
     <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
         <span class="material-symbols-outlined">error</span>
         @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-secondary-container text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">check_circle</span>
+        @TempData["SuccessMessage"]
     </div>
 }
 
@@ -111,5 +128,73 @@
     }
 </div>
 
+<!-- Add Grade Modal -->
+<div id="addGradeModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Add/Update Grade</span><span class="lang-tr">Not Ekle/Güncelle</span></h3>
+            <button onclick="closeAddGradeModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form method="post" asp-action="AddGrade" class="space-y-sm">
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Select Student</span><span class="lang-tr">Öğrenci Seçin</span></label>
+                <select name="studentId" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary">
+                    @if(Model != null)
+                    {
+                        foreach(var student in Model)
+                        {
+                            <option value="@student.Id">@student.FirstName @student.LastName (@student.StudentNumber)</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Select Course</span><span class="lang-tr">Ders Seçin</span></label>
+                <select name="courseId" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary">
+                    @if(ViewBag.Courses != null)
+                    {
+                        foreach(var course in (List<Student_Information_System.Models.Course>)ViewBag.Courses)
+                        {
+                            <option value="@course.Id">@course.Code - @course.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-sm">
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Midterm Grade</span><span class="lang-tr">Vize Notu</span></label>
+                    <input type="number" name="midtermGrade" min="0" max="100" class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+                </div>
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Final Grade</span><span class="lang-tr">Final Notu</span></label>
+                    <input type="number" name="finalGrade" min="0" max="100" class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+                <button type="button" onclick="closeAddGradeModal()" class="px-md py-xs border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-variant/50 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Save</span><span class="lang-tr">Kaydet</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </div>
 </div>
+
+@section Scripts {
+<script>
+    function openAddGradeModal() {
+        document.getElementById('addGradeModal').classList.remove('hidden');
+    }
+    
+    function closeAddGradeModal() {
+        document.getElementById('addGradeModal').classList.add('hidden');
+    }
+</script>
+}

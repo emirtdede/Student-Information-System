@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Student_Information_System.Data;
+using Student_Information_System.Models;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System;
+using System.Collections.Generic;
 
 namespace StudentInformationSystem.Controllers
 {
@@ -26,13 +29,15 @@ namespace StudentInformationSystem.Controllers
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("Logout", "Auth");
 
-            var student = await _context.Students
-                .Include(s => s.Advisor)
-                .FirstOrDefaultAsync(s => s.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return RedirectToAction("Logout", "Auth");
 
-            if (student == null) return RedirectToAction("Logout", "Auth");
+            if (user is Student student)
+            {
+                await _context.Entry(student).Reference(s => s.Advisor).LoadAsync();
+            }
 
-            return View(student);
+            return View(user);
         }
 
         public async Task<IActionResult> Profile()
@@ -40,13 +45,15 @@ namespace StudentInformationSystem.Controllers
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("Logout", "Auth");
 
-            var student = await _context.Students
-                .Include(s => s.Advisor)
-                .FirstOrDefaultAsync(s => s.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return RedirectToAction("Logout", "Auth");
 
-            if (student == null) return RedirectToAction("Logout", "Auth");
+            if (user is Student student)
+            {
+                await _context.Entry(student).Reference(s => s.Advisor).LoadAsync();
+            }
 
-            return View(student);
+            return View(user);
         }
 
         [HttpPost]
@@ -73,33 +80,33 @@ namespace StudentInformationSystem.Controllers
             if (!int.TryParse(userIdStr, out int userId)) 
                 return Json(new { success = false, message = "Oturum bulunamadı." });
 
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == userId);
-            if (student == null) 
-                return Json(new { success = false, message = "Öğrenci bulunamadı." });
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) 
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
 
             if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName) || string.IsNullOrWhiteSpace(email))
             {
                 return Json(new { success = false, message = "Lütfen tüm alanları doldurunuz." });
             }
 
-            student.FirstName = firstName.Trim();
-            student.LastName = lastName.Trim();
-            student.Email = email.Trim();
+            user.FirstName = firstName.Trim();
+            user.LastName = lastName.Trim();
+            user.Email = email.Trim();
 
-            _context.Students.Update(student);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             // Refresh cookie claims
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
-                new Claim(ClaimTypes.Name, $"{student.FirstName} {student.LastName}"),
-                new Claim(ClaimTypes.Role, "Student")
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Role, user.Role)
             };
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            return Json(new { success = true, fullName = $"{student.FirstName} {student.LastName}" });
+            return Json(new { success = true, fullName = $"{user.FirstName} {user.LastName}" });
         }
 
         [HttpPost]
@@ -110,8 +117,8 @@ namespace StudentInformationSystem.Controllers
             if (!int.TryParse(userIdStr, out int userId)) 
                 return Json(new { success = false, message = LocalizationHelper.Get("UserNotFound", lang) });
 
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == userId);
-            if (student == null) 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) 
                 return Json(new { success = false, message = LocalizationHelper.Get("UserNotFound", lang) });
 
             if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
@@ -119,7 +126,7 @@ namespace StudentInformationSystem.Controllers
                 return Json(new { success = false, message = LocalizationHelper.Get("ErrorOccurred", lang) });
             }
 
-            if (!SecurityHelper.VerifyPassword(student, student.Password, currentPassword))
+            if (!SecurityHelper.VerifyPassword(user, user.Password, currentPassword))
             {
                 return Json(new { success = false, message = LocalizationHelper.Get("CurrentPasswordIncorrect", lang) });
             }
@@ -134,8 +141,8 @@ namespace StudentInformationSystem.Controllers
                 return Json(new { success = false, message = LocalizationHelper.Get("PasswordTooShort", lang) });
             }
 
-            student.Password = SecurityHelper.HashPassword(student, newPassword);
-            _context.Students.Update(student);
+            user.Password = SecurityHelper.HashPassword(user, newPassword);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = LocalizationHelper.Get("PasswordUpdated", lang) });
@@ -148,27 +155,27 @@ namespace StudentInformationSystem.Controllers
             if (!int.TryParse(userIdStr, out int userId)) 
                 return Json(new { success = false, message = "Oturum bulunamadı." });
 
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == userId);
-            if (student == null) 
-                return Json(new { success = false, message = "Öğrenci bulunamadı." });
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) 
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
 
-            student.EmailNotificationsEnabled = emailNotificationsEnabled;
-            student.SmsNotificationsEnabled = smsNotificationsEnabled;
-            student.ThemePreference = themePreference ?? "light";
-            student.LanguagePreference = languagePreference ?? "tr";
+            user.EmailNotificationsEnabled = emailNotificationsEnabled;
+            user.SmsNotificationsEnabled = smsNotificationsEnabled;
+            user.ThemePreference = themePreference ?? "light";
+            user.LanguagePreference = languagePreference ?? "tr";
 
-            _context.Students.Update(student);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             // Store the language in cookie to keep it persistent across session/requests
-            Response.Cookies.Append("lang", student.LanguagePreference, new CookieOptions
+            Response.Cookies.Append("lang", user.LanguagePreference, new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddYears(1),
                 HttpOnly = false, // Accessible by JS
                 SameSite = SameSiteMode.Lax
             });
 
-            var lang = student.LanguagePreference;
+            var lang = user.LanguagePreference;
             return Json(new { success = true, message = LocalizationHelper.Get("PreferencesUpdated", lang) });
         }
 
@@ -181,10 +188,10 @@ namespace StudentInformationSystem.Controllers
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (int.TryParse(userIdStr, out int userId))
             {
-                var student = _context.Students.Find(userId);
-                if (student != null && !string.IsNullOrEmpty(student.LanguagePreference))
+                var user = _context.Users.Find(userId);
+                if (user != null && !string.IsNullOrEmpty(user.LanguagePreference))
                 {
-                    return student.LanguagePreference;
+                    return user.LanguagePreference;
                 }
             }
             var acceptLanguage = Request.Headers["Accept-Language"].ToString();

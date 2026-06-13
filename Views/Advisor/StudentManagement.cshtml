@@ -45,12 +45,32 @@
 <h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-on-surface mb-xs tracking-tight"><span class="lang-en">Student Management</span><span class="lang-tr">Öğrenci Yönetimi</span></h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"><span class="lang-en">View and track the students you advise.</span><span class="lang-tr">Danışmanlığını yaptığınız öğrencileri görüntüleyin ve takip edin.</span></p>
 </div>
-<div class="hidden md:flex items-center gap-sm">
+<div class="flex items-center gap-sm">
+<button onclick="openAddStudentModal()" class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-xs">
+    <span class="material-symbols-outlined text-[20px]">add</span>
+    <span class="lang-en">Add Student</span><span class="lang-tr">Öğrenci Ekle</span>
+</button>
 <div class="w-10 h-10 rounded-full border-2 border-surface-bright bg-surface-variant flex items-center justify-center font-label-sm text-label-sm text-on-surface-variant font-bold">
     @Model.Count
 </div>
 </div>
 </div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-error-container text-on-error-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">error</span>
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-secondary-container text-on-secondary-container p-md rounded-xl mb-md font-body-md flex items-center gap-sm">
+        <span class="material-symbols-outlined">check_circle</span>
+        @TempData["SuccessMessage"]
+    </div>
+}
 
 <!-- Data Table Area -->
 <div class="glass-panel rounded-2xl overflow-hidden ambient-shadow flex-grow flex flex-col mb-xl">
@@ -92,3 +112,70 @@
 </div>
 </div>
 </div>
+
+<!-- Add Student Modal -->
+<div id="addStudentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card rounded-xl p-md max-w-lg w-full mx-4 shadow-2xl border border-white/20">
+        <div class="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-xs">
+            <h3 class="font-h3 text-h3 text-primary"><span class="lang-en">Add New Student</span><span class="lang-tr">Yeni Öğrenci Ekle</span></h3>
+            <button onclick="closeAddStudentModal()" class="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form method="post" asp-action="AddStudent" class="space-y-sm">
+            <div class="grid grid-cols-2 gap-sm">
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">First Name</span><span class="lang-tr">Ad</span></label>
+                    <input type="text" name="firstName" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+                </div>
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Last Name</span><span class="lang-tr">Soyad</span></label>
+                    <input type="text" name="lastName" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">TC Identification No</span><span class="lang-tr">T.C. Kimlik No</span></label>
+                <input type="text" name="tcKimlikNo" minlength="11" maxlength="11" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Student Number</span><span class="lang-tr">Öğrenci Numarası</span></label>
+                <input type="text" name="studentNumber" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Email Address</span><span class="lang-tr">E-posta Adresi</span></label>
+                <input type="email" name="email" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></label>
+                <input type="text" name="department" value="Computer Engineering" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+            </div>
+
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs"><span class="lang-en">Password</span><span class="lang-tr">Şifre</span></label>
+                <input type="password" name="password" required class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-primary" />
+            </div>
+
+            <div class="flex justify-end gap-sm pt-xs border-t border-outline-variant/30 mt-md">
+                <button type="button" onclick="closeAddStudentModal()" class="px-md py-xs border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-variant/50 transition-all"><span class="lang-en">Cancel</span><span class="lang-tr">İptal</span></button>
+                <button type="submit" class="bg-primary text-on-primary font-label-md text-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-all shadow-sm"><span class="lang-en">Save</span><span class="lang-tr">Kaydet</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openAddStudentModal() {
+        document.getElementById('addStudentModal').classList.remove('hidden');
+    }
+    
+    function closeAddStudentModal() {
+        document.getElementById('addStudentModal').classList.add('hidden');
+    }
+</script>
+}

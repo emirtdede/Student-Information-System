@@ -1,4 +1,4 @@
-@model Student_Information_System.Models.Student
+@model Student_Information_System.Models.ApplicationUser
 @{ ViewData["Title"] = "My Profile"; }
 
 @section Styles {
@@ -38,50 +38,77 @@
                     <input type="file" id="profile-upload-input" class="hidden" accept="image/*" onchange="initCropper(event)" />
                 </div>
                 <h3 class="font-h2 text-h2 text-on-background mb-xs">@Model.FirstName @Model.LastName</h3>
-                <p class="font-label-md text-label-md text-on-surface-variant bg-surface-container-highest px-3 py-1 rounded-full mb-md"><span class="lang-en">Student No:</span><span class="lang-tr">Öğrenci No:</span> @Model.StudentNumber</p>
-<div class="w-full text-left space-y-sm">
-<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
-<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></span>
-<span class="font-body-md text-body-md font-medium text-on-surface">@Model.Department</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
-<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Faculty</span><span class="lang-tr">Fakülte</span></span>
-<span class="font-body-md text-body-md font-medium text-on-surface"><span class="lang-en">Faculty of Engineering</span><span class="lang-tr">Mühendislik Fakültesi</span></span>
-</div>
-<div class="flex justify-between items-center py-2">
-<span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></span>
-<span class="font-label-md text-label-md bg-secondary text-on-secondary px-2 py-1 rounded-full"><span class="lang-en">Active</span><span class="lang-tr">Aktif</span></span>
-</div>
-</div>
-</div>
-<!-- Academic Quick Info -->
-<div class="glass-card rounded-xl p-md">
-<h4 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-2">
-<span class="material-symbols-outlined text-primary" data-icon="menu_book">menu_book</span>
-                            <span class="lang-en">Academic Info</span><span class="lang-tr">Akademik Bilgiler</span>
-                        </h4>
-<div class="space-y-md">
-<div>
-<label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Enrollment Date</span><span class="lang-tr">Kayıt Tarihi</span></label>
-<p class="font-body-md text-body-md text-on-surface"><span class="lang-tr">15 Eylül</span><span class="lang-en">15 September</span> @Model.EnrollmentYear</p>
-</div>
-<div>
-<label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Academic Advisor</span><span class="lang-tr">Akademik Danışman</span></label>
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
-<img alt="Advisor" class="w-full h-full object-cover" src="/profile.png"/>
-</div>
-<div>
-<p class="font-body-md text-body-md font-medium text-on-surface">@(Model.Advisor?.Title) @(Model.Advisor?.FirstName) @(Model.Advisor?.LastName)</p>
-<a class="font-label-sm text-label-sm text-primary hover:underline flex items-center gap-1" href="mailto:@(Model.Advisor?.Email)">
-<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
-<span class="lang-en">Contact Advisor</span><span class="lang-tr">Danışmanla İletişime Geç</span>
-</a>
-</div>
-</div>
-</div>
-</div>
-</div>
+                @if (Model is Student_Information_System.Models.Student s)
+                {
+                    <p class="font-label-md text-label-md text-on-surface-variant bg-surface-container-highest px-3 py-1 rounded-full mb-md"><span class="lang-en">Student No:</span><span class="lang-tr">Öğrenci No:</span> @s.StudentNumber</p>
+                }
+                else if (Model is Student_Information_System.Models.Advisor a)
+                {
+                    <p class="font-label-md text-label-md text-on-surface-variant bg-surface-container-highest px-3 py-1 rounded-full mb-md"><span class="lang-en">Title:</span><span class="lang-tr">Unvan:</span> @a.Title</p>
+                }
+                <div class="w-full text-left space-y-sm">
+                    <div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></span>
+                        <span class="font-body-md text-body-md font-medium text-on-surface">@((Model as Student_Information_System.Models.Student)?.Department ?? (Model as Student_Information_System.Models.Advisor)?.Department)</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Faculty</span><span class="lang-tr">Fakülte</span></span>
+                        <span class="font-body-md text-body-md font-medium text-on-surface"><span class="lang-en">Faculty of Engineering</span><span class="lang-tr">Mühendislik Fakültesi</span></span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">Status</span><span class="lang-tr">Durum</span></span>
+                        <span class="font-label-md text-label-md bg-secondary text-on-secondary px-2 py-1 rounded-full"><span class="lang-en">Active</span><span class="lang-tr">Aktif</span></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Academic Quick Info / Advisor Info -->
+            <div class="glass-card rounded-xl p-md">
+                @if (Model is Student_Information_System.Models.Student s2)
+                {
+                    <h4 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary" data-icon="menu_book">menu_book</span>
+                        <span class="lang-en">Academic Info</span><span class="lang-tr">Akademik Bilgiler</span>
+                    </h4>
+                    <div class="space-y-md">
+                        <div>
+                            <label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Enrollment Date</span><span class="lang-tr">Kayıt Tarihi</span></label>
+                            <p class="font-body-md text-body-md text-on-surface"><span class="lang-tr">15 Eylül</span><span class="lang-en">15 September</span> @s2.EnrollmentYear</p>
+                        </div>
+                        <div>
+                            <label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Academic Advisor</span><span class="lang-tr">Akademik Danışman</span></label>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+                                    <img alt="Advisor" class="w-full h-full object-cover" src="/profile.png"/>
+                                </div>
+                                <div>
+                                    <p class="font-body-md text-body-md font-medium text-on-surface">@(s2.Advisor?.Title) @(s2.Advisor?.FirstName) @(s2.Advisor?.LastName)</p>
+                                    <a class="font-label-sm text-label-sm text-primary hover:underline flex items-center gap-1" href="mailto:@(s2.Advisor?.Email)">
+                                        <span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+                                        <span class="lang-en">Contact Advisor</span><span class="lang-tr">Danışmanla İletişime Geç</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (Model is Student_Information_System.Models.Advisor a2)
+                {
+                    <h4 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary" data-icon="badge">badge</span>
+                        <span class="lang-en">Advisor Info</span><span class="lang-tr">Danışman Bilgileri</span>
+                    </h4>
+                    <div class="space-y-md">
+                        <div>
+                            <label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Role</span><span class="lang-tr">Rol</span></label>
+                            <p class="font-body-md text-body-md text-on-surface"><span class="lang-tr">Akademik Danışman / Öğretim Üyesi</span><span class="lang-en">Academic Advisor / Faculty Member</span></p>
+                        </div>
+                        <div>
+                            <label class="font-label-sm text-label-sm text-outline block mb-1"><span class="lang-en">Department</span><span class="lang-tr">Bölüm</span></label>
+                            <p class="font-body-md text-body-md text-on-surface">@a2.Department</p>
+                        </div>
+                    </div>
+                }
+            </div>
 </div>
 <!-- Right Column: Editable Forms -->
 <div class="lg:col-span-8 flex flex-col gap-gutter">
@@ -130,7 +157,7 @@
 <label class="font-label-sm text-label-sm text-on-surface-variant"><span class="lang-en">University Email (Read-only)</span><span class="lang-tr">Üniversite E-posta (Okunur)</span></label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="school">school</span>
-<input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-highest text-on-surface-variant text-body-md font-body-md border-none" disabled="" type="email" value="@(Model.StudentNumber)@("@")ogr.oku.edu.tr"/>
+                                <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-highest text-on-surface-variant text-body-md font-body-md border-none" disabled="" type="email" value="@(Model is Student_Information_System.Models.Student s3 ? s3.StudentNumber + "@ogr.oku.edu.tr" : Model.Email)"/>
 </div>
 </div>
 <div class="flex flex-col gap-1 md:col-span-2">
