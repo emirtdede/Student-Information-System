@@ -41,12 +41,11 @@ namespace Student_Information_System.Data
                 FirstName = "Emir Tarık",
                 LastName = "Dede",
                 TcKimlikNo = "11111111111",
-                Password = "password",
-                Email = "emir@oku.edu.tr",
+                Email = "20217170031@ogr.oku.edu.tr",
                 Role = "Student",
-                StudentNumber = "20240101001",
+                StudentNumber = "20217170031",
                 Department = "Computer Engineering",
-                EnrollmentYear = 2020,
+                EnrollmentYear = 2021,
                 Gpa = 3.5,
                 AdvisorId = advisor.Id,
                 TuitionDebt = 4250.00m,
@@ -56,6 +55,7 @@ namespace Student_Information_System.Data
                 DoubleMajorDepartment = "Industrial Engineering",
                 DoubleMajorGpa = 3.20
             };
+            student.Password = SecurityHelper.HashPassword(student, "EtdRke3101");
             context.Students.Add(student);
             context.SaveChanges();
 
