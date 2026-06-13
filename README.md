@@ -5,8 +5,13 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-cyan.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
+<p align="center">
+  <a href="#english">English</a> | <a href="#turkish">Türkçe</a>
+</p>
+
 ---
 
+<a name="english"></a>
 ## English Version
 
 OKÜ Student Information System (OBS) is a high-density, modern, and fully responsive academic portal designed for computer engineering students and academic advisors. 
@@ -84,6 +89,7 @@ This project is built following modern web design trends (bento grid layout, gla
 
 ---
 
+<a name="turkish"></a>
 # 🎓 OKÜ Öğrenci Bilgi Sistemi - OBS
 
 ## Türkçe Versiyon (Ekran Görüntüleri ile)
