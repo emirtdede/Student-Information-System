@@ -46,7 +46,7 @@ namespace Student_Information_System.Data
                 StudentNumber = "20217170031",
                 Department = "Computer Engineering",
                 EnrollmentYear = 2021,
-                Gpa = 3.5,
+                Gpa = 3.75,
                 AdvisorId = advisor.Id,
                 TuitionDebt = 4250.00m,
                 IsInternship1Completed = true,
