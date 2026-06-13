@@ -1,12 +1,33 @@
 # 🎓 OKÜ Student Information System - SIS
 
-[![.NET Core](https://img.shields.io/badge/.NET_Core-9.0-blue.svg?style=flat-square&logo=.net)](https://dotnet.microsoft.com/)
-[![SQLite](https://img.shields.io/badge/SQLite-Database-green.svg?style=flat-square&logo=sqlite)](https://www.sqlite.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-cyan.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+<p align="center">
+  <a href="#english">
+    <img src="https://img.shields.io/badge/LANGUAGE-ENGLISH-blue?style=for-the-badge&logo=googletranslate&logoColor=white" alt="English" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="#turkish">
+    <img src="https://img.shields.io/badge/D%C4%B0L-T%C3%9CRK%C3%87E-red?style=for-the-badge&logo=googletranslate&logoColor=white" alt="Türkçe" />
+  </a>
+</p>
+
+---
 
 <p align="center">
-  <a href="#english">English</a> | <a href="#turkish">Türkçe</a>
+  <a href="https://dotnet.microsoft.com/">
+    <img src="https://img.shields.io/badge/.NET_Core-9.0-blue.svg?style=flat-square&logo=.net" alt=".NET Core" />
+  </a>
+  &nbsp;
+  <a href="https://www.sqlite.org/">
+    <img src="https://img.shields.io/badge/SQLite-Database-green.svg?style=flat-square&logo=sqlite" alt="SQLite" />
+  </a>
+  &nbsp;
+  <a href="https://tailwindcss.com/">
+    <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-cyan.svg?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" />
+  </a>
+  &nbsp;
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square" alt="License" />
+  </a>
 </p>
 
 ---
